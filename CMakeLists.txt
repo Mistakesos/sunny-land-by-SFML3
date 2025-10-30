@@ -23,6 +23,7 @@ file(GLOB_RECURSE SRC_LIST CMAKE_CONFIGURE_DEPENDS
     ${PROJECT_SOURCE_DIR}/src/engine/core/*.cpp
     ${PROJECT_SOURCE_DIR}/src/engine/resource/*.cpp
     ${PROJECT_SOURCE_DIR}/src/engine/render/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/engine/input/*.cpp
 )
 
 # 5、生成可执行文件，这里的所有cpp文件用变量替代
@@ -35,6 +36,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/include/engine/core
         ${PROJECT_SOURCE_DIR}/include/engine/resource
         ${PROJECT_SOURCE_DIR}/include/engine/render
+        ${PROJECT_SOURCE_DIR}/include/engine/input
 )
 
 target_link_libraries(${PROJECT_NAME} 

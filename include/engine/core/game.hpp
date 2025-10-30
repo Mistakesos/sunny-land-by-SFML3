@@ -17,6 +17,10 @@ namespace engine::render {
     class Camera;
 } // namespace engine::render
 
+namespace engine::input {
+    class InputManager;
+}
+
 namespace engine::core {
 class Time;
 class Config;
@@ -48,6 +52,7 @@ private:
     void test_resource_manager();
     void test_renderer();
     void test_camera();
+    void test_input_manager();
 
     // 配置组件，优先加载，优先级最高
     std::unique_ptr<engine::core::Config> config_;
@@ -58,6 +63,7 @@ private:
     // 引擎组件
     std::unique_ptr<engine::core::Time> time_;                                  ///< @brief 时间组件
     std::unique_ptr<engine::resource::ResourceManager> resource_manager_;       ///< @brief 资源管理器组件
+    std::unique_ptr<engine::input::InputManager> input_manager_;                ///< @brief 输入管理器组件
     std::unique_ptr<engine::render::Renderer> renderer_;                        ///< @brief 渲染器组件
     std::unique_ptr<engine::render::Camera> camera_;                            ///< @brief 摄像机组件
 };

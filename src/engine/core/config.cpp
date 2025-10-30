@@ -5,6 +5,19 @@
 
 engine::core::Config::Config(const std::string& filepath) {
     load_from_file(filepath);
+
+    // 初始化动作到输入
+    for (const auto& [action, scancodes] : keyboard_input_mappings_) {
+        for (const auto& scancode : scancodes) {
+            action_to_input_[action].push_back(scancode);
+        }
+    }
+    
+    for (const auto& [action, buttons] : mouse_input_mappings_) {
+        for (const auto& button : buttons) {
+            action_to_input_[action].push_back(button);
+        }
+    }
 }
 
 bool engine::core::Config::load_from_file(const std::string& filepath) {

@@ -1,23 +1,15 @@
 #pragma once
+#include "action.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <string>
 #include <vector>
+#include <variant>
 #include <unordered_map>
 #include <nlohmann/json_fwd.hpp>        // 官方提供的前向声明头文件
 
 namespace engine::core {
-enum class Action {
-    None,
-    MoveLeft,
-    MoveRight,
-    MoveUp,
-    MoveDown,
-    Jump,
-    Attack,
-    Pause
-};
 /**
  * @brief 管理应用程序的配置设置
  * 提供配置项的默认值，且支持从 JSON 文件加载/保存配置
@@ -56,19 +48,20 @@ public:
     float sound_volume_ = 0.5f;
 
     // 存储动作名称到 sfml scancode/button 的名称列表映射
-    using Key = sf::Keyboard::Scancode;
+    using Scancode = sf::Keyboard::Scancode;
     using Button = sf::Mouse::Button;
-    std::unordered_map<Action, std::vector<sf::Keyboard::Scancode>> keyboard_input_mappings_ = {
-        {Action::MoveLeft, {Key::A, Key::Left}},
-        {Action::MoveRight, {Key::D, Key::Right}},
-        {Action::MoveUp, {Key::W, Key::Up}},
-        {Action::MoveDown, {Key::S, Key::Down}},
-        {Action::Jump, {Key::J, Key::Space}},
-        {Action::Attack, {Key::K}},
-        {Action::Pause, {Key::P, Key::Escape}}
+    std::unordered_map<Action, std::vector<Scancode>> keyboard_input_mappings_ = {
+        {Action::MoveLeft, {Scancode::A, Scancode::Left}},
+        {Action::MoveRight, {Scancode::D, Scancode::Right}},
+        {Action::MoveUp, {Scancode::W, Scancode::Up}},
+        {Action::MoveDown, {Scancode::S, Scancode::Down}},
+        {Action::Jump, {Scancode::J, Scancode::Space}},
+        {Action::Attack, {Scancode::K}},
+        {Action::Pause, {Scancode::P, Scancode::Escape}}
     };
-    std::unordered_map<Action, std::vector<sf::Mouse::Button>> mouse_input_mappings_ = {
+    std::unordered_map<Action, std::vector<Button>> mouse_input_mappings_ = {
         {Action::Attack, {Button::Left}}
     };
+    std::unordered_map<Action, std::vector<std::variant<Scancode, Button>>> action_to_input_;
 };
 } // namespace engine::core
