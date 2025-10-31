@@ -17,15 +17,15 @@ namespace engine::core {
  */
 class Config final {
 public:
-    explicit Config(const std::string& filepath);   ///< @brief 构造函数，制定配置文件路径
+    explicit Config(std::string_view filepath);   ///< @brief 构造函数，制定配置文件路径
 
     Config(const Config&) = delete;
     Config& operator=(const Config&) = delete;
     Config(Config&) = delete;
     Config& operator=(Config&&) = delete;
 
-    bool load_from_file(const std::string& filepath);               ///< @brief 从指定的json文件加载配置，成功返回true
-    [[nodiscard]] bool save_to_file(const std::string& filepath);   ///< @brief 将当前配置保存到指定的json文件，成功返回true（不应忽略返回值）
+    bool load_from_file(std::string_view filepath);               ///< @brief 从指定的json文件加载配置，成功返回true
+    [[nodiscard]] bool save_to_file(std::string_view filepath);   ///< @brief 将当前配置保存到指定的json文件，成功返回true（不应忽略返回值）
 
 private:
     void from_json(const nlohmann::json& json);

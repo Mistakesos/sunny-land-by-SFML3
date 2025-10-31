@@ -45,7 +45,7 @@ public:
 
 private:
     void handle_event();
-    void update(const sf::Time& delta);
+    void update(sf::Time delta);
     void render();
 
     // 测试用函数
@@ -53,6 +53,7 @@ private:
     void test_renderer();
     void test_camera();
     void test_input_manager();
+    void test_gameobject();
 
     // 配置组件，优先加载，优先级最高
     std::unique_ptr<engine::core::Config> config_;

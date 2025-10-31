@@ -6,6 +6,7 @@
 #include "input_manager.hpp"
 #include "render.hpp"
 #include "camera.hpp"
+#include "game_object.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <spdlog/spdlog.h>
 
@@ -17,6 +18,7 @@ engine::core::Game::Game()
     , input_manager_{std::make_unique<engine::input::InputManager>(window_.get(), config_.get())}
     , renderer_{std::make_unique<engine::render::Renderer>(window_.get(), resource_manager_.get())}
     , camera_{std::make_unique<engine::render::Camera>(window_.get())} {
+    test_gameobject();
 }
 
 engine::core::Game::~Game() = default;
@@ -56,7 +58,7 @@ void engine::core::Game::handle_event() {
     test_input_manager();
 }
 
-void engine::core::Game::update(const sf::Time& delta) {
+void engine::core::Game::update(sf::Time delta) {
     test_camera();
 }
 
@@ -132,4 +134,9 @@ void engine::core::Game::test_input_manager() {
             spdlog::info("{} 长按", static_cast<int>(action));
         }
     }
+}
+
+void engine::core::Game::test_gameobject() {
+    engine::object::GameObject game_object("text_game_object");
+    game_object.add_component<engine::component::Component>();
 }

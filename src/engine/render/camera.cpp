@@ -21,7 +21,7 @@ Camera::Camera(sf::RenderWindow* window, std::optional<sf::FloatRect> limit_boun
     window_obs_->setView(world_view_);
 }
 
-void Camera::update(const sf::Time& delta_time)
+void Camera::update(sf::Time delta_time)
 {
     // if (target_ == nullptr) return;
     

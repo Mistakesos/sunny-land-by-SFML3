@@ -30,7 +30,7 @@ public:
      */
     Camera(sf::RenderWindow* window, std::optional<sf::FloatRect> limit_bounds = std::nullopt);
     
-    void update(const sf::Time& delta_time);                                ///< @brief 更新相机位置
+    void update(sf::Time delta_time);                                ///< @brief 更新相机位置
     void move(const sf::Vector2f& offset);                                  ///< @brief 移动相机
 
     sf::Vector2f world_to_screen(const sf::Vector2f& world_pos) const;      ///< @brief 世界坐标转屏幕坐标

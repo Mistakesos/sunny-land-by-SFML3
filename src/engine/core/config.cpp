@@ -1,9 +1,10 @@
 #include "config.hpp"
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
+#include <filesystem>
 #include <fstream>
 
-engine::core::Config::Config(const std::string& filepath) {
+engine::core::Config::Config(std::string_view filepath) {
     load_from_file(filepath);
 
     // 初始化动作到输入
@@ -20,8 +21,9 @@ engine::core::Config::Config(const std::string& filepath) {
     }
 }
 
-bool engine::core::Config::load_from_file(const std::string& filepath) {
-    std::fstream file(filepath);
+bool engine::core::Config::load_from_file(std::string_view filepath) {
+    auto path = std::filesystem::path(filepath);
+    std::fstream file(path);
     if (!file.is_open()) {
         spdlog::warn("配置文件 ‘{}’ 未找到，将使用默认设置并创建默认配置文件", filepath);
         if (!save_to_file(filepath)) {
@@ -43,8 +45,9 @@ bool engine::core::Config::load_from_file(const std::string& filepath) {
     return false;
 }
 
-bool engine::core::Config::save_to_file(const std::string& filepath) {
-    std::ofstream file(filepath);
+bool engine::core::Config::save_to_file(std::string_view filepath) {
+    auto path = std::filesystem::path(filepath);
+    std::ofstream file(path);
     if (!file.is_open()) {
         spdlog::error("无法打开配置文件 ‘{}’ 进行写入", filepath);
         return false;
