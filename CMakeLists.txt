@@ -35,6 +35,7 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 target_include_directories(${PROJECT_NAME} 
     PRIVATE
         ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include/engine/utils
         ${PROJECT_SOURCE_DIR}/include/engine/core
         ${PROJECT_SOURCE_DIR}/include/engine/resource
         ${PROJECT_SOURCE_DIR}/include/engine/render

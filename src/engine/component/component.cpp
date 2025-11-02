@@ -1,14 +1,11 @@
 #include "component.hpp"
-#include <SFML/System/Time.hpp>
 
-engine::component::Component::Component() = default;
-
-engine::component::Component::~Component() = default;
-
-void engine::component::Component::set_owner(engine::object::GameObject* owner) {
+namespace engine::component {
+void Component::set_owner(engine::object::GameObject* owner) {
     this->owner_ = owner;
 }
 
-engine::object::GameObject* engine::component::Component::get_owner() const {
+engine::object::GameObject* Component::get_owner() const {
     return this->owner_;
 }
+} // namespace engine::component

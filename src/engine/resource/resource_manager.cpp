@@ -3,7 +3,6 @@
 #include <stdexcept>
 
 namespace engine::resource {
-
 // ---------------- Texture ----------------
 sf::Texture* ResourceManager::load_texture(std::string_view file) {
     auto key = std::string(file);
@@ -131,5 +130,4 @@ void ResourceManager::clear_all() {
     clear_musics();
     clear_fonts();
 }
-
 } // namespace engine::resource

@@ -11,7 +11,7 @@ namespace engine::render {
     class Animation final {
     public:
         Animation(std::string_view name = "default", bool loop = true);
-        ~Animation();
+        ~Animation() = default;
 
         // 添加一帧
         void add_frame(const sf::FloatRect& source_rect, const sf::Time& duration);

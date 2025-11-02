@@ -36,7 +36,7 @@ public:
      */
     Renderer(sf::RenderWindow* window, engine::resource::ResourceManager* resource_manager);
 
-    ~Renderer();
+    ~Renderer() = default;
 
     /**
      * @brief 清空当前帧

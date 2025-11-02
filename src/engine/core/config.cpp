@@ -4,7 +4,8 @@
 #include <filesystem>
 #include <fstream>
 
-engine::core::Config::Config(std::string_view filepath) {
+namespace engine::core {
+Config::Config(std::string_view filepath) {
     load_from_file(filepath);
 
     // 初始化动作到输入
@@ -21,7 +22,7 @@ engine::core::Config::Config(std::string_view filepath) {
     }
 }
 
-bool engine::core::Config::load_from_file(std::string_view filepath) {
+bool Config::load_from_file(std::string_view filepath) {
     auto path = std::filesystem::path(filepath);
     std::fstream file(path);
     if (!file.is_open()) {
@@ -45,7 +46,7 @@ bool engine::core::Config::load_from_file(std::string_view filepath) {
     return false;
 }
 
-bool engine::core::Config::save_to_file(std::string_view filepath) {
+bool Config::save_to_file(std::string_view filepath) {
     auto path = std::filesystem::path(filepath);
     std::ofstream file(path);
     if (!file.is_open()) {
@@ -64,7 +65,7 @@ bool engine::core::Config::save_to_file(std::string_view filepath) {
     return false;
 }
 
-void engine::core::Config::from_json(const nlohmann::json& json) {
+void Config::from_json(const nlohmann::json& json) {
     if (json.contains("window")) {
         const auto& window_config = json["window"];
         window_title_ = window_config.value("title", window_title_);
@@ -122,7 +123,7 @@ void engine::core::Config::from_json(const nlohmann::json& json) {
     }
 }
 
-nlohmann::ordered_json engine::core::Config::to_json() const {
+nlohmann::ordered_json Config::to_json() const {
     return nlohmann::ordered_json{
         {"window", {
             {"title", window_title_},
@@ -144,3 +145,4 @@ nlohmann::ordered_json engine::core::Config::to_json() const {
         {"mouse_input_mappings", mouse_input_mappings_}
     };
 }
+} // namespace engine::core

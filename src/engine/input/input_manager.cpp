@@ -4,7 +4,8 @@
 #include <spdlog/spdlog.h>
 #include <optional>
 
-engine::input::InputManager::InputManager(sf::RenderWindow* window, const engine::core::Config* config) 
+namespace engine::input {
+InputManager::InputManager(sf::RenderWindow* window, const engine::core::Config* config) 
     : window_obs_{window}
     , action_to_input_copy_{config->action_to_input_} {
     for (const auto& [action, inputs] : action_to_input_copy_) {
@@ -12,9 +13,7 @@ engine::input::InputManager::InputManager(sf::RenderWindow* window, const engine
     }
 }
 
-engine::input::InputManager::~InputManager() = default;
-
-void engine::input::InputManager::update() {
+void InputManager::update() {
     for (auto& [action, state] : action_state_map_) {
         if (state == ActionState::PressedThisFrame) {
             state = ActionState::HeldDown;
@@ -61,39 +60,40 @@ void engine::input::InputManager::update() {
     }
 }
 
-bool engine::input::InputManager::is_action_held(Action action) const {
+bool InputManager::is_action_held(Action action) const {
     if (auto it = action_state_map_.find(action); it != action_state_map_.end()) {
         return it->second == ActionState::PressedThisFrame || it->second == ActionState::HeldDown;
     }
     return false;
 }
 
-bool engine::input::InputManager::is_action_pressed(Action action) const {
+bool InputManager::is_action_pressed(Action action) const {
     if (auto it = action_state_map_.find(action); it != action_state_map_.end()) {
         return it->second == ActionState::PressedThisFrame;
     }
     return false;
 }
 
-bool engine::input::InputManager::is_action_released(Action action) const {
+bool InputManager::is_action_released(Action action) const {
     if (auto it = action_state_map_.find(action); it != action_state_map_.end()) {
         return it->second == ActionState::ReleasedThisFrame;
     }
     return false;
 }
 
-sf::Vector2i engine::input::InputManager::get_mouse_position() const {
+sf::Vector2i InputManager::get_mouse_position() const {
     return sf::Mouse::getPosition();
 }
 
-sf::Vector2i engine::input::InputManager::get_mouse_logical_position() const {
+sf::Vector2i InputManager::get_mouse_logical_position() const {
     return sf::Mouse::getPosition(*window_obs_);
 }
 
-void engine::input::InputManager::process_event() {
+void InputManager::process_event() {
     while (std::optional event = window_obs_->pollEvent()) {
         if (event->is<sf::Event::Closed>()) {
             window_obs_->close();
         }
     }
 }
+} // namespace engine::input

@@ -1,5 +1,4 @@
 #include "render.hpp"
-
 #include "resource_manager.hpp"
 #include "camera.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -8,7 +7,8 @@
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
-engine::render::Renderer::Renderer(sf::RenderWindow* window, engine::resource::ResourceManager* resource_manager)
+namespace engine::render {
+Renderer::Renderer(sf::RenderWindow* window, engine::resource::ResourceManager* resource_manager)
     : window_obs_{window}
     , resourec_manager_obs_{resource_manager} {
     spdlog::trace("构造 Renderer...");
@@ -21,81 +21,18 @@ engine::render::Renderer::Renderer(sf::RenderWindow* window, engine::resource::R
     spdlog::trace("Renderer 构造成功");
 }
 
-engine::render::Renderer::~Renderer() = default;
-
-void engine::render::Renderer::clear_frame() {
+void Renderer::clear_frame() {
     window_obs_->clear(sf::Color::Black);
 }
 
-void engine::render::Renderer::display_frame() {
+void Renderer::display_frame() {
     window_obs_->display();
 }
 
-void engine::render::Renderer::draw_sprite(const Camera& camera, sf::Sprite& sprite) {
+void Renderer::draw_sprite(const Camera& camera, sf::Sprite& sprite) {
     window_obs_->setView(camera.get_world_view());
     window_obs_->draw(sprite);
 }
-
-// void engine::render::Renderer::draw_parallax(const Camera& camera, sf::Sprite& sprite,
-//                                              const sf::Vector2f& scroll_factor, sf::Vector2<bool> repeat, const sf::Vector2f& scale) {
-//     // 应用相机变换
-//     auto position = sprite.getPosition();
-
-//     // 设置位置、缩放
-//     sprite.setPosition(position);
-//     sprite.setScale(scale);
-
-//     sf::IntRect original_texture_rect = sprite.getTextureRect();
-
-//     // 如果需要重复，调整纹理矩形
-//     if (repeat.x || repeat.y) {
-//         sf::Vector2f viewport_size = camera.get_world_viewport_size();
-
-//         // 计算缩放后的精灵尺寸
-//         sf::Vector2f scaled_sprite_size = {
-//             original_texture_rect.size.x * scale.x,
-//             original_texture_rect.size.y * scale.y
-//         };
-
-//         // 修复问题1：计算相机偏移量，确保向左移动时也能正确重复
-//         sf::Vector2f camera_offset = {
-//             std::fmod(camera.get_center().x * scroll_factor.x, scaled_sprite_size.x),
-//             std::fmod(camera.get_center().y * scroll_factor.y, scaled_sprite_size.y)
-//         };
-
-//         // 计算需要覆盖的区域（考虑两个方向）
-//         sf::IntRect texture_rect = original_texture_rect;
-
-//         if (repeat.x) {
-//             // 修复问题2：安全计算重复次数，避免整数溢出
-//             int repeat_count_x = static_cast<int>(std::ceil(viewport_size.x / scaled_sprite_size.x)) + 2; // +2 确保覆盖边界
-//             texture_rect.size.x = original_texture_rect.size.x * repeat_count_x;
-
-//             // 调整纹理矩形的left，确保向左移动时也能正确显示
-//             texture_rect.position.x = original_texture_rect.position.x - static_cast<int>(camera_offset.x);
-//         }
-
-//         if (repeat.y) {
-//             int repeat_count_y = static_cast<int>(std::ceil(viewport_size.y / scaled_sprite_size.y)) + 2;
-//             texture_rect.size.y = original_texture_rect.size.y * repeat_count_y;
-
-//             texture_rect.position.y = original_texture_rect.position.y - static_cast<int>(camera_offset.y);
-//         }
-
-//         // 设置纹理重复模式
-//         sprite.setTextureRect(texture_rect);
-
-//         // 调整精灵位置以补偿纹理偏移
-//         sprite.setPosition({
-//             position.x - (repeat.x ? camera_offset.x : 0),
-//             position.y - (repeat.y ? camera_offset.y : 0)
-//         });
-//     }
-
-//     // 绘制
-//     window_obs_->setView(camera.get_world_view());
-//     window_obs_->draw(sprite);
-// }
 
 static float positive_fmod(float x, float m) {
     // 把浮点 x 模 m 映射到 [0, m)
@@ -105,7 +42,7 @@ static float positive_fmod(float x, float m) {
     return r;
 }
 
-void engine::render::Renderer::draw_parallax(
+void Renderer::draw_parallax(
     const Camera& camera,
     sf::Sprite& sprite,
     const sf::Vector2f& scroll_factor,
@@ -210,15 +147,16 @@ void engine::render::Renderer::draw_parallax(
 }
 
 
-void engine::render::Renderer::draw_ui_sprite(const Camera& camera, sf::Sprite& sprite) {
+void Renderer::draw_ui_sprite(const Camera& camera, sf::Sprite& sprite) {
     window_obs_->setView(camera.get_ui_view());
     window_obs_->draw(sprite);
 }
 
-void engine::render::Renderer::draw_rect(const sf::FloatRect& rect, sf::Color color) {
+void Renderer::draw_rect(const sf::FloatRect& rect, sf::Color color) {
     sf::RectangleShape shape;
     shape.setPosition({rect.position.x, rect.position.y});
     shape.setSize({rect.size.x, rect.size.y});
     shape.setFillColor(color);
     window_obs_->draw(shape);
 }
+} // namespace engine::render

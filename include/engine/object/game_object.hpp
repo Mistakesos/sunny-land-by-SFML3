@@ -21,7 +21,7 @@ namespace engine::object {
 class GameObject final {
 public:
     GameObject(std::string_view name = "", std::string_view tag = "");  ///< @brief 构造函数，默认名称为空，标签为空
-    ~GameObject();
+    ~GameObject() = default;
 
     // 禁止拷贝和移动，确保唯一性 (通常游戏对象不应随意拷贝)
     GameObject(const GameObject&) = delete;
@@ -38,9 +38,9 @@ public:
     bool is_need_remove() const;                ///< @brief 获取是否需要删除
 
     // 关键循环函数
-    void handle_input();                        ///< @brief 处理输入
-    void update(sf::Time delta);               ///< @brief 更新所有组件
-    void render();                              ///< @brief 渲染所有组件
+    void handle_input(engine::core::Context& context);                        ///< @brief 处理输入
+    void update(sf::Time delta, engine::core::Context& context);              ///< @brief 更新所有组件
+    void render(engine::core::Context& context);                              ///< @brief 渲染所有组件
 
     /**
      * @brief 添加组件

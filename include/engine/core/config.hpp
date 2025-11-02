@@ -18,6 +18,7 @@ namespace engine::core {
 class Config final {
 public:
     explicit Config(std::string_view filepath);   ///< @brief 构造函数，制定配置文件路径
+    ~Config() = default;
 
     Config(const Config&) = delete;
     Config& operator=(const Config&) = delete;

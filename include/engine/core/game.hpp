@@ -19,12 +19,12 @@ namespace engine::render {
 
 namespace engine::input {
     class InputManager;
-}
+} // namespace engine::input
 
 namespace engine::core {
 class Time;
 class Config;
-
+class Context;
 /**
  * @brief 主游戏类，初始化资源，管理游戏循环
  */
@@ -67,5 +67,6 @@ private:
     std::unique_ptr<engine::input::InputManager> input_manager_;                ///< @brief 输入管理器组件
     std::unique_ptr<engine::render::Renderer> renderer_;                        ///< @brief 渲染器组件
     std::unique_ptr<engine::render::Camera> camera_;                            ///< @brief 摄像机组件
+    std::unique_ptr<engine::core::Context> context_;                            ///< @brief 上下文组件，最后初始化
 };
 } // namespace engine::core

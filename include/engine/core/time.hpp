@@ -12,8 +12,8 @@ namespace engine::core {
  */
 class Time final {
 public:
-    Time();
-    ~Time();
+    Time() = default;
+    ~Time() = default;
 
     Time(const Time&) = delete;
     Time& operator=(const Time&) = delete;

@@ -26,7 +26,7 @@ enum class ActionState {
 class InputManager final {
 public:
     InputManager(sf::RenderWindow* window, const engine::core::Config* config);
-    ~InputManager();
+    ~InputManager() = default;
     
     void update();                                      ///< @brief 更新输入状态，每轮循环最先调用
     
@@ -49,4 +49,4 @@ private:
     bool should_quit = false;           ///< @brief 退出标志
     sf::Vector2f mouse_position_;       ///< @brief 鼠标位置（针对逻辑坐标）
 };
-}
+} // namespace engine::input

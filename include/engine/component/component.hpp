@@ -5,6 +5,10 @@ namespace engine::object {
     class GameObject;
 } // namespace engine::object
 
+namespace engine::core {
+    class Context;
+} // namespace engine::core
+
 namespace engine::component {
 /**
  * @brief 组件的抽象基类
@@ -15,8 +19,8 @@ namespace engine::component {
 class Component {
     friend class engine::object::GameObject;                ///< @brief 他需要调用Component的protected函数
 public:
-    Component();
-    virtual ~Component();
+    Component() = default;
+    virtual ~Component() = default;
 
     // 禁止拷贝和移动，组件通常不应被拷贝或移动（更改owner_就相当于移动）
     Component(const Component&) = delete;
@@ -29,9 +33,9 @@ public:
 
 protected:
     // 关键循环函数（未来将其中一个改为 = 0 以实现纯虚函数
-    virtual void handle_input() {}                          ///< @brief 处理输入
-    virtual void update(sf::Time delta) {}                  ///< @brief 更新
-    virtual void render() {}                                ///< @brief 渲染
+    virtual void handle_input(engine::core::Context& context) {}                          ///< @brief 处理输入
+    virtual void update(sf::Time delta, engine::core::Context& context) = 0;              ///< @brief 更新
+    virtual void render(engine::core::Context& context) {}                                ///< @brief 渲染
 
     engine::object::GameObject* owner_ = nullptr;           ///< @brief 指向该组件的 GameObject
 };
