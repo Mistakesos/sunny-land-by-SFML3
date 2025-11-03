@@ -37,8 +37,8 @@ public:
     sf::Vector2i get_mouse_position() const;            ///< @brief 获取鼠标位置（屏幕坐标）
     sf::Vector2i get_mouse_logical_position() const;    ///< @brief 获取鼠标逻辑坐标（从窗口）
     
-private:
     void process_event();
+private:
 
     sf::RenderWindow* window_obs_ = nullptr;                                                            ///< @brief 用于传入获取鼠标的逻辑位置
     using Scancode = sf::Keyboard::Scancode;

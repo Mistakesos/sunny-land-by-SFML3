@@ -22,8 +22,6 @@ void InputManager::update() {
         }
     }
 
-    process_event();
-
     for (auto& [action, inputs] : action_to_input_copy_) {
         bool pressed = false;
 

@@ -21,6 +21,10 @@ namespace engine::input {
     class InputManager;
 } // namespace engine::input
 
+namespace engine::scene {
+    class SceneManager;
+} // namespace engine::scene
+
 namespace engine::core {
 class Time;
 class Config;
@@ -48,13 +52,6 @@ private:
     void update(sf::Time delta);
     void render();
 
-    // 测试用函数
-    void test_resource_manager();
-    void test_renderer();
-    void test_camera();
-    void test_input_manager();
-    void test_gameobject();
-
     // 配置组件，优先加载，优先级最高
     std::unique_ptr<engine::core::Config> config_;
 
@@ -68,5 +65,6 @@ private:
     std::unique_ptr<engine::render::Renderer> renderer_;                        ///< @brief 渲染器组件
     std::unique_ptr<engine::render::Camera> camera_;                            ///< @brief 摄像机组件
     std::unique_ptr<engine::core::Context> context_;                            ///< @brief 上下文组件，最后初始化
+    std::unique_ptr<engine::scene::SceneManager> scene_manager_;                ///< @brief 场景管理器
 };
 } // namespace engine::core
