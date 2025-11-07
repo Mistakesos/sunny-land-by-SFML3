@@ -22,5 +22,6 @@ public:
 private:
     // 测试函数
     void creat_test_object();
+    void test_camera();
 };
 }

@@ -139,11 +139,11 @@ sf::Vector2f Camera::screen_to_world(const sf::Vector2f& screen_pos) const {
 }
 
 sf::Vector2f Camera::get_world_view_size() const {
-    return world_view_.getViewport().size;
+    return world_view_.getSize();
 }
 
 sf::Vector2f Camera::get_ui_view_size() const {
-    return ui_view_.getViewport().size;
+    return ui_view_.getSize();
 }
 
 std::optional<sf::FloatRect> Camera::get_limit_bounds() const {

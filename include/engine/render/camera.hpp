@@ -30,7 +30,7 @@ public:
      */
     Camera(sf::RenderWindow* window, std::optional<sf::FloatRect> limit_bounds = std::nullopt);
     
-    void update(sf::Time delta_time);                                ///< @brief 更新相机位置
+    void update(sf::Time delta_time);                                       ///< @brief 更新相机位置
     void move(const sf::Vector2f& offset);                                  ///< @brief 移动相机
 
     sf::Vector2f world_to_screen(const sf::Vector2f& world_pos) const;      ///< @brief 世界坐标转屏幕坐标
@@ -45,8 +45,8 @@ public:
     const sf::Vector2f get_world_view_center() const;                       ///< @brief 获取世界摄像机中心位置
     const sf::Vector2f get_ui_view_center() const;                          ///< @brief 获取ui摄像机中心位置
     
-    sf::Vector2f get_world_view_size() const;                           ///< @brief 获取世界视口大小
-    sf::Vector2f get_ui_view_size() const;                              ///< @brief 获取ui视口大小
+    sf::Vector2f get_world_view_size() const;                               ///< @brief 获取世界视口大小
+    sf::Vector2f get_ui_view_size() const;                                  ///< @brief 获取ui视口大小
     std::optional<sf::FloatRect> get_limit_bounds() const;                  ///< @brief 获取限制相机的移动范围
     engine::component::TransformComponent* get_target() const;              ///< @brief 获取跟随目标变换组件
 

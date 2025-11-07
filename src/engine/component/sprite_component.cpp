@@ -9,6 +9,7 @@
 namespace engine::component {
 SpriteComponent::SpriteComponent(const sf::Texture& texture)
     : sprite_{texture} {
+    ///< @attention transform_obs_ 在渲染函数调用时初始化，并确保了只初始化一次
 }
 
 sf::Sprite& SpriteComponent::get_sprite() {
