@@ -67,8 +67,8 @@ void Renderer::draw_parallax(
     sf::Vector2f layer_world_pos = layer_origin + parallax_offset;
 
     // 视口边界
-    sf::Vector2f view_min = view_center - view_size * 0.5f;
-    sf::Vector2f view_max = view_center + view_size * 0.5f;
+    sf::Vector2f view_min = view_center - view_size / 2.f;
+    sf::Vector2f view_max = view_center + view_size / 2.f;
 
     window_obs_->setView(view);
 
