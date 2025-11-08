@@ -16,6 +16,15 @@ enum class TileType {
     Empty,      ///< @brief 空白瓦片
     Normal,     ///< @brief 普通瓦片
     Solid,      ///< @brief 静止可碰撞瓦片
+    Unisolid,   ///< @brief 单向静止可碰撞瓦片
+    Slope_0_1,  ///< @brief 斜坡瓦片，高度:左0  右1
+    Slope_1_0,  ///< @brief 斜坡瓦片，高度:左1  右0
+    Slope_0_2,  ///< @brief 斜坡瓦片，高度:左0  右1/2
+    Slope_2_1,  ///< @brief 斜坡瓦片，高度:左1/2右1
+    Slope_1_2,  ///< @brief 斜坡瓦片，高度:左1  右1/2
+    Slope_2_0,  ///< @brief 斜坡瓦片，高度:左1/2右0
+    Hazard,     ///< @brief 危险瓦片（例如火焰、尖刺等）
+    Ladder      ///< @brief 梯子瓦片
     // 未来补充其它类型
 };
 
@@ -24,7 +33,7 @@ enum class TileType {
  */
 struct TileInfo {
     TileInfo(sf::Sprite& s, TileType t = TileType::Empty)
-    : sprite(std::move(s)), type(t) {
+        : sprite(std::move(s)), type(t) {
     }
     sf::Sprite sprite;          ///< @brief 瓦片的视觉表示
     TileType type;              ///< @brief 瓦片的逻辑类型

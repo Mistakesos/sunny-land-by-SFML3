@@ -14,9 +14,6 @@ TileLayerComponent::TileLayerComponent(sf::Vector2i tile_size, sf::Vector2i map_
         map_size_ = {0, 0};
     }
     
-    if (!owner_) {
-        spdlog::warn("TileLayerComponent 的 owner_ 未设置！");
-    }
     spdlog::trace("TileLayerComponent 构造完成");
 }
 
