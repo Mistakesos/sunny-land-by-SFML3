@@ -12,6 +12,10 @@ SpriteComponent::SpriteComponent(const sf::Texture& texture)
     ///< @attention transform_obs_ 在渲染函数调用时初始化，并确保了只初始化一次
 }
 
+SpriteComponent::SpriteComponent(sf::Sprite&& sprite) 
+    : sprite_{sprite} {
+}
+
 sf::Sprite& SpriteComponent::get_sprite() {
    return this->sprite_;
 }

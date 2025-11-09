@@ -4,6 +4,7 @@
 #include "game_object.hpp"
 #include "component.hpp"
 #include "transform_component.hpp"
+#include "sprite_component.hpp"
 #include "tilelayer_component.hpp"
 #include "parallax_component.hpp"
 #include <nlohmann/json.hpp>
@@ -57,7 +58,7 @@ bool LevelLoader::load_level(std::string_view level_path, Scene& scene) {
             load_tileset(tileset_path, first_gid);
         }
     }
-    
+
     // 5、加载图层数据
     if (!json_data.contains("layers") || !json_data["layers"].is_array()) {       // 地图文件中必须有 layers 数组
         spdlog::error("地图文件 '{}' 中缺少或无效的 'layers' 数组。", level_path);
@@ -72,7 +73,7 @@ bool LevelLoader::load_level(std::string_view level_path, Scene& scene) {
         }
 
         // 根据图层类型决定加载方法
-        if (layer_type == "imagelayer") {       
+        if (layer_type == "imagelayer") {
             load_image_layer(layer_json, scene);
         } else if (layer_type == "tilelayer") {
             load_tile_layer(layer_json, scene);
@@ -99,16 +100,16 @@ void LevelLoader::load_image_layer(const nlohmann::json& layer_json, Scene& scen
 
     // 获取图层偏移量（json中没有则代表未设置，给默认值即可）
     const sf::Vector2f offset = sf::Vector2f(layer_json.value("offsetx", 0.f), layer_json.value("offsety", 0.f));
-    
+
     // 获取视差因子及重复标志
     const sf::Vector2f scroll_factor = sf::Vector2f(layer_json.value("parallaxx", 1.f), layer_json.value("parallaxy", 1.f));
     const sf::Vector2<bool> repeat = sf::Vector2<bool>(layer_json.value("repeatx", false), layer_json.value("repeaty", false));
-    
+
     // 获取图层名称
     std::string layer_name = layer_json.value("name", "Unnamed");
-    
+
     /*  可用类似方法获取其它各种属性，这里我们暂时用不上 */
-    
+
     // 创建游戏对象
     auto game_object = std::make_unique<engine::object::GameObject>(layer_name);
     // 依次添加Transform，Parallax组件
@@ -149,6 +150,44 @@ void LevelLoader::load_tile_layer(const nlohmann::json& layer_json, Scene& scene
 }
 
 void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& scene) {
+    if (!layer_json.contains("objects") || !layer_json["objects"].is_array()) {
+        spdlog::error("对象图层 '{}' 缺少 'objects' 属性。", layer_json.value("name", "Unnamed"));
+        return;
+    }
+    // 获取对象数据
+    const auto& objects = layer_json["objects"];
+    // 遍历对象数据
+    for (const auto& object : objects) {
+        // 获取对象gid
+        auto gid = object.value("gid", 0);
+        if (gid == 0) {
+            // 如果gid为0（即不存在），则代表自己绘制的形状（可能是碰撞盒、触发器，未来按需处理）
+        } else {
+            // --- 根据gid获取必要信息，每个gid对应一个游戏对象 ---
+            auto tile_info = get_tile_info_by_gid(gid);
+
+            // 获取Transform相关信息
+            auto position = sf::Vector2f(object.value("x", 0.f), object.value("y", 0.f));
+            auto dst_size = sf::Vector2f(object.value("width", 0.f), object.value("height", 0.f));
+            position = sf::Vector2f(position.x, position.y - dst_size.y);   // 实际position需要进行调整（左下角到左上角）
+
+            auto rotation = sf::degrees(object.value("rotation", 0.f));
+            auto src_size = tile_info.sprite.getGlobalBounds().size;
+            auto scale = dst_size.componentWiseDiv(src_size);
+
+            // 获取对象名称
+            const std::string& object_name = object.value("name", "Unnamed");
+
+            // 创建游戏对象并添加组件
+            auto game_object = std::make_unique<engine::object::GameObject>(object_name);
+            game_object->add_component<engine::component::TransformComponent>(position, scale, rotation);
+            game_object->add_component<engine::component::SpriteComponent>(std::move(tile_info.sprite));
+
+            // 添加到场景中
+            scene.add_game_object(std::move(game_object));
+            spdlog::info("加载对象：{} 完成", object_name);
+        }
+    }
 }
 
 engine::component::TileInfo LevelLoader::get_tile_info_by_gid(int gid) {
@@ -164,7 +203,7 @@ engine::component::TileInfo LevelLoader::get_tile_info_by_gid(int gid) {
     if (tileset_it == tileset_data_.begin()) {
         spdlog::error("gid为 {} 的瓦片未找到图块集。", gid);
         return default_tile_info;
-    } 
+    }
     --tileset_it;  // 前移一个位置，这样就得到不大于gid的最近一个元素（我们需要的）
 
     const auto& tileset = tileset_it->second;
@@ -218,7 +257,7 @@ engine::component::TileInfo LevelLoader::get_tile_info_by_gid(int gid) {
                     {tile_json.value("width", image_width),    // 如果未设置，则使用图片尺寸
                     tile_json.value("height", image_height)}
                 };
-                sf::Sprite sprite{*context_.get_resource_manager().get_texture(texture_id)};
+                sf::Sprite sprite{*context_.get_resource_manager().get_texture(texture_id), texture_rect};
                 return engine::component::TileInfo(sprite, engine::component::TileType::Normal);
             }
         }
@@ -249,7 +288,7 @@ void LevelLoader::load_tileset(std::string_view tileset_path, int first_gid) {
 }
 
 std::string LevelLoader::resolve_path(std::string_view relative_path, std::string_view file_path) {
-    try {   
+    try {
     // 获取地图文件的父目录（相对于可执行文件） "assets/maps/level1.tmj" -> "assets/maps"
     auto map_dir = std::filesystem::path(file_path).parent_path();
     // 合并路径（相对于可执行文件）并返回。 /* std::filesystem::canonical：解析路径中的当前目录（.）和上级目录（..）导航符，
