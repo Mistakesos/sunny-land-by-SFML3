@@ -48,11 +48,11 @@ public:
     Context& operator=(Context&&) = delete;
 
     // --- Getters ---
-    engine::input::InputManager& get_input_manager() const;             ///< @brief 获取输入管理器
-    engine::render::Renderer& get_renderer() const;                     ///< @brief 获取渲染器
-    engine::render::Camera& get_camera() const;                         ///< @brief 获取相机
-    engine::resource::ResourceManager& get_resource_manager() const;    ///< @brief 获取资源管理器
-    engine::physics::PhysicsEngine& get_physics_engine() const;         ///< @brief 获取物理引擎
+    engine::input::InputManager& get_input_manager() const { return input_manager_; }            ///< @brief 获取输入管理器
+    engine::render::Renderer& get_renderer() const { return renderer_; }                         ///< @brief 获取渲染器
+    engine::render::Camera& get_camera() const { return camera_; }                               ///< @brief 获取相机
+    engine::resource::ResourceManager& get_resource_manager() const { return resource_manager_; }///< @brief 获取资源管理器
+    engine::physics::PhysicsEngine& get_physics_engine() const { return physics_engine_; }       ///< @brief 获取物理引擎
 
 private:
     engine::input::InputManager& input_manager_;                ///< @brief 输入管理器

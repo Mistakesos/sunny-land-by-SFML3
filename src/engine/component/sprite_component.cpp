@@ -18,18 +18,6 @@ SpriteComponent::SpriteComponent(engine::object::GameObject* owner, sf::Sprite&&
     , sprite_{sprite} {
 }
 
-sf::Sprite& SpriteComponent::get_sprite() {
-   return this->sprite_;
-}
-
-bool SpriteComponent::get_hidden() {
-    return this->is_hidden_;
-}
-
-void SpriteComponent::set_hidden(bool hide) {
-    this->is_hidden_ = hide;
-}
-
 void SpriteComponent::render(engine::core::Context& context) {
     if (!transform_obs_) {
         transform_obs_ = owner_->get_component<TransformComponent>();

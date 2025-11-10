@@ -48,38 +48,6 @@ TileType TileLayerComponent::get_tile_type_at_world_pos(const sf::Vector2f& worl
     return get_tile_type_at(sf::Vector2i{tile_x, tile_y});
 }
 
-sf::Vector2i TileLayerComponent::get_tile_size() const {
-    return tile_size_;
-}
-
-sf::Vector2i TileLayerComponent::get_map_size() const {
-    return map_size_;
-}
-
-sf::Vector2f TileLayerComponent::get_world_size() const {
-    return sf::Vector2f(map_size_.x * tile_size_.x, map_size_.y * tile_size_.y); 
-}
-
-const std::vector<TileInfo>& TileLayerComponent::get_tiles() const {
-    return tiles_;
-}
-
-const sf::Vector2f& TileLayerComponent::get_offset() const {
-    return offset_;
-}
-
-bool TileLayerComponent::is_hidden() const {
-    return is_hidden_;
-}
-
-void TileLayerComponent::set_offset(sf::Vector2f offset) {
-    offset_ = std::move(offset);
-}
-
-void TileLayerComponent::set_hidden(bool hidden) {
-    is_hidden_ = hidden;
-}
-
 void TileLayerComponent::render(engine::core::Context& context) {
     if (tile_size_.x <= 0 || tile_size_.y <= 0) {
         spdlog::warn("除以零或无效尺寸！");

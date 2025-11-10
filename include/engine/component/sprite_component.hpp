@@ -25,10 +25,9 @@ public:
     SpriteComponent(engine::object::GameObject* owner, sf::Sprite&& sprite);
     ~SpriteComponent() override = default;
 
-    sf::Sprite& get_sprite();                           ///< @brief 获取精灵
-    bool get_hidden();
-    void set_hidden(bool hide);
-
+    sf::Sprite& get_sprite() { return sprite_; }                           ///< @brief 获取精灵
+    bool get_hidden() { return is_hidden_; }                               ///< @brief 获取隐藏状态
+    void set_hidden(bool hide) { is_hidden_ = hide; }                      ///< @brief 设置隐藏状态
 private:
     void update(sf::Time delta, engine::core::Context& context) override {} ///< @brief 更新函数留空
     void render(engine::core::Context& context) override;                   ///< @brief 渲染函数需要覆盖

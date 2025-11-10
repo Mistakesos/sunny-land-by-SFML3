@@ -30,12 +30,12 @@ public:
     GameObject& operator=(GameObject&&) = delete;
 
     // setters and getters
-    void set_name(std::string_view name);       ///< @brief 设置名称
-    std::string_view get_name() const;          ///< @brief 获取名称
-    void set_tag(std::string_view tag);         ///< @brief 设置标签
-    std::string_view get_tag() const;           ///< @brief 获取标签
-    void set_need_remove(bool need_remove);     ///< @brief 设置是否需要删除
-    bool is_need_remove() const;                ///< @brief 获取是否需要删除
+    void set_name(std::string_view name) { name_ = name; }                    ///< @brief 设置名称
+    std::string_view get_name() const { return name_; }                       ///< @brief 获取名称
+    void set_tag(std::string_view tag) { tag_ = tag; }                        ///< @brief 设置标签
+    std::string_view get_tag() const { return tag_; }                         ///< @brief 获取标签
+    void set_need_remove(bool need_remove) { need_remove_ = need_remove; }    ///< @brief 设置是否需要删除
+    bool is_need_remove() const { return need_remove_; }                      ///< @brief 获取是否需要删除
 
     // 关键循环函数
     void handle_input(engine::core::Context& context);                        ///< @brief 处理输入

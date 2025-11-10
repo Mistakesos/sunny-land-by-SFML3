@@ -15,38 +15,6 @@ ParallaxComponent::ParallaxComponent(engine::object::GameObject* owner, const sf
 
 ParallaxComponent::~ParallaxComponent() = default;
 
-void ParallaxComponent::set_sprite(sf::Sprite& sprite) {
-    sprite_ = sprite;
-}
-
-void ParallaxComponent::set_scroll_factor(sf::Vector2f factor) {
-    scroll_factor_ = std::move(factor);
-}
-
-void ParallaxComponent::set_repeat(sf::Vector2<bool> repeat) {
-    repeat_ = std::move(repeat);
-}
-
-void ParallaxComponent::set_hidden(bool hidden) {
-    is_hidden_ = hidden;
-}
-
-const sf::Sprite& ParallaxComponent::get_sprite() const {
-    return sprite_;
-}
-
-const sf::Vector2f& ParallaxComponent::get_scroll_factor() const {
-    return scroll_factor_;
-}
-
-const sf::Vector2<bool>& ParallaxComponent::get_repeat() const {
-    return repeat_;
-}
-
-bool ParallaxComponent::is_hidden() const {
-    return is_hidden_;
-}
-
 void ParallaxComponent::render(engine::core::Context& context) {
     if (!transform_obs_) {
         transform_obs_ = owner_->get_component<TransformComponent>();

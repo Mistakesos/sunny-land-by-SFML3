@@ -67,15 +67,15 @@ public:
     engine::object::GameObject* find_game_object_by_name(std::string_view name) const;
 
     // getters and setters
-    void set_name(std::string_view name);           ///< @brief 设置场景名称
-    std::string_view get_name() const;              ///< @brief 获取场景名称
-    void set_initialized(bool initialized);         ///< @brief 设置场景是否已初始化
-    bool is_initialized() const;                    ///< @brief 获取场景是否已初始化
+    void set_name(std::string_view name) { scene_name_ = name; }                ///< @brief 设置场景名称
+    std::string_view get_name() const { return scene_name_; }                   ///< @brief 获取场景名称
+    void set_initialized(bool initialized) { is_initialized_ = initialized; }   ///< @brief 设置场景是否已初始化
+    bool is_initialized() const { return is_initialized_; }                     ///< @brief 获取场景是否已初始化
 
-    engine::core::Context& get_context() const;             ///< @brief 获取上下文引用
-    engine::scene::SceneManager& get_scene_manager() const; ///< @brief 获取场景管理器引用
-    std::vector<std::unique_ptr<engine::object::GameObject>>& get_game_objects(); ///< @brief 获取场景中的游戏对象
-
+    engine::core::Context& get_context() const { return context_; }                                         ///< @brief 获取上下文引用
+    engine::scene::SceneManager& get_scene_manager() const { return scene_manager_; }                       ///< @brief 获取场景管理器引用
+    std::vector<std::unique_ptr<engine::object::GameObject>>& get_game_objects() { return game_objects_; }  ///< @brief 获取场景中的游戏对象
+    
 protected:
     void process_pending_additions();                       ///< @brief 处理待添加的游戏对象。（每轮更新的最后调用）
 

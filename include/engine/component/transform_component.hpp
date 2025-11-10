@@ -39,16 +39,16 @@ public:
     TransformComponent& operator=(TransformComponent&&) = delete;
 
     // Getters and setters 
-    const sf::Vector2f& get_position() const;           ///< @brief 获取位置
-    sf::Angle get_rotation() const;                     ///< @brief 获取旋转
-    const sf::Vector2f& get_scale() const;              ///< @brief 获取缩放
-    sf::Vector2f get_origin() const;                    ///< @brief 获取原点
-    void set_origin(const sf::Vector2f& origin);        ///< @brief 设置原点
-    void set_position(sf::Vector2f position);           ///< @brief 设置位置
-    void set_rotation(sf::Angle angle);                 ///< @brief 设置旋转角度
-    void set_scale(sf::Vector2f scale);                 ///< @brief 设置缩放，应用缩放时应同步更新Sprite偏移量
-    void translate(const sf::Vector2f& offset);         ///< @brief 移动（sf::Sprite::move)
-    
+    const sf::Vector2f& get_position() const { return position_; }                ///< @brief 获取位置
+    sf::Angle get_rotation() const { return angle_; }                             ///< @brief 获取旋转
+    const sf::Vector2f& get_scale() const { return scale_; }                      ///< @brief 获取缩放
+    sf::Vector2f get_origin() const { return origin_; }                           ///< @brief 获取原点
+    void set_origin(const sf::Vector2f& origin) { origin_ = origin; }             ///< @brief 设置原点
+    void set_position(sf::Vector2f position) { position_ = std::move(position); } ///< @brief 设置位置
+    void set_rotation(sf::Angle angle) { angle_ = angle; }                        ///< @brief 设置旋转角度
+    void set_scale(sf::Vector2f scale) { scale_ = std::move(scale); }             ///< @brief 设置缩放，应用缩放时应同步更新Sprite偏移量
+    void translate(const sf::Vector2f& offset) { position_ += offset; }           ///< @brief 移动（sf::Sprite::move)    
+
 private:
     void update(sf::Time delta, engine::core::Context& context) override {} ///< @brief 覆盖纯虚函数，这里不需要实现
 

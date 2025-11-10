@@ -25,10 +25,10 @@ public:
     void update(sf::Time delta);
 
     // 设置器/获取器
-    void set_gravity(sf::Vector2f gravity) { gravity_ = std::move(gravity); }   ///< @brief 设置全局重力加速度
-    const sf::Vector2f& get_gravity() const { return gravity_; }                ///< @brief 获取当前的全局重力加速度
-    void set_max_speed(sf::Vector2f max_speed) { max_speed_ = std::move(max_speed); }       ///< @brief 设置最大速度
-    sf::Vector2f get_max_speed() const { return max_speed_; }                    ///< @brief 获取当前的最大速度
+    void set_gravity(sf::Vector2f gravity) { gravity_ = std::move(gravity); }           ///< @brief 设置全局重力加速度
+    const sf::Vector2f& get_gravity() const { return gravity_; }                        ///< @brief 获取当前的全局重力加速度
+    void set_max_speed(sf::Vector2f max_speed) { max_speed_ = std::move(max_speed); }   ///< @brief 设置最大速度
+    sf::Vector2f get_max_speed() const { return max_speed_; }                           ///< @brief 获取当前的最大速度
 
 private:
     std::vector<engine::component::PhysicsComponent*> components_;  ///< @brief 注册的物理组件容器，非拥有指针

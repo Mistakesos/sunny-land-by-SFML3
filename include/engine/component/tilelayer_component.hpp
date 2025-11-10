@@ -79,15 +79,15 @@ public:
      */
     TileType get_tile_type_at_world_pos(const sf::Vector2f& world_pos) const;
 
-    sf::Vector2i get_tile_size() const;                 ///< @brief 获取单个瓦片尺寸
-    sf::Vector2i get_map_size() const;                  ///< @brief 获取地图尺寸
-    sf::Vector2f get_world_size() const;                ///< @brief 获取地图世界尺寸
-    const std::vector<TileInfo>& get_tiles() const;     ///< @brief 获取瓦片容器
-    const sf::Vector2f& get_offset() const;             ///< @brief 获取瓦片层的偏移量
-    bool is_hidden() const;                             ///< @brief 获取是否隐藏（不渲染）
+    sf::Vector2i get_tile_size() const { return tile_size_; }                                                              ///< @brief 获取单个瓦片尺寸
+    sf::Vector2i get_map_size() const { return map_size_; }                                                                ///< @brief 获取地图尺寸
+    sf::Vector2f get_world_size() const { return sf::Vector2f(map_size_.x * tile_size_.x, map_size_.y * tile_size_.y); }   ///< @brief 获取地图世界尺寸
+    const std::vector<TileInfo>& get_tiles() const { return tiles_; }                                                      ///< @brief 获取瓦片容器
+    const sf::Vector2f& get_offset() const { return offset_; }                                                             ///< @brief 获取瓦片层的偏移量
+    bool is_hidden() const { return is_hidden_; }                                                                          ///< @brief 获取是否隐藏（不渲染）
 
-    void set_offset(sf::Vector2f offset);           ///< @brief 设置瓦片层的偏移量
-    void set_hidden(bool hidden);                   ///< @brief 设置是否隐藏（不渲染）
+    void set_offset(sf::Vector2f offset) { offset_ = std::move(offset); }                                                  ///< @brief 设置瓦片层的偏移量
+    void set_hidden(bool hidden) { is_hidden_ = hidden; }                                                                  ///< @brief 设置是否隐藏（不渲染）
 
 protected:
     // 核心循环方法

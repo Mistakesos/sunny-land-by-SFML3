@@ -78,22 +78,6 @@ void Camera::set_limit_bounds(std::optional<sf::FloatRect> limit_bounds) {
     clamp_position();
 }
 
-void Camera::set_target(engine::component::TransformComponent* target) {
-    target_obs_ = target;
-}
-
-engine::component::TransformComponent* Camera::get_target() const {
-    return target_obs_;
-}
-
-const sf::Vector2f Camera::get_world_view_center() const {
-    return world_view_.getCenter();
-}
-
-const sf::Vector2f Camera::get_ui_view_center() const {
-    return ui_view_.getCenter();
-}
-
 void Camera::clamp_position() {
     if (!limit_bounds_.has_value()) return;
     
@@ -136,25 +120,5 @@ sf::Vector2f Camera::world_to_screen_with_parallax(const sf::Vector2f& world_pos
 sf::Vector2f Camera::screen_to_world(const sf::Vector2f& screen_pos) const {
     // 将屏幕坐标加上相机左上角位置
     return static_cast<sf::Vector2f>(window_obs_->mapCoordsToPixel(screen_pos));
-}
-
-sf::Vector2f Camera::get_world_view_size() const {
-    return world_view_.getSize();
-}
-
-sf::Vector2f Camera::get_ui_view_size() const {
-    return ui_view_.getSize();
-}
-
-std::optional<sf::FloatRect> Camera::get_limit_bounds() const {
-    return limit_bounds_;
-}
-
-const sf::View& Camera::get_world_view() const {
-    return world_view_;
-}
-
-const sf::View& Camera::get_ui_view() const {
-    return ui_view_;
 }
 } // namespace engine::render

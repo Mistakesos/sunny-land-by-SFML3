@@ -19,23 +19,4 @@ Context::Context(engine::input::InputManager& input_manager,
     , physics_engine_{physics_engine} {
     spdlog::trace("上下文已创建并初始化");
 }
-
-engine::input::InputManager& Context::get_input_manager() const {
-    return input_manager_;
-}
-
-engine::render::Renderer& Context::get_renderer() const {
-    return renderer_;
-}
-
-engine::render::Camera& Context::get_camera() const {
-    return camera_;
-}
-
-engine::resource::ResourceManager& Context::get_resource_manager() const {
-    return resource_manager_;
-}
-engine::physics::PhysicsEngine& Context::get_physics_engine() const {
-    return physics_engine_;
-}
 } // namespace engine::core

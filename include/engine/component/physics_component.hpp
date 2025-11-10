@@ -34,21 +34,21 @@ public:
     PhysicsComponent& operator=(PhysicsComponent&&) = delete;
 
     // PhysicsEngine使用的物理方法
-    void add_force(const sf::Vector2f& force);  ///< @brief 添加力
-    void clear_force();                         ///< @brief 清除力
-    const sf::Vector2f& get_force() const;      ///< @brief 获取当前力
-    float get_mass() const;                     ///< @brief 获取质量
-    bool is_enabled() const;                    ///< @brief 获取组件是否启用
-    bool is_use_gravity() const;                ///< @brief 获取组件是否受重力影响
+    void add_force(const sf::Vector2f& force) { if (enabled_) force_ += force; }  ///< @brief 添加力
+    void clear_force() { force_ = {0.0f, 0.0f}; }                                ///< @brief 清除力
+    const sf::Vector2f& get_force() const { return force_; }                     ///< @brief 获取当前力
+    float get_mass() const { return mass_; }                                     ///< @brief 获取质量
+    bool is_enabled() const { return enabled_; }                                 ///< @brief 获取组件是否启用
+    bool is_use_gravity() const { return use_gravity_; }                         ///< @brief 获取组件是否受重力影响
 
     // 设置器/获取器
-    void set_enabled(bool enabled);             ///< @brief 设置组件是否启用
-    void set_mass(float mass);                  ///< @brief 设置质量，质量不能为负
-    void set_use_gravity(bool use_gravity);     ///< @brief 设置组件是否受重力影响
-    void set_velocity(sf::Vector2f velocity);   ///< @brief 设置速度
-    const sf::Vector2f& get_velocity() const;   ///< @brief 获取当前速度
-    TransformComponent* get_transform() const;  ///< @brief 获取TransformComponent指针
-
+    void set_enabled(bool enabled) { enabled_ = enabled; }                           ///< @brief 设置组件是否启用
+    void set_mass(float mass) { mass_ = (mass >= 0.0f) ? mass : 1.0f; }              ///< @brief 设置质量，质量不能为负
+    void set_use_gravity(bool use_gravity) { use_gravity_ = use_gravity; }           ///< @brief 设置组件是否受重力影响
+    void set_velocity(sf::Vector2f velocity) { velocity_ = std::move(velocity); }    ///< @brief 设置速度
+    const sf::Vector2f& get_velocity() const { return velocity_; }                   ///< @brief 获取当前速度
+    TransformComponent* get_transform() const { return transform_obs_; }             ///< @brief 获取TransformComponent指针
+    
 private:
     // 核心循环方法
     void update(sf::Time delta, engine::core::Context& context) override {}

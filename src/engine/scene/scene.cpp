@@ -114,34 +114,6 @@ engine::object::GameObject* Scene::find_game_object_by_name(std::string_view nam
     return nullptr;
 }
 
-void Scene::set_name(std::string_view name) {
-    this->scene_name_ = name;
-}
-
-std::string_view Scene::get_name() const {
-    return scene_name_;
-}
-
-void Scene::set_initialized(bool initialized) {
-    is_initialized_ = initialized;
-}
-
-bool Scene::is_initialized() const {
-    return this->is_initialized_;
-}
-
-engine::core::Context& Scene::get_context() const {
-    return this->context_;
-}
-
-engine::scene::SceneManager& Scene::get_scene_manager() const {
-    return scene_manager_;
-}
-
-std::vector<std::unique_ptr<engine::object::GameObject>>& Scene::get_game_objects() {
-    return game_objects_;
-}
-
 void Scene::process_pending_additions() {
     // 处理待添加的游戏对象
     for (auto& game_object : pending_additions_) {
