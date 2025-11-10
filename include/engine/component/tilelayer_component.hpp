@@ -48,14 +48,14 @@ struct TileInfo {
 class TileLayerComponent final : public Component {
     friend class engine::object::GameObject;
 public:
-    TileLayerComponent() = default;
+    // TileLayerComponent() = default;
     /**
      * @brief 构造函数
      * @param tile_size 单个瓦片尺寸（像素）
      * @param map_size 地图尺寸（瓦片数）
      * @param tiles 初始化瓦片数据的容器 (会被移动)
      */
-    TileLayerComponent(sf::Vector2i tile_size, sf::Vector2i map_size, std::vector<TileInfo>&& tiles);
+    TileLayerComponent(engine::object::GameObject* owner, sf::Vector2i tile_size, sf::Vector2i map_size, std::vector<TileInfo>&& tiles);
     ~TileLayerComponent();
 
     /**

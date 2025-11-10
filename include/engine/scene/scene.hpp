@@ -46,7 +46,7 @@ public:
     // 核心循环方法
     virtual void update(sf::Time delta);        ///< @brief 更新场景。
     virtual void render();                      ///< @brief 渲染场景。
-    virtual void handle_input();                 ///< @brief 处理输入。
+    virtual void handle_input();                ///< @brief 处理输入。
 
     /// @brief 直接向场景中添加一个游戏对象。（初始化时可用，游戏进行中不安全） （&&表示右值引用，与std::move搭配使用，避免拷贝）
     virtual void add_game_object(std::unique_ptr<engine::object::GameObject>&& game_object);
@@ -67,12 +67,12 @@ public:
     engine::object::GameObject* find_game_object_by_name(std::string_view name) const;
 
     // getters and setters
-    void set_name(std::string_view name);               ///< @brief 设置场景名称
-    std::string_view get_name() const;                 ///< @brief 获取场景名称
-    void set_initialized(bool initialized);    ///< @brief 设置场景是否已初始化
-    bool is_initialized() const;                      ///< @brief 获取场景是否已初始化
+    void set_name(std::string_view name);           ///< @brief 设置场景名称
+    std::string_view get_name() const;              ///< @brief 获取场景名称
+    void set_initialized(bool initialized);         ///< @brief 设置场景是否已初始化
+    bool is_initialized() const;                    ///< @brief 获取场景是否已初始化
 
-    engine::core::Context& get_context() const;                  ///< @brief 获取上下文引用
+    engine::core::Context& get_context() const;             ///< @brief 获取上下文引用
     engine::scene::SceneManager& get_scene_manager() const; ///< @brief 获取场景管理器引用
     std::vector<std::unique_ptr<engine::object::GameObject>>& get_game_objects(); ///< @brief 获取场景中的游戏对象
 

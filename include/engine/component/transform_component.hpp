@@ -29,7 +29,7 @@ public:
      * @param scale 缩放
      * @param angle 旋转角度（兼容角度和弧度）
      */
-    TransformComponent(sf::Vector2f position = {0.f, 0.f}, sf::Vector2f scale = {1.f, 1.f}, sf::Angle angle = sf::degrees(0.f));
+    TransformComponent(engine::object::GameObject* owner, sf::Vector2f position = {0.f, 0.f}, sf::Vector2f scale = {1.f, 1.f}, sf::Angle angle = sf::degrees(0.f));
     ~TransformComponent() override = default;
 
     // 禁止拷贝和移动
@@ -48,6 +48,7 @@ public:
     void set_rotation(sf::Angle angle);                 ///< @brief 设置旋转角度
     void set_scale(sf::Vector2f scale);                 ///< @brief 设置缩放，应用缩放时应同步更新Sprite偏移量
     void translate(const sf::Vector2f& offset);         ///< @brief 移动（sf::Sprite::move)
+    
 private:
     void update(sf::Time delta, engine::core::Context& context) override {} ///< @brief 覆盖纯虚函数，这里不需要实现
 

@@ -60,10 +60,9 @@ public:
             return get_component<T>();
         }
 
-        // 如果不存在就创建组件
-        auto new_component = std::make_unique<T>(std::forward<Args>(args)...);
+        // 如果不存在就创建组件 记得把this传入！
+        auto new_component = std::make_unique<T>(this, std::forward<Args>(args)...);
         T* ptr = new_component.get();
-        new_component->set_owner(this);
         components_[type_index] = std::move(new_component);
         spdlog::debug("GameObject::add_component: {} added component {}", name_, typeid(T).name());
         return ptr;

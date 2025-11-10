@@ -19,9 +19,14 @@ public:
     void update(sf::Time delta) override;
     void render() override;
     void handle_input() override;
+    
 private:
     // 测试函数
     void creat_test_object();
     void test_camera();
+    void test_object();
+
+private:
+    engine::object::GameObject* test_object_obs_ = nullptr; ///< @brief 保存测试对象的指针，方便访问
 };
 }

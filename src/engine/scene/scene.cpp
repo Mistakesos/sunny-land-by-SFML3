@@ -2,6 +2,8 @@
 #include "context.hpp"
 #include "game_object.hpp"
 #include "scene_manager.hpp"
+#include "physics_engine.hpp"
+#include "context.hpp"
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
@@ -18,6 +20,9 @@ Scene::~Scene() = default;
 void Scene::update(sf::Time delta) {
     if (!is_initialized_) return;
 
+    // 先更新物理引擎
+    context_.get_physics_engine().update(delta);
+    
     bool need_remove = false;  // 设定一个标志，用于判断是否需要移除对象
 
     // 更新所有游戏对象，先略过需要移除的对象

@@ -5,15 +5,15 @@
 #include "context.hpp"
 
 namespace engine::component {
-ParallaxComponent::ParallaxComponent(const sf::Texture& texture, const sf::Vector2f& scroll_factor, sf::Vector2<bool> repeat)
-    : sprite_{texture}
+ParallaxComponent::ParallaxComponent(engine::object::GameObject* owner, const sf::Texture& texture, const sf::Vector2f& scroll_factor, sf::Vector2<bool> repeat)
+    : Component{owner}
+    , sprite_{texture}
     , scroll_factor_{std::move(scroll_factor)}
     , repeat_{std::move(repeat)} {
     ///< @attention transform_obs_ 在渲染函数调用时初始化，并确保了只初始化一次
 }
 
-ParallaxComponent::~ParallaxComponent() {
-}
+ParallaxComponent::~ParallaxComponent() = default;
 
 void ParallaxComponent::set_sprite(sf::Sprite& sprite) {
     sprite_ = sprite;
@@ -48,7 +48,7 @@ bool ParallaxComponent::is_hidden() const {
 }
 
 void ParallaxComponent::render(engine::core::Context& context) {
-    if (owner_ && !transform_obs_) {
+    if (!transform_obs_) {
         transform_obs_ = owner_->get_component<TransformComponent>();
         if (!transform_obs_) {
             spdlog::warn(

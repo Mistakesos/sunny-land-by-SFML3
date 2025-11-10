@@ -7,13 +7,15 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::component {
-SpriteComponent::SpriteComponent(const sf::Texture& texture)
-    : sprite_{texture} {
+SpriteComponent::SpriteComponent(engine::object::GameObject* owner, const sf::Texture& texture)
+    : Component{owner}
+    , sprite_{texture} {
     ///< @attention transform_obs_ 在渲染函数调用时初始化，并确保了只初始化一次
 }
 
-SpriteComponent::SpriteComponent(sf::Sprite&& sprite) 
-    : sprite_{sprite} {
+SpriteComponent::SpriteComponent(engine::object::GameObject* owner, sf::Sprite&& sprite) 
+    : Component{owner}
+    , sprite_{sprite} {
 }
 
 sf::Sprite& SpriteComponent::get_sprite() {
@@ -29,7 +31,7 @@ void SpriteComponent::set_hidden(bool hide) {
 }
 
 void SpriteComponent::render(engine::core::Context& context) {
-    if (owner_ && !transform_obs_) {
+    if (!transform_obs_) {
         transform_obs_ = owner_->get_component<TransformComponent>();
         if (!transform_obs_) {
             spdlog::warn(

@@ -4,8 +4,9 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::component {
-TileLayerComponent::TileLayerComponent(sf::Vector2i tile_size, sf::Vector2i map_size, std::vector<TileInfo>&& tiles)
-    : tile_size_(tile_size)
+TileLayerComponent::TileLayerComponent(engine::object::GameObject* owner, sf::Vector2i tile_size, sf::Vector2i map_size, std::vector<TileInfo>&& tiles)
+    : Component{owner}
+    , tile_size_(tile_size)
     , map_size_(map_size)
     , tiles_(std::move(tiles)) {
     if (tiles_.size() != static_cast<size_t>(map_size_.x * map_size_.y)) {

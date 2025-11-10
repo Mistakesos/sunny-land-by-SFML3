@@ -21,8 +21,8 @@ class TransformComponent;
 class SpriteComponent final : public engine::component::Component {
     friend class engine::object::GameObject;            // 友元不能继承，必须每个子类单独添加
 public:
-    SpriteComponent(const sf::Texture& texture);
-    SpriteComponent(sf::Sprite&& sprite);
+    SpriteComponent(engine::object::GameObject* owner, const sf::Texture& texture);
+    SpriteComponent(engine::object::GameObject* owner, sf::Sprite&& sprite);
     ~SpriteComponent() override = default;
 
     sf::Sprite& get_sprite();                           ///< @brief 获取精灵

@@ -14,6 +14,10 @@ namespace engine::resource {
     class ResourceManager;
 } // namespace engine::resource
 
+namespace engine::physics {
+    class PhysicsEngine;
+} // namespace engine::physics
+
 namespace engine::core {
 /**
  * @brief 持有对核心引擎模块引用的上下文对象
@@ -33,7 +37,8 @@ public:
     Context(engine::input::InputManager& input_manager,
             engine::render::Renderer& renderer,
             engine::render::Camera& camera,
-            engine::resource::ResourceManager& resource_manager);
+            engine::resource::ResourceManager& resource_manager,
+            engine::physics::PhysicsEngine& physics_engine);
     ~Context() = default;
 
     // 禁止拷贝和移动，Context 对象通常是唯一的或按需创建/传递
@@ -47,11 +52,13 @@ public:
     engine::render::Renderer& get_renderer() const;                     ///< @brief 获取渲染器
     engine::render::Camera& get_camera() const;                         ///< @brief 获取相机
     engine::resource::ResourceManager& get_resource_manager() const;    ///< @brief 获取资源管理器
+    engine::physics::PhysicsEngine& get_physics_engine() const;         ///< @brief 获取物理引擎
 
 private:
     engine::input::InputManager& input_manager_;                ///< @brief 输入管理器
     engine::render::Renderer& renderer_;                        ///< @brief 渲染器
     engine::render::Camera& camera_;                            ///< @brief 相机
     engine::resource::ResourceManager& resource_manager_;       ///< @brief 资源管理器
+    engine::physics::PhysicsEngine& physics_engine_;            ///< @brief 物理引擎
 };
 } // namespace engine::core
