@@ -12,10 +12,6 @@ namespace engine::resource {
 } // namespace engine::resource
 
 namespace engine::component {
-class TransformComponent;
-} // namespace engine::component
-
-namespace engine::component {
 /**
  * @class TransformComponent
  * @brief 管理 GameObject 的位置、旋转和缩放。
@@ -29,7 +25,7 @@ public:
      * @param scale 缩放
      * @param angle 旋转角度（兼容角度和弧度）
      */
-    TransformComponent(engine::object::GameObject* owner, sf::Vector2f position = {0.f, 0.f}, sf::Vector2f scale = {1.f, 1.f}, sf::Angle angle = sf::degrees(0.f));
+    TransformComponent(engine::object::GameObject* owner, sf::Vector2f position = {0.f, 0.f}, sf::Vector2f scale = {1.f, 1.f}, sf::Angle angle = sf::degrees(0.f), sf::Vector2f origin = {0.f, 0.f});
     ~TransformComponent() override = default;
 
     // 禁止拷贝和移动
@@ -51,11 +47,10 @@ public:
 
 private:
     void update(sf::Time delta, engine::core::Context& context) override {} ///< @brief 覆盖纯虚函数，这里不需要实现
-
-public:
-    sf::Vector2f origin_ = {0.f, 0.f};          ///< @brief 原点
+    
     sf::Vector2f position_ = {0.f, 0.f};        ///< @brief 位置
     sf::Vector2f scale_ = {1.f, 1.f};           ///< @brief 缩放
     sf::Angle angle_ = sf::degrees(0.f);        ///< @brief 角度制，单位：度（约定，实际上也支持弧度）
+    sf::Vector2f origin_ = {0.f, 0.f};          ///< @brief 原点
 };
 } // namespace engine::component
