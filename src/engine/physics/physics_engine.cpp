@@ -3,6 +3,7 @@
 #include "game_object.hpp"
 #include "physics_component.hpp"
 #include "transform_component.hpp"
+#include "tilelayer_component.hpp"
 #include "collider_component.hpp"
 #include <spdlog/spdlog.h>
 #include <algorithm>
@@ -20,6 +21,18 @@ void PhysicsEngine::unregister_component(engine::component::PhysicsComponent* co
     spdlog::trace("物理组件注销完成");
 }
 
+void PhysicsEngine::register_collision_layer(engine::component::TileLayerComponent* layer) {
+    layer->set_physics_engine(this);    // 设置物理引擎
+    collision_tile_layers_.push_back(layer);
+    spdlog::trace("碰撞瓦片图层注册完成。");
+}
+
+void PhysicsEngine::unregister_collision_layer(engine::component::TileLayerComponent* layer) {
+    auto it = std::remove(collision_tile_layers_.begin(), collision_tile_layers_.end(), layer);
+    collision_tile_layers_.erase(it, collision_tile_layers_.end());
+    spdlog::trace("碰撞瓦片图层注销完成。");
+}
+
 void PhysicsEngine::update(sf::Time delta) {
     // 每次开始时先清空碰撞对容器
     collision_pairs_.clear();
@@ -34,23 +47,15 @@ void PhysicsEngine::update(sf::Time delta) {
             pc->add_force(gravity_ * pc->get_mass());
         }
         /* 还能添加其他力影响，比如风力、摩擦力、目前不考虑 */
+
         // 更新速度：v += a * dt, 其中 a = F / m
         pc->velocity_ += (pc->get_force() / pc->get_mass()) * delta.asSeconds();
         pc->clear_force();  // 清除当前帧的力
 
-        // 更新位置：S += v * dt
-        auto* tc = pc->get_transform();
-        if (tc) {
-            tc->translate(pc->velocity_ * delta.asSeconds());
-        }
-
-        // 限制最大速度
-        pc->velocity_.x = std::clamp(pc->velocity_.x, -max_speed_.x, max_speed_.x);
-        pc->velocity_.y = std::clamp(pc->velocity_.y, -max_speed_.y, max_speed_.y);
-
-        // 处理对象间碰撞
-        check_object_collisions();
+        resolve_tile_collisions(pc, delta);
     }
+    // 处理对象间碰撞
+    check_object_collisions();
 }
 
 void PhysicsEngine::check_object_collisions() {
@@ -80,4 +85,104 @@ void PhysicsEngine::check_object_collisions() {
         }
     }
 }
-} // engine::physics
+void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent* pc, sf::Time delta) {
+    // 检查组件是否有效
+    auto* obj = pc->get_owner();
+    if (!obj) return;
+    auto* tc = obj->get_component<engine::component::TransformComponent>();
+    auto* cc = obj->get_component<engine::component::ColliderComponent>();
+    if (!tc || !cc || cc->is_trigger()) return;
+    auto world_aabb = cc->get_world_aabb(); // 使用最小包围盒进行碰撞检测（简化）
+    auto obj_pos = world_aabb.position;
+    auto obj_size = world_aabb.size;
+    if (world_aabb.size.x <= 0.f || world_aabb.size.y <= 0.f) return;
+    // -- 检查结束, 正式开始处理 --
+
+    constexpr float tolerance = 1.0f;               // 检查右边缘和下边缘时，需要减1像素，否则会检查到下一行/列的瓦片
+    auto ds = pc->velocity_ * delta.asSeconds();    // 计算物体在delta_time内的位移
+    auto new_obj_pos = obj_pos + ds;                // 计算物体在delta_time后的新位置
+
+    if (!cc->is_active()) {  // 如果碰撞器未激活，直接让物体正常移动，然后返回。
+        tc->translate(ds);
+        // // 限制最大速度
+        pc->velocity_.x = std::clamp(pc->velocity_.x, -max_speed_.x, max_speed_.x);
+        pc->velocity_.y = std::clamp(pc->velocity_.y, -max_speed_.y, max_speed_.y);
+        return;
+    }
+
+    // 遍历所有注册的碰撞瓦片层
+    for (auto* layer : collision_tile_layers_) {
+        if (!layer) continue;
+        auto tile_size = layer->get_tile_size();
+        // 轴分离碰撞检测：先检查X方向是否有碰撞 (y方向使用初始值obj_pos.y)
+        if (ds.x > 0.f) {
+            // 检查右侧碰撞，需要分别测试右上和右下角
+            auto right_top_x = new_obj_pos.x + obj_size.x;
+            auto tile_x = static_cast<int>(std::floor(right_top_x / tile_size.x));      // 获取x方向瓦片坐标
+            // y方向坐标有两个，右上和右下
+            auto tile_y = static_cast<int>(std::floor(obj_pos.y / tile_size.y));
+            auto tile_type_top = layer->get_tile_type_at({tile_x, tile_y});             // 右上角瓦片类型
+            auto tile_y_bottom = static_cast<int>(std::floor((obj_pos.y + obj_size.y - tolerance) / tile_size.y));
+            auto tile_type_bottom = layer->get_tile_type_at({tile_x, tile_y_bottom});   // 右下角瓦片类型
+
+            if (tile_type_top == engine::component::TileType::Solid || tile_type_bottom == engine::component::TileType::Solid) {
+                // 撞墙了！速度归零，x方向移动到贴着墙的位置
+                new_obj_pos.x = tile_x * layer->get_tile_size().x - obj_size.x;
+                pc->velocity_.x = 0.f;
+            }
+        } else if (ds.x < 0.f) {
+            // 检查左侧碰撞，需要分别测试左上和左下角
+            auto left_top_x = new_obj_pos.x;
+            auto tile_x = static_cast<int>(std::floor(left_top_x / tile_size.x));       // 获取x方向瓦片坐标
+            // y方向坐标有两个，左上和左下
+            auto tile_y = static_cast<int>(std::floor(obj_pos.y / tile_size.y));
+            auto tile_type_top = layer->get_tile_type_at({tile_x, tile_y});             // 左上角瓦片类型
+            auto tile_y_bottom = static_cast<int>(std::floor((obj_pos.y + obj_size.y - tolerance) / tile_size.y));
+            auto tile_type_bottom = layer->get_tile_type_at({tile_x, tile_y_bottom});   // 左下角瓦片类型
+
+            if (tile_type_top == engine::component::TileType::Solid || tile_type_bottom == engine::component::TileType::Solid) {
+                // 撞墙了！速度归零，x方向移动到贴着墙的位置
+                new_obj_pos.x = (tile_x + 1) * layer->get_tile_size().x;
+                pc->velocity_.x = 0.0f;
+            }
+        }
+
+        // 轴分离碰撞检测：再检查Y方向是否有碰撞 (x方向使用初始值obj_pos.x)
+        if (ds.y > 0.0f) {
+            // 检查底部碰撞，需要分别测试左下和右下角
+            auto bottom_left_y = new_obj_pos.y + obj_size.y;
+            auto tile_y = static_cast<int>(std::floor(bottom_left_y / tile_size.y));
+
+            auto tile_x = static_cast<int>(std::floor(obj_pos.x / tile_size.x));
+            auto tile_type_left = layer->get_tile_type_at({tile_x, tile_y});            // 左下角瓦片类型   
+            auto tile_x_right = static_cast<int>(std::floor((obj_pos.x + obj_size.x - tolerance) / tile_size.x));
+            auto tile_type_right = layer->get_tile_type_at({tile_x_right, tile_y});     // 右下角瓦片类型
+
+            if (tile_type_left == engine::component::TileType::Solid || tile_type_right == engine::component::TileType::Solid) {
+                // 到达地面，速度归零，y方向移动到贴着地面的位置
+                new_obj_pos.y = tile_y * layer->get_tile_size().y - obj_size.y;
+                pc->velocity_.y = 0.f;
+            }
+        } else if (ds.y < 0.0f) {
+            // 检查顶部碰撞，需要分别测试左上和右上角
+            auto top_left_y = new_obj_pos.y;
+            auto tile_y = static_cast<int>(floor(top_left_y / tile_size.y));
+
+            auto tile_x = static_cast<int>(floor(obj_pos.x / tile_size.x));
+            auto tile_type_left = layer->get_tile_type_at({tile_x, tile_y});        // 左上角瓦片类型
+            auto tile_x_right = static_cast<int>(floor((obj_pos.x + obj_size.x - tolerance) / tile_size.x));
+            auto tile_type_right = layer->get_tile_type_at({tile_x_right, tile_y});     // 右上角瓦片类型
+
+            if (tile_type_left == engine::component::TileType::Solid || tile_type_right == engine::component::TileType::Solid) {
+                // 撞到天花板！速度归零，y方向移动到贴着天花板的位置
+                new_obj_pos.y = (tile_y + 1) * layer->get_tile_size().y;
+                pc->velocity_.y = 0.f;
+            }
+        }
+    }
+    // 更新物体位置，并限制最大速度
+    tc->set_position(new_obj_pos);
+    pc->velocity_.x = std::clamp(pc->velocity_.x, -max_speed_.x, max_speed_.x);
+    pc->velocity_.y = std::clamp(pc->velocity_.y, -max_speed_.y, max_speed_.y);
+}
+} // namespace engine::physics

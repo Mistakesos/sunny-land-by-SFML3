@@ -5,8 +5,12 @@
 #include <vector>
 
 namespace engine::core {
-class Context;
+    class Context;
 } // namespace engine::core
+
+namespace engine::physics {
+    class PhysicsEngine;
+} // namespace engine::physics
 
 namespace engine::component {
 /**
@@ -88,6 +92,7 @@ public:
 
     void set_offset(sf::Vector2f offset) { offset_ = std::move(offset); }                                                  ///< @brief 设置瓦片层的偏移量
     void set_hidden(bool hidden) { is_hidden_ = hidden; }                                                                  ///< @brief 设置是否隐藏（不渲染）
+    void set_physics_engine(engine::physics::PhysicsEngine* physics_engine) {physics_engine_ = physics_engine; }           ///< @brief 设置物理引擎
 
 protected:
     // 核心循环方法
@@ -101,5 +106,6 @@ private:
     sf::Vector2f offset_ = {0.f, 0.f};  ///< @brief 瓦片层在世界中的偏移量 (瓦片层通常不需要缩放及旋转，因此不引入Transform组件)
                                         ///< offset_ 最好也保持默认的0，以免增加不必要的复杂性
     bool is_hidden_ = false;            ///< @brief 是否隐藏（不渲染）
+    engine::physics::PhysicsEngine* physics_engine_ = nullptr;   ///< @brief 物理引擎的指针， 析构函数中可能需要注销
 };
 } // namespace engine::component

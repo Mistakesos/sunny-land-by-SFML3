@@ -1,4 +1,5 @@
 #include "tilelayer_component.hpp"
+#include "physics_engine.hpp"
 #include "context.hpp"
 #include "render.hpp"
 #include <spdlog/spdlog.h>
@@ -18,7 +19,11 @@ TileLayerComponent::TileLayerComponent(engine::object::GameObject* owner, sf::Ve
     spdlog::trace("TileLayerComponent 构造完成");
 }
 
-TileLayerComponent::~TileLayerComponent() = default;
+TileLayerComponent::~TileLayerComponent() {
+    if (physics_engine_) {
+        physics_engine_->unregister_collision_layer(this);
+    }
+}
 
 const TileInfo* TileLayerComponent::get_tile_info_at(sf::Vector2i pos) const {
     if (pos.x < 0 || pos.x >= map_size_.x || pos.y < 0 || pos.y >= map_size_.y) {

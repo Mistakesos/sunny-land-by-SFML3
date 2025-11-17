@@ -190,6 +190,32 @@ void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& sce
     }
 }
 
+engine::component::TileType LevelLoader::get_tile_type(const nlohmann::json& tile_json) {
+    if (tile_json.contains("properties")) {
+        auto& properties = tile_json["properties"];
+        for (auto& property : properties) {
+            if (property.contains("name") && property["name"] == "solid") {
+                auto is_solid = property.value("value", false);
+                return is_solid ? engine::component::TileType::Solid : engine::component::TileType::Normal;
+            }
+            // TODO: 未来添加更多自定义属性处理逻辑，当前只针对solid
+        }
+    }
+    return engine::component::TileType::Normal;
+}
+
+engine::component::TileType LevelLoader::get_tile_type_by_id(const nlohmann::json& tileset_json, int local_id) {
+    if (tileset_json.contains("tiles")) {
+        auto& tiles = tileset_json["tiles"];
+        for (auto& tile : tiles) {
+            if (tile.contains("id") && tile["id"] == local_id) {
+                return get_tile_type(tile);
+            }
+        }
+    }
+    return engine::component::TileType::Normal;
+}
+
 engine::component::TileInfo LevelLoader::get_tile_info_by_gid(int gid) {
     sf::Sprite default_sprite(*context_.get_resource_manager().get_texture("assets/textures/Props/big-crate.png"));
     auto default_tile_info = engine::component::TileInfo(default_sprite);
@@ -229,7 +255,8 @@ engine::component::TileInfo LevelLoader::get_tile_info_by_gid(int gid) {
             tile_size_.y}
         };
         sf::Sprite sprite{*context_.get_resource_manager().get_texture(texture_id), texture_rect};
-        return engine::component::TileInfo(sprite, engine::component::TileType::Normal);
+        auto tile_type = get_tile_type_by_id(tileset, local_id);
+        return engine::component::TileInfo(sprite, tile_type);
     } else {   // 这是多图片的情况
         if (!tileset.contains("tiles")) {   // 没有tiles字段的话不符合数据格式要求，直接返回空的瓦片信息
             spdlog::error("Tileset 文件 '{}' 缺少 'tiles' 属性。", tileset_it->first);
@@ -258,7 +285,8 @@ engine::component::TileInfo LevelLoader::get_tile_info_by_gid(int gid) {
                     tile_json.value("height", image_height)}
                 };
                 sf::Sprite sprite{*context_.get_resource_manager().get_texture(texture_id), texture_rect};
-                return engine::component::TileInfo(sprite, engine::component::TileType::Normal);
+                auto tile_type = get_tile_type(tile_json);      // 有了瓦片json，直接获取瓦片类型
+                return engine::component::TileInfo(sprite, tile_type);
             }
         }
     }

@@ -8,6 +8,7 @@
 #include "sprite_component.hpp"
 #include "physics_component.hpp"
 #include "collider_component.hpp"
+#include "tilelayer_component.hpp"
 #include "level_loader.hpp"
 #include "input_manager.hpp"
 #include <SFML/Graphics/Rect.hpp>
@@ -16,8 +17,20 @@
 namespace game::scene {
 GameScene::GameScene(std::string_view name, engine::core::Context& context, engine::scene::SceneManager& scene_manager)
     : Scene{name, context, scene_manager} {
+    // 加载关卡（level_loader通常加载完成后即可销毁，因此不存为成员变量
     engine::scene::LevelLoader level_loader(context);
     if (level_loader.load_level("assets/maps/level_1.tmj", *this));
+
+    // 注册 “main”层到物理引擎
+    auto* main_layer = find_game_object_by_name("main");
+    if (main_layer) {
+        auto* tile_layer = main_layer->get_component<engine::component::TileLayerComponent>();
+        if (tile_layer) {
+            context.get_physics_engine().register_collision_layer(tile_layer);
+            spdlog::info("注册‘main’层到物理引擎");
+        }
+    }
+    
     creat_test_object();
     spdlog::trace("GameScene 构造成功");
 }
@@ -75,15 +88,23 @@ void GameScene::test_camera() {
 void GameScene::test_object() {
     if (!test_object_obs_) return;
     auto& input_manager = context_.get_input_manager();
+    auto* pc = test_object_obs_->get_component<engine::component::PhysicsComponent>();
+    if (!pc) return;
 
     if (input_manager.is_action_held(Action::MoveLeft)) {
-        test_object_obs_->get_component<engine::component::TransformComponent>()->translate({-0.1f, 0.f});
+        pc->velocity_.x = -100.f;
+    } else {
+        pc->velocity_.x *= 0.9f;
     }
+
     if (input_manager.is_action_held(Action::MoveRight)) {
-        test_object_obs_->get_component<engine::component::TransformComponent>()->translate({0.1f, 0.f});
+        pc->velocity_.x = 100.f;
+    } else {
+        pc->velocity_.x *= 0.9f;
     }
+
     if (input_manager.is_action_pressed(Action::Jump)) {
-        test_object_obs_->get_component<engine::component::PhysicsComponent>()->set_velocity({0.f, -400.f});
+        pc->velocity_.y = -400.f;
     }
 }
 
