@@ -34,9 +34,6 @@ public:
     void unregister_collision_layer(engine::component::TileLayerComponent* layer); ///< @brief 注销用于碰撞检测的 TileLayerComponent
 
     void update(sf::Time delta);        ///< @brief 核心循环：更新所有注册的物理组件的状态
-    void check_object_collisions();     ///< @brief 检测并处理对象之间的碰撞，并记录需要游戏逻辑处理的碰撞对
-    /// @brief 检测并处理游戏对象和瓦片层之间的碰撞。
-    void resolve_tile_collisions(engine::component::PhysicsComponent* pc, sf::Time delta);
 
     // 设置器/获取器
     void set_gravity(sf::Vector2f gravity) { gravity_ = std::move(gravity); }           ///< @brief 设置全局重力加速度
@@ -47,6 +44,12 @@ public:
     const std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>& get_collision_pairs() { return collision_pairs_; }
 
 private:
+    void check_object_collisions();     ///< @brief 检测并处理对象之间的碰撞，并记录需要游戏逻辑处理的碰撞对
+    /// @brief 检测并处理游戏对象和瓦片层之间的碰撞。
+    void resolve_tile_collisions(engine::component::PhysicsComponent* pc, sf::Time delta);
+    /// @brief 处理可移动物体与SOLID物体的碰撞。
+    void resolve_solid_object_collisions(engine::object::GameObject* move_obj, engine::object::GameObject* solid_obj);
+
     std::vector<engine::component::PhysicsComponent*> components_;              ///< @brief 注册的物理组件容器，非拥有指针
     std::vector<engine::component::TileLayerComponent*> collision_tile_layers_; ///< @brief 注册的碰撞瓦片图层容器
 

@@ -20,7 +20,7 @@ sf::FloatRect ColliderComponent::get_world_aabb() const {
     if (!transform_obs_ || !collider_) {
         return sf::FloatRect{{0.f, 0.f}, {0.f, 0.f}};
     }
-    const sf::Vector2f position = transform_obs_->get_position() - transform_obs_->get_origin();
+    const sf::Vector2f position = transform_obs_->get_position() - transform_obs_->get_origin() + offset_;
     const sf::Vector2f size = collider_->get_aabb_size().componentWiseMul(transform_obs_->get_scale());
     return {position, size};
 }

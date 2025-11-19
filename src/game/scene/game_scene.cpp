@@ -30,8 +30,12 @@ GameScene::GameScene(std::string_view name, engine::core::Context& context, engi
             spdlog::info("注册‘main’层到物理引擎");
         }
     }
+
+    player_obs_ = find_game_object_by_name("player");
+    if (!player_obs_) {
+        spdlog::error("未找到玩家对象");
+    }
     
-    creat_test_object();
     spdlog::trace("GameScene 构造成功");
 }
 
@@ -48,32 +52,7 @@ void GameScene::render() {
 
 void GameScene::handle_input() {
     Scene::handle_input();
-    test_object();
-}
-
-void GameScene::creat_test_object() {
-    spdlog::trace("在 GameScene 中创建 test_object...");
-    auto test_object = std::make_unique<engine::object::GameObject>("test_object");
-    test_object_obs_ = test_object.get();
-
-    // 添加组件
-    test_object->add_component<engine::component::TransformComponent>(sf::Vector2f{100.f, 100.f});
-    test_object->add_component<engine::component::SpriteComponent>(*context_.get_resource_manager().get_texture("assets/textures/Props/big-crate.png"));
-    test_object->add_component<engine::component::PhysicsComponent>(&context_.get_physics_engine());
-    test_object->add_component<engine::component::ColliderComponent>(std::make_unique<engine::physics::AABBCollider>(sf::Vector2f{32.f, 32.f}));
-    // 将其添加到场景
-    add_game_object(std::move(test_object));
-
-    // 添加组件
-    auto test_object2 = std::make_unique<engine::object::GameObject>("test_object2");
-    test_object2->add_component<engine::component::TransformComponent>(sf::Vector2f{50.f, 50.f});
-    test_object2->add_component<engine::component::SpriteComponent>(*context_.get_resource_manager().get_texture("assets/textures/Props/big-crate.png"));
-    test_object2->add_component<engine::component::PhysicsComponent>(&context_.get_physics_engine(), false);
-    test_object2->add_component<engine::component::ColliderComponent>(std::make_unique<engine::physics::CircleCollider>(16.f));
-    // 将其添加到场景
-    add_game_object(std::move(test_object2));
-
-    spdlog::trace("test_object 创建并添加到 GameScene 中");
+    test_player();
 }
 
 void GameScene::test_camera() {
@@ -85,10 +64,10 @@ void GameScene::test_camera() {
     if (input_manager.is_action_held(Action::MoveRight)) camera.move({1.f, 0.f});
 }
 
-void GameScene::test_object() {
-    if (!test_object_obs_) return;
+void GameScene::test_player() {
+    if (!player_obs_) return;
     auto& input_manager = context_.get_input_manager();
-    auto* pc = test_object_obs_->get_component<engine::component::PhysicsComponent>();
+    auto* pc = player_obs_->get_component<engine::component::PhysicsComponent>();
     if (!pc) return;
 
     if (input_manager.is_action_held(Action::MoveLeft)) {

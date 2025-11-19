@@ -22,12 +22,11 @@ public:
     
 private:
     // 测试函数
-    void creat_test_object();
     void test_camera();
-    void test_object();
+    void test_player();
     void test_collision_pairs();
 
 private:
-    engine::object::GameObject* test_object_obs_ = nullptr; ///< @brief 保存测试对象的指针，方便访问
+    engine::object::GameObject* player_obs_ = nullptr; ///< @brief 保存测试对象的指针，方便访问
 };
 }

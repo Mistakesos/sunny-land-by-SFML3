@@ -78,9 +78,15 @@ void PhysicsEngine::check_object_collisions() {
             /* --- 通过保护性测试后，正式执行逻辑 --- */
 
             if (collision::check_collision(*cc_a, *cc_b)) {
-                // TODO: 不是所有碰撞都插入collision_pairs 未来添加过滤条件
-                // 记录碰撞对
-                collision_pairs_.emplace_back(obj_a, obj_b);
+                // 如果是可移动物体与Solid物体碰撞，则直接处理位置变化，不用记录碰撞对
+                if (obj_a->get_tag() != "solid" && obj_b->get_tag() == "solid") {
+                    resolve_solid_object_collisions(obj_a, obj_b);
+                } else if (obj_a->get_tag() == "solid" && obj_b->get_tag() != "solid") {
+                    resolve_solid_object_collisions(obj_b, obj_a);
+                } else {
+                    // 记录碰撞对
+                    collision_pairs_.emplace_back(obj_a, obj_b);
+                }
             }
         }
     }
@@ -143,12 +149,12 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
             if (tile_type_top == engine::component::TileType::Solid || tile_type_bottom == engine::component::TileType::Solid) {
                 // 撞墙了！速度归零，x方向移动到贴着墙的位置
                 new_obj_pos.x = (tile_x + 1) * layer->get_tile_size().x;
-                pc->velocity_.x = 0.0f;
+                pc->velocity_.x = 0.f;
             }
         }
 
         // 轴分离碰撞检测：再检查Y方向是否有碰撞 (x方向使用初始值obj_pos.x)
-        if (ds.y > 0.0f) {
+        if (ds.y > 0.f) {
             // 检查底部碰撞，需要分别测试左下和右下角
             auto bottom_left_y = new_obj_pos.y + obj_size.y;
             auto tile_y = static_cast<int>(std::floor(bottom_left_y / tile_size.y));
@@ -163,7 +169,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 new_obj_pos.y = tile_y * layer->get_tile_size().y - obj_size.y;
                 pc->velocity_.y = 0.f;
             }
-        } else if (ds.y < 0.0f) {
+        } else if (ds.y < 0.f) {
             // 检查顶部碰撞，需要分别测试左上和右上角
             auto top_left_y = new_obj_pos.y;
             auto tile_y = static_cast<int>(floor(top_left_y / tile_size.y));
@@ -181,8 +187,61 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
         }
     }
     // 更新物体位置，并限制最大速度
-    tc->set_position(new_obj_pos);
+    tc->translate(new_obj_pos - obj_pos);   // 使用translate方法，避免直接设置位置，因为碰撞箱可能有偏移
     pc->velocity_.x = std::clamp(pc->velocity_.x, -max_speed_.x, max_speed_.x);
     pc->velocity_.y = std::clamp(pc->velocity_.y, -max_speed_.y, max_speed_.y);
+}
+
+void PhysicsEngine::resolve_solid_object_collisions(engine::object::GameObject* move_obj, engine::object::GameObject* solid_obj) {
+    // 进入此函数前，已经检查了各个组件的有效性，因此直接进行计算
+    auto* move_tc = move_obj->get_component<engine::component::TransformComponent>();
+    auto* move_pc = move_obj->get_component<engine::component::PhysicsComponent>();
+    auto* move_cc = move_obj->get_component<engine::component::ColliderComponent>();
+    auto* solid_cc = solid_obj->get_component<engine::component::ColliderComponent>();
+
+    // 这里只能获取期望位置，无法获取当前帧初始位置，因此无法进行轴分离碰撞检测
+    /* 未来可以进行重构，让这里可以获取初始位置。但是我们展示另外一种处理方法 */
+    auto move_aabb = move_cc->get_world_aabb();
+    auto solid_aabb = solid_cc->get_world_aabb();
+
+    auto intersection = move_aabb.findIntersection(solid_aabb);
+    if (!intersection) return;
+
+    auto overlap = intersection->size;
+
+    // --- 使用最小平移向量解决碰撞问题 ---
+    auto move_center = move_aabb.position + move_aabb.size / 2.f;
+    auto solid_center = solid_aabb.position + solid_aabb.size / 2.f;
+
+    if (overlap.x < overlap.y) {    // 如果重叠部分在x方向上更小，则认为碰撞发生在x方向上（推出x方向平移向量最小）
+        if (move_center.x < solid_center.x) {
+            // 移动物体在左边，让它贴着右边SOLID物体（相当于向左移出重叠部分），y方向正常移动
+            move_tc->translate(sf::Vector2f(-overlap.x, 0.f));
+            // 如果速度为正(向右移动)，则归零 （if判断不可少，否则可能出现错误吸附）
+            if (move_pc->velocity_.x > 0.f) {
+                move_pc->velocity_.x = 0.f;
+            }
+        } else {
+            // 移动物体在右边，让它贴着左边SOLID物体（相当于向右移出重叠部分），y方向正常移动
+            move_tc->translate(sf::Vector2f(overlap.x, 0.f));
+            if (move_pc->velocity_.x < 0.f) {
+                move_pc->velocity_.x = 0.f;
+            }
+        }
+    } else {                        // 重叠部分在y方向上更小，则认为碰撞发生在y方向上（推出y方向平移向量最小）
+        if (move_center.y < solid_center.y) {
+            // 移动物体在上面，让它贴着下面SOLID物体（相当于向上移出重叠部分），x方向正常移动
+            move_tc->translate(sf::Vector2f(0.f, -overlap.y));
+            if (move_pc->velocity_.y > 0.f) {
+                move_pc->velocity_.y = 0.f;
+            }
+        } else {
+            // 移动物体在下面，让它贴着上面SOLID物体（相当于向下移出重叠部分），x方向正常移动
+            move_tc->translate(sf::Vector2f(0.f, overlap.y));
+            if (move_pc->velocity_.y < 0.f) {
+                move_pc->velocity_.y = 0.f;
+            }
+        }
+    }
 }
 } // namespace engine::physics
