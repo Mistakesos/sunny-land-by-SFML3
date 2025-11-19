@@ -1,5 +1,5 @@
 #include "camera.hpp"
-
+#include "transform_component.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
 #include <spdlog/spdlog.h>
@@ -21,40 +21,36 @@ Camera::Camera(sf::RenderWindow* window, std::optional<sf::FloatRect> limit_boun
     window_obs_->setView(world_view_);
 }
 
-void Camera::update(sf::Time delta_time)
-{
-    // if (target_ == nullptr) return;
+void Camera::update(sf::Time delta_time) {
+    if (target_obs_ == nullptr) return;
     
-    // // 获取目标位置
-    // sf::Vector2f target_pos = target_->get_position();
+    sf::Vector2f target_pos = target_obs_->get_position();
+    sf::Vector2f desired_center = target_pos;   // 目标位置就是期望的视图中心
+    sf::Vector2f current_center = world_view_.getCenter();
     
-    // // 计算目标位置 (让目标位于视口中心)
-    // // 注意：position_是相机左上角，所以要让目标在中心需要减去视口的一半
-    // sf::Vector2f desired_position = target_pos - size_ / 2.0f;
-
-    // // 计算当前位置与目标位置的距离
-    // float dx = desired_position.x - position_.x;
-    // float dy = desired_position.y - position_.y;
-    // float distance = std::sqrt(dx * dx + dy * dy);
+    // 计算当前位置与目标位置的距离
+    sf::Vector2f diff = desired_center - current_center;
+    float distance = diff.length();
+    constexpr float SNAP_THRESHOLD = 1.f; // 设置一个距离阈值
     
-    // constexpr float snap_threshold = 1.0f;
-
-    // if (distance < snap_threshold) {
-    //     // 如果距离小于阈值，直接吸附到目标位置
-    //     position_ = desired_position;
-    // } else {
-    //     // 使用线性插值平滑移动
-    //     // 等效于 glm::mix: current + (desired - current) * factor
-    //     float t = smooth_speed_ * delta_time;
-    //     position_.x = position_.x + (desired_position.x - position_.x) * t;
-    //     position_.y = position_.y + (desired_position.y - position_.y) * t;
+    sf::Vector2f new_center;
+    if (distance < SNAP_THRESHOLD) {
+        // 如果距离小于阈值，直接吸附到目标位置
+        new_center = desired_center;
+    } else {
+        // 使用线性插值平滑移动
+        float t = smooth_speed_ * delta_time.asSeconds();
+        t = std::min(t, 1.f); // 确保插值因子不超过1
         
-    //     // 四舍五入到整数
-    //     position_.x = std::round(position_.x);
-    //     position_.y = std::round(position_.y);
-    // }
-
-    // clamp_position();
+        new_center = current_center + diff * t;
+        
+        // 四舍五入到整数，避免画面割裂
+        // new_center.x = std::round(new_center.x);
+        // new_center.y = std::round(new_center.y);
+    }
+    
+    world_view_.setCenter(new_center);
+    clamp_position();
 }
 
 void Camera::set_world_view_center(sf::Vector2f center) {
@@ -83,20 +79,28 @@ void Camera::clamp_position() {
     
     const sf::FloatRect& bounds = limit_bounds_.value();
     
-    // 边界检查需要确保相机视图（position 到 position + viewport_size）在 limit_bounds 内
+    // 边界检查需要确保相机视图完全在 limit_bounds 内
     if (bounds.size.x > 0 && bounds.size.y > 0) {
-        // 计算允许的相机位置范围
-        sf::Vector2f min_cam_pos = bounds.position;
-        sf::Vector2f max_cam_pos = bounds.position + bounds.size - get_world_view_size();
+        sf::Vector2f view_size = get_world_view_size();
+        sf::Vector2f half_view_size = view_size / 2.f;
+        
+        // 计算允许的相机中心位置范围
+        // 最小中心位置：左上角 + 半个视口
+        sf::Vector2f min_center = sf::Vector2f(bounds.position.x, bounds.position.y) + half_view_size;
+        // 最大中心位置：右下角 - 半个视口
+        sf::Vector2f max_center = sf::Vector2f(bounds.position.x + bounds.size.x, 
+                                               bounds.position.y + bounds.size.y) - half_view_size;
 
-        // 确保 max_cam_pos 不小于 min_cam_pos (视口可能比世界还大)
-        max_cam_pos.x = std::max(min_cam_pos.x, max_cam_pos.x);
-        max_cam_pos.y = std::max(min_cam_pos.y, max_cam_pos.y);
+        // 确保 max_center 不小于 min_center (视口可能比世界还大)
+        max_center.x = std::max(min_center.x, max_center.x);
+        max_center.y = std::max(min_center.y, max_center.y);
 
-        // 手动实现clamp
-        auto position = world_view_.getCenter();
-        position.x = std::clamp(position.x, min_cam_pos.x, max_cam_pos.x);
-        position.y = std::clamp(position.y, min_cam_pos.y, max_cam_pos.y);
+        // 限制视图中心在允许范围内
+        sf::Vector2f current_center = world_view_.getCenter();
+        current_center.x = std::clamp(current_center.x, min_center.x, max_center.x);
+        current_center.y = std::clamp(current_center.y, min_center.y, max_center.y);
+        
+        world_view_.setCenter(current_center);
     }
 }
 

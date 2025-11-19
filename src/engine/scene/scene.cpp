@@ -1,6 +1,7 @@
 #include "scene.hpp"
 #include "context.hpp"
 #include "game_object.hpp"
+#include "camera.hpp"
 #include "scene_manager.hpp"
 #include "physics_engine.hpp"
 #include "context.hpp"
@@ -22,6 +23,9 @@ void Scene::update(sf::Time delta) {
 
     // 先更新物理引擎
     context_.get_physics_engine().update(delta);
+
+    // 更新相机
+    context_.get_camera().update(delta);
     
     bool need_remove = false;  // 设定一个标志，用于判断是否需要移除对象
 

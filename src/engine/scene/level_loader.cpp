@@ -252,8 +252,29 @@ engine::component::TileType LevelLoader::get_tile_type(const nlohmann::json& til
             if (property.contains("name") && property["name"] == "solid") {
                 auto is_solid = property.value("value", false);
                 return is_solid ? engine::component::TileType::Solid : engine::component::TileType::Normal;
+            } else if (property.contains("name") && property["name"] == "slope") {
+                auto slope_type = property.value("value", "");
+                if (slope_type == "0_1") {
+                    return engine::component::TileType::Slope_0_1;
+                } else if (slope_type == "1_0") {
+                    return engine::component::TileType::Slope_1_0;
+                } else if (slope_type == "0_2") {
+                    return engine::component::TileType::Slope_0_2;
+                } else if (slope_type == "2_0") {
+                    return engine::component::TileType::Slope_2_0;
+                } else if (slope_type == "2_1") {
+                    return engine::component::TileType::Slope_2_1;
+                } else if (slope_type == "1_2") {
+                    return engine::component::TileType::Slope_1_2;
+                } else {
+                    spdlog::error("未知的斜坡类型: {}", slope_type);
+                    return engine::component::TileType::Normal;
+                }
+            } else if (property.contains("name") && property["name"] == "unisolid") {
+                auto is_unisolid = property.value("value", false);
+                return is_unisolid ? engine::component::TileType::Unisolid : engine::component::TileType::Normal;
             }
-            // TODO: 未来添加更多自定义属性处理逻辑，当前只针对solid
+            // TODO: 可以在这里添加更多自定义属性处理逻辑
         }
     }
     return engine::component::TileType::Normal;
@@ -409,5 +430,4 @@ std::string LevelLoader::resolve_path(std::string_view relative_path, std::strin
         return std::string(relative_path);
     }
 }
-
 } // namespace engine::scene

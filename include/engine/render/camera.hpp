@@ -67,7 +67,7 @@ private:
     sf::View world_view_;                                           ///< @brief world（世界）摄像机
     sf::View ui_view_;                                              ///< @brief ui（界面）摄像机
     std::optional<sf::FloatRect> limit_bounds_;                     ///< @brief 限制相机的移动范围，空值表示不限制
-    float smooth_speed_ = 5.0f;                                     ///< @brief 相机移动的平滑速度
+    float smooth_speed_ = 5.f;                                      ///< @brief 相机移动的平滑速度
     engine::component::TransformComponent* target_obs_ = nullptr;   ///< @brief 跟随目标变换组件，空值表示不跟随
 };
 } // namespace engine::render
