@@ -2,6 +2,7 @@
 #include "component.hpp"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <vector>
 
 namespace engine::core {
@@ -100,6 +101,8 @@ protected:
     void render(engine::core::Context& context) override;
 
 private:
+    void rebuild_cache() const;
+
     sf::Vector2i tile_size_;            ///< @brief 单个瓦片尺寸（像素）
     sf::Vector2i map_size_;             ///< @brief 地图尺寸（瓦片数）
     std::vector<TileInfo> tiles_;       ///< @brief 存储所有瓦片信息 (按"行主序"存储, index = y * map_width_ + x)
@@ -107,5 +110,9 @@ private:
                                         ///< offset_ 最好也保持默认的0，以免增加不必要的复杂性
     bool is_hidden_ = false;            ///< @brief 是否隐藏（不渲染）
     engine::physics::PhysicsEngine* physics_engine_ = nullptr;   ///< @brief 物理引擎的指针， 析构函数中可能需要注销
+
+    mutable sf::RenderTexture render_texture_;                              // mutable 因为 render() 是 const 上下文也能重建
+    mutable bool cache_dirty_ = true;                                       // 是否需要重新绘制到 render_texture_
+    mutable std::unique_ptr<sf::Sprite> cached_sprite_ = nullptr;           // 从 render_texture_ 生成的 sprite，每帧只 draw 这一个
 };
 } // namespace engine::component
