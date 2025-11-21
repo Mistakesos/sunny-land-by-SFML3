@@ -9,6 +9,7 @@
 #include "physics_component.hpp"
 #include "collider_component.hpp"
 #include "tilelayer_component.hpp"
+#include "player_component.hpp"
 #include "level_loader.hpp"
 #include "input_manager.hpp"
 #include <SFML/Graphics/Rect.hpp>
@@ -19,7 +20,9 @@ GameScene::GameScene(std::string_view name, engine::core::Context& context, engi
     : Scene{name, context, scene_manager} {
     // 加载关卡（level_loader通常加载完成后即可销毁，因此不存为成员变量
     engine::scene::LevelLoader level_loader(context_);
-    if (level_loader.load_level("assets/maps/level_1.tmj", *this));
+    if (!level_loader.load_level("assets/maps/level_1.tmj", *this)) {
+        spdlog::error("关卡加载失败！");
+    }
 
     // 注册 “main”层到物理引擎
     auto* main_layer = find_game_object_by_name("main");
@@ -35,6 +38,12 @@ GameScene::GameScene(std::string_view name, engine::core::Context& context, engi
     player_obs_ = find_game_object_by_name("player");
     if (!player_obs_) {
         spdlog::error("未找到玩家对象");
+    }
+
+    // 添加PlayerComponent到玩家对象
+    auto* player_component = player_obs_->add_component<game::component::PlayerComponent>();
+    if (!player_component) {
+        spdlog::error("无法找到 PlayerComponent 到玩家对象");
     }
 
     // 相机跟随玩家
@@ -57,7 +66,6 @@ GameScene::~GameScene() = default;
 
 void GameScene::update(sf::Time delta) {
     Scene::update(delta);
-    test_collision_pairs();
 }
 
 void GameScene::render() {
@@ -66,45 +74,5 @@ void GameScene::render() {
 
 void GameScene::handle_input() {
     Scene::handle_input();
-    test_player();
-}
-
-void GameScene::test_camera() {
-    auto& camera = context_.get_camera();
-    auto& input_manager = context_.get_input_manager();
-    if (input_manager.is_action_held(Action::MoveUp)) camera.move({0.f, -1.f});
-    if (input_manager.is_action_held(Action::MoveDown)) camera.move({0.f, 1.f});
-    if (input_manager.is_action_held(Action::MoveLeft)) camera.move({-1.f, 0.f});
-    if (input_manager.is_action_held(Action::MoveRight)) camera.move({1.f, 0.f});
-}
-
-void GameScene::test_player() {
-    if (!player_obs_) return;
-    auto& input_manager = context_.get_input_manager();
-    auto* pc = player_obs_->get_component<engine::component::PhysicsComponent>();
-    if (!pc) return;
-
-    if (input_manager.is_action_held(Action::MoveLeft)) {
-        pc->velocity_.x = -100.f;
-    } else {
-        pc->velocity_.x *= 0.9f;
-    }
-
-    if (input_manager.is_action_held(Action::MoveRight)) {
-        pc->velocity_.x = 100.f;
-    } else {
-        pc->velocity_.x *= 0.9f;
-    }
-
-    if (input_manager.is_action_pressed(Action::Jump)) {
-        pc->velocity_.y = -400.f;
-    }
-}
-
-void GameScene::test_collision_pairs() {
-    auto collision_pairs = context_.get_physics_engine().get_collision_pairs();
-    for (auto& pair : collision_pairs) {
-        spdlog::info("键值对：{} 和 {}", pair.first->get_name(), pair.second->get_name());
-    }
 }
 } // namespace game::scene

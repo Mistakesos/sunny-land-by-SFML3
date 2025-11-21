@@ -42,6 +42,8 @@ void PhysicsEngine::update(sf::Time delta) {
             continue;
         }
 
+        pc->reset_collision_flags();    // 重置碰撞标志
+        
         // 应用重力
         if (pc->is_use_gravity()) {
             pc->add_force(gravity_ * pc->get_mass());
@@ -140,6 +142,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 // 撞墙了！速度归零，x方向移动到贴着墙的位置
                 new_obj_pos.x = tile_x * layer->get_tile_size().x - obj_size.x;
                 pc->velocity_.x = 0.f;
+                pc->set_collided_right(true);
             } else {
                 // 检测右下角斜坡瓦片
                 auto width_right = new_obj_pos.x + obj_size.x - tile_x * tile_size.x;
@@ -148,6 +151,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                     // 如果有碰撞（角点的世界y坐标 > 斜坡地面的世界y坐标）, 就让物体贴着斜坡表面
                     if (new_obj_pos.y > (tile_y_bottom + 1) * layer->get_tile_size().y - obj_size.y - height_right) {
                         new_obj_pos.y = (tile_y_bottom + 1) * layer->get_tile_size().y - obj_size.y - height_right;
+                        pc->set_collided_below(true);
                     }
                 }
             }
@@ -165,6 +169,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 // 撞墙了！速度归零，x方向移动到贴着墙的位置
                 new_obj_pos.x = (tile_x + 1) * layer->get_tile_size().x;
                 pc->velocity_.x = 0.f;
+                pc->set_collided_left(true);
             } else {
                 // 检测左下角斜坡瓦片
                 auto width_left = new_obj_pos.x - tile_x * tile_size.x;
@@ -172,6 +177,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 if (height_left > 0.f) {
                     if (new_obj_pos.y > (tile_y_bottom + 1) * layer->get_tile_size().y - obj_size.y - height_left) {
                         new_obj_pos.y = (tile_y_bottom + 1) * layer->get_tile_size().y - obj_size.y - height_left;
+                        pc->set_collided_below(true);
                     }
                 }
             }
@@ -195,6 +201,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 // 到达地面，速度归零，y方向移动到贴着地面的位置
                 new_obj_pos.y = tile_y * layer->get_tile_size().y - obj_size.y;
                 pc->velocity_.y = 0.f;
+                pc->set_collided_below(true);
             } else {
                 // 检测斜坡瓦片（下方两个角点都要检测）
                 auto width_left = obj_pos.x - tile_x * tile_size.x;
@@ -206,6 +213,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                     if (new_obj_pos.y > (tile_y + 1) * layer->get_tile_size().y - obj_size.y - height) {
                         new_obj_pos.y = (tile_y + 1) * layer->get_tile_size().y - obj_size.y - height;
                         pc->velocity_.y = 0.f;     // 只有向下运动时才需要让 y 速度归零
+                        pc->set_collided_below(true);
                     }
                 }
             }
@@ -223,6 +231,7 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 // 撞到天花板！速度归零，y方向移动到贴着天花板的位置
                 new_obj_pos.y = (tile_y + 1) * layer->get_tile_size().y;
                 pc->velocity_.y = 0.f;
+                pc->set_collided_above(true);
             }
         }
     }
@@ -260,26 +269,30 @@ void PhysicsEngine::resolve_solid_object_collisions(engine::object::GameObject* 
             // 如果速度为正(向右移动)，则归零 （if判断不可少，否则可能出现错误吸附）
             if (move_pc->velocity_.x > 0.f) {
                 move_pc->velocity_.x = 0.f;
+                move_pc->set_collided_right(true);
             }
         } else {
             // 移动物体在右边，让它贴着左边SOLID物体（相当于向右移出重叠部分），y方向正常移动
             move_tc->translate(sf::Vector2f(overlap.x, 0.f));
             if (move_pc->velocity_.x < 0.f) {
                 move_pc->velocity_.x = 0.f;
+                move_pc->set_collided_left(true);
             }
         }
-    } else {                        // 重叠部分在y方向上更小，则认为碰撞发生在y方向上（推出y方向平移向量最小）
+    } else {    // 重叠部分在y方向上更小，则认为碰撞发生在y方向上（推出y方向平移向量最小）
         if (move_center.y < solid_center.y) {
             // 移动物体在上面，让它贴着下面SOLID物体（相当于向上移出重叠部分），x方向正常移动
             move_tc->translate(sf::Vector2f(0.f, -overlap.y));
             if (move_pc->velocity_.y > 0.f) {
                 move_pc->velocity_.y = 0.f;
+                move_pc->set_collided_below(true);
             }
         } else {
             // 移动物体在下面，让它贴着上面SOLID物体（相当于向下移出重叠部分），x方向正常移动
             move_tc->translate(sf::Vector2f(0.f, overlap.y));
             if (move_pc->velocity_.y < 0.f) {
                 move_pc->velocity_.y = 0.f;
+                move_pc->set_collided_above(true);
             }
         }
     }

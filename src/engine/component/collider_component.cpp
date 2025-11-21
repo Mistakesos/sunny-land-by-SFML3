@@ -21,7 +21,10 @@ sf::FloatRect ColliderComponent::get_world_aabb() const {
         return sf::FloatRect{{0.f, 0.f}, {0.f, 0.f}};
     }
     const sf::Vector2f position = transform_obs_->get_position() - transform_obs_->get_origin() + offset_;
-    const sf::Vector2f size = collider_->get_aabb_size().componentWiseMul(transform_obs_->get_scale());
+    sf::Vector2f scale = transform_obs_->get_scale();
+    scale.x = std::abs(scale.x);
+    scale.y = std::abs(scale.y);
+    const sf::Vector2f size = collider_->get_aabb_size().componentWiseMul(scale);
     return {position, size};
 }
 } // namespace engine::component

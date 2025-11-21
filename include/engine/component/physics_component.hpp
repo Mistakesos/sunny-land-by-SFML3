@@ -34,7 +34,7 @@ public:
     PhysicsComponent& operator=(PhysicsComponent&&) = delete;
 
     // PhysicsEngine使用的物理方法
-    void add_force(const sf::Vector2f& force) { if (enabled_) force_ += force; }  ///< @brief 添加力
+    void add_force(const sf::Vector2f& force) { if (enabled_) force_ += force; } ///< @brief 添加力
     void clear_force() { force_ = {0.0f, 0.0f}; }                                ///< @brief 清除力
     const sf::Vector2f& get_force() const { return force_; }                     ///< @brief 获取当前力
     float get_mass() const { return mass_; }                                     ///< @brief 获取质量
@@ -49,6 +49,25 @@ public:
     const sf::Vector2f& get_velocity() const { return velocity_; }                   ///< @brief 获取当前速度
     TransformComponent* get_transform() const { return transform_obs_; }             ///< @brief 获取TransformComponent指针
     
+    // --- 碰撞状态访问与修改 (供 PhysicsEngine 使用) ---
+    /** @brief 重置所有碰撞标志 (在物理更新开始时调用) */
+    void reset_collision_flags() {
+        collided_below_ = false;
+        collided_above_ = false;
+        collided_left_ = false;
+        collided_right_ = false;
+    }
+
+    void set_collided_below(bool collided) { collided_below_ = collided; }    ///< @brief 设置下方碰撞标志
+    void set_collided_above(bool collided) { collided_above_ = collided; }    ///< @brief 设置上方碰撞标志
+    void set_collided_left(bool collided) { collided_left_ = collided; }      ///< @brief 设置左方碰撞标志
+    void set_collided_right(bool collided) { collided_right_ = collided; }    ///< @brief 设置右方碰撞标志
+    
+    bool has_collided_below() const { return collided_below_; }       ///< @brief 检查是否与下方发生碰撞
+    bool has_collided_above() const { return collided_above_; }       ///< @brief 检查是否与上方发生碰撞
+    bool has_collided_left() const { return collided_left_; }         ///< @brief 检查是否与左方发生碰撞
+    bool has_collided_right() const { return collided_right_; }       ///< @brief 检查是否与右方发生碰撞    
+
 private:
     // 核心循环方法
     void update(sf::Time delta, engine::core::Context& context) override {}
@@ -64,5 +83,11 @@ private:
     float mass_ = 1.f;                          ///< @brief 物体质量（默认1）
     bool use_gravity_ = true;                   ///< @brief 物体是否受重力影响
     bool enabled_ = true;                       ///< @brief 组件是否激活
+
+    // --- 碰撞状态标志 ---
+    bool collided_below_ = false;
+    bool collided_above_ = false;
+    bool collided_left_ = false;
+    bool collided_right_ = false;
 };
 } // namespace engine::component

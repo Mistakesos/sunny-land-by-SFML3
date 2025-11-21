@@ -21,12 +21,6 @@ public:
     void handle_input() override;
     
 private:
-    // 测试函数
-    void test_camera();
-    void test_player();
-    void test_collision_pairs();
-
-private:
     engine::object::GameObject* player_obs_ = nullptr; ///< @brief 保存测试对象的指针，方便访问
 };
 }
