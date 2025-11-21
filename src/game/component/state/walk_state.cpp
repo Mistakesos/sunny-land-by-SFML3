@@ -12,6 +12,9 @@
 namespace game::component::state {
 WalkState::WalkState(PlayerComponent* player_component)
     : PlayerState{player_component} {
+    // 播放动画
+    play_animation("walk");
+    
     spdlog::debug("PlayerComponent 进入 WalkState");
 }
 

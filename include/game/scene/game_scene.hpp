@@ -21,6 +21,10 @@ public:
     void handle_input() override;
     
 private:
+    [[nodiscard]] bool init_level();
+    [[nodiscard]] bool init_player();
+    [[nodiscard]] bool init_enemy_and_item();
+
     engine::object::GameObject* player_obs_ = nullptr; ///< @brief 保存测试对象的指针，方便访问
 };
 }

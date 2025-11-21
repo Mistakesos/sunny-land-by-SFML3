@@ -4,6 +4,7 @@
 #include "transform_component.hpp"
 #include "physics_component.hpp"
 #include "sprite_component.hpp"
+#include "animation_component.hpp"
 #include "game_object.hpp"
 #include <spdlog/spdlog.h>
 
@@ -14,6 +15,7 @@ PlayerComponent::PlayerComponent(engine::object::GameObject* owner)
     transform_component_obs_ = owner_->get_component<engine::component::TransformComponent>();
     physics_component_obs_ = owner_->get_component<engine::component::PhysicsComponent>();
     sprite_component_obs_ = owner_->get_component<engine::component::SpriteComponent>();
+    animation_component_obs_ = owner_->get_component<engine::component::AnimationComponent>();
 
     // 设为以脚底中心为原点
     sf::Sprite& sprite = sprite_component_obs_->get_sprite();

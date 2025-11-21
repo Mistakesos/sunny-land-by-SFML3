@@ -10,6 +10,9 @@
 namespace game::component::state {
 FallState::FallState(PlayerComponent* player_component)
     : PlayerState{player_component} {
+    // 播放动画
+    play_animation("fall");
+        
     spdlog::debug("PlayerComponent 进入 FallState");
 }
 

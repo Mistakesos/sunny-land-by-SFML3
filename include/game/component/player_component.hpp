@@ -14,6 +14,9 @@ namespace engine::component {
     class TransformComponent;
     class PhysicsComponent;
     class SpriteComponent;
+    class AnimationComponent;
+    class HealthComponent;
+    class AudioComponent;
 } // namespace engine::component
 
 namespace game::component::state {
@@ -41,6 +44,7 @@ public:
     engine::component::TransformComponent* get_transform_component() const { return transform_component_obs_; }
     engine::component::SpriteComponent* get_sprite_component() const { return sprite_component_obs_; }
     engine::component::PhysicsComponent* get_physics_component() const { return physics_component_obs_; }
+    engine::component::AnimationComponent* get_animation_component() const { return animation_component_obs_; }
 
     void set_is_dead(bool is_dead) { is_dead_ = is_dead; }                ///< @brief 设置玩家是否死亡
     bool is_dead() const { return is_dead_; }                             ///< @brief 获取玩家是否死亡    
@@ -61,6 +65,7 @@ private:
     engine::component::TransformComponent* transform_component_obs_ = nullptr; // 指向 TransformComponent 的非拥有指针
     engine::component::SpriteComponent* sprite_component_obs_ = nullptr;
     engine::component::PhysicsComponent* physics_component_obs_ = nullptr;
+    engine::component::AnimationComponent* animation_component_obs_ = nullptr;
 
     std::unique_ptr<state::PlayerState> current_state_;
     bool is_dead_ = false;
@@ -68,7 +73,7 @@ private:
     // --- 移动相关参数 ---
     float move_force_ = 200.f;         ///< @brief 水平移动力
     float max_speed_ = 120.f;          ///< @brief 最大移动速度 (像素/秒)
-    float friction_factor_ = 0.85f;    ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
+    float friction_factor_ = 0.6f;     ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
     float jump_vel_ = 350.f;           ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
 };
 } // namespace game::component

@@ -10,6 +10,9 @@
 namespace game::component::state {
 IdleState::IdleState(PlayerComponent* player_component)
     : PlayerState{player_component} {
+    // 播放动画
+    play_animation("idle");
+    
     spdlog::debug("PlayerComponent 进入 IdleState");
 }
 

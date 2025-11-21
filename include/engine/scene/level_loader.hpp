@@ -7,6 +7,8 @@
 #include <string>
 
 namespace engine::component {
+    class AnimationComponent;
+    class AudioComponent;
     struct TileInfo;
     enum class TileType;
 } // namespace engine::component
@@ -32,6 +34,14 @@ private:
     void load_tile_layer(const nlohmann::json& layer_json, Scene& scene);   ///< @brief 加载瓦片图层
     void load_object_layer(const nlohmann::json& layer_json, Scene& scene); ///< @brief 加载对象图层
 
+    /**
+     * @brief 添加动画到指定的 AnimationComponent。
+     * @param anim_json 动画json数据（自定义）
+     * @param ac AnimationComponent 指针（动画添加到此组件）
+     * @param sprite_size 每一帧动画的尺寸
+     */
+    void add_animation(const nlohmann::json& anim_json, engine::component::AnimationComponent* ac, const sf::Vector2i& sprite_size);
+    
     /**
      * @brief 获取瓦片属性
      * @tparam T 属性类型

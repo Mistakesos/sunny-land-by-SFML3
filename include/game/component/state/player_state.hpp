@@ -28,13 +28,13 @@ public:
     PlayerState(PlayerState&&) = delete;
     PlayerState& operator=(PlayerState&&) = delete;
 
+    void play_animation(const std::string& animation_name);      ///< @brief 播放指定名称的动画，使用 AnimationComponent 的方法
+
 protected:
     template<typename Next, typename... Args>
     void transition(Args&&... args) {
         next_state_ = std::make_unique<Next>(player_component_obs_, std::forward<Args>(args)...);
     }
-
-    std::unique_ptr<PlayerState> release_next() { return std::move(next_state_); }
 
     // 核心状态方法
     virtual void handle_input(engine::core::Context& context) = 0;              ///< @brief 处理输入
