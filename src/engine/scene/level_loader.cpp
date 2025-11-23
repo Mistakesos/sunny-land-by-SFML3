@@ -11,6 +11,7 @@
 #include "collider_component.hpp"
 #include "physics_component.hpp"
 #include "animation_component.hpp"
+#include "health_component.hpp"
 #include <spdlog/spdlog.h>
 #include <SFML/System/Vector2.hpp>
 #include <fstream>
@@ -243,6 +244,13 @@ void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& sce
                 add_animation(anim_json, ac, static_cast<sf::Vector2i>(local_size));
             }
 
+            // 获取生命值信息并设置
+            auto health = get_tile_property<int>(tile_json, "health");
+            if (health) {
+                // 添加 HealthComponent
+                game_object->add_component<engine::component::HealthComponent>(health.value());
+            }
+            
             // 添加到场景中
             scene.add_game_object(std::move(game_object));
             spdlog::info("加载对象：{} 完成", object_name);
@@ -284,7 +292,7 @@ void LevelLoader::add_animation(const nlohmann::json& anim_json, engine::compone
             }
             auto column = frame.get<int>();
             // 计算源矩形
-            sf::FloatRect src_rect = { 
+            sf::IntRect src_rect = { 
                 {column * sprite_size.x, 
                 row * sprite_size.y},
                 {sprite_size.x, 

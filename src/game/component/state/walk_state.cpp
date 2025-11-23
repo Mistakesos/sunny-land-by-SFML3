@@ -26,7 +26,6 @@ void WalkState::handle_input(engine::core::Context& context) {
     // 如果按下“jump”则切换到 JumpState
     if (input_manager.is_action_pressed(Action::Jump)) {
         transition<JumpState>();
-        // return;
     }
     
     // 步行状态可以左右移动
@@ -47,7 +46,6 @@ void WalkState::handle_input(engine::core::Context& context) {
     } else {
         // 如果没有按下左右移动键，则切换到 IdleState
         transition<IdleState>();
-        // return;
     }
 }
 
@@ -60,7 +58,6 @@ void WalkState::update(sf::Time delta_time, engine::core::Context& context) {
     // 如果离地，则切换到 FallState
     if (!physics_component->has_collided_below()) {
         transition<FallState>();
-        // return;
     }
 }
 } // namespace game::component::state

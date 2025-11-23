@@ -42,7 +42,7 @@ public:
      * @param source_rect 纹理图集上此帧的区域。
      * @param duration 此帧应显示的持续时间（秒）。
      */
-    void add_frame(const sf::FloatRect& source_rect, sf::Time duration);
+    void add_frame(const sf::IntRect& source_rect, sf::Time duration);
 
     /**
      * @brief 获取在给定时间点应该显示的动画帧。

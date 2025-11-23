@@ -43,10 +43,8 @@ void FallState::update(sf::Time delta_time, engine::core::Context& context) {
     if (physics_component->has_collided_below()) {
         if (std::abs(physics_component->velocity_.x) < 1.f) {
             transition<IdleState>();
-            // return;
         } else {
             transition<WalkState>();
-            // return;
         }
     }
 }

@@ -43,7 +43,6 @@ void JumpState::update(sf::Time delta_time, engine::core::Context& context) {
     // 如果速度为正，切换到 FallState
     if (physics_component->velocity_.y >= 0.f) {
         transition<FallState>();
-        // return;
     }
 }
 } // namespace game::component::state

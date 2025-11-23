@@ -7,12 +7,12 @@ Animation::Animation(std::string_view name, bool loop)
     , loop_{loop} {
 }
 
-void Animation::add_frame(const sf::FloatRect& source_rect, sf::Time duration) {
+void Animation::add_frame(const sf::IntRect& source_rect, sf::Time duration) {
     if (duration <= sf::Time::Zero) {
         spdlog::warn("尝试向动画 '{}' 添加无效持续时间的帧", name_);
         return;
     }
-    frames_.push_back({static_cast<sf::IntRect>(source_rect), duration});
+    frames_.push_back({source_rect, duration});
     total_duration_ += duration;
 }
 

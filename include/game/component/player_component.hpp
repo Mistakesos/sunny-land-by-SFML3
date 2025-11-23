@@ -40,11 +40,14 @@ public:
     PlayerComponent(PlayerComponent&&) = delete;
     PlayerComponent& operator=(PlayerComponent&&) = delete;
 
+    bool take_damage(int damage);        ///< @brief 试图造成伤害，返回是否成功
+
     // setter-getter
     engine::component::TransformComponent* get_transform_component() const { return transform_component_obs_; }
     engine::component::SpriteComponent* get_sprite_component() const { return sprite_component_obs_; }
     engine::component::PhysicsComponent* get_physics_component() const { return physics_component_obs_; }
     engine::component::AnimationComponent* get_animation_component() const { return animation_component_obs_; }
+    engine::component::HealthComponent* get_health_component() const { return health_component_obs_; }
 
     void set_is_dead(bool is_dead) { is_dead_ = is_dead; }                ///< @brief 设置玩家是否死亡
     bool is_dead() const { return is_dead_; }                             ///< @brief 获取玩家是否死亡    
@@ -56,6 +59,9 @@ public:
     float get_friction_factor() const { return friction_factor_; }        ///< @brief 获取摩擦系数
     void set_jump_velocity(float jump_vel) { jump_vel_ = jump_vel; }      ///< @brief 设置跳跃速度
     float get_jump_velocity() const { return jump_vel_; }                 ///< @brief 获取跳跃速度
+    void set_stunned_duration(sf::Time duration) { stunned_duration_ = duration; }    ///< @brief 设置硬直时间
+    sf::Time get_stunned_duration() const { return stunned_duration_; }               ///< @brief 获取硬直时间
+
 
 private:
     // 核心循环函数
@@ -66,7 +72,9 @@ private:
     engine::component::SpriteComponent* sprite_component_obs_ = nullptr;
     engine::component::PhysicsComponent* physics_component_obs_ = nullptr;
     engine::component::AnimationComponent* animation_component_obs_ = nullptr;
+    engine::component::HealthComponent* health_component_obs_ = nullptr;
 
+    ///< @brief PlayerState（基类）内部缓存了 PlayerComponent 指针
     std::unique_ptr<state::PlayerState> current_state_;
     bool is_dead_ = false;
 
@@ -75,5 +83,8 @@ private:
     float max_speed_ = 120.f;          ///< @brief 最大移动速度 (像素/秒)
     float friction_factor_ = 0.6f;     ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
     float jump_vel_ = 350.f;           ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
+
+    // --- 属性相关参数 ---
+    sf::Time stunned_duration_ = sf::seconds(0.4f); ///< @brief 玩家被击中后的硬直时间（单位：秒）
 };
 } // namespace game::component

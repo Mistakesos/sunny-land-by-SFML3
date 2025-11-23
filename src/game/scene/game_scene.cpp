@@ -47,6 +47,7 @@ void GameScene::render() {
 
 void GameScene::handle_input() {
     Scene::handle_input();
+    test_health();  // 测试生命值组件
 }
 
 bool GameScene::init_level() {
@@ -145,5 +146,12 @@ bool GameScene::init_enemy_and_item() {
     }
 
     return success;
+}
+
+void GameScene::test_health() {
+    auto input_manager = context_.get_input_manager();
+    if (input_manager.is_action_pressed(Action::Attack)) {
+        player_obs_->get_component<game::component::PlayerComponent>()->take_damage(1);
+    }
 }
 } // namespace game::scene
