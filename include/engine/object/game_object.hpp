@@ -114,6 +114,6 @@ private:
     std::string name_;          ///< @brief 名称
     std::string tag_;           ///< @brief 标签
     std::unordered_map<std::type_index, std::unique_ptr<engine::component::Component>> components_;     ///< @brief 组件列表
-    bool need_remove_;          ///< @brief 延迟删除的标识，将由场景类负责管理
+    bool need_remove_ = false;  ///< @brief 延迟删除的标识，将由场景类负责管理
 };
 } // namespace engine::object

@@ -1,6 +1,7 @@
 #include "game_scene.hpp"
 #include "resource_manager.hpp"
 #include "physics_engine.hpp"
+#include "animation.hpp"
 #include "context.hpp"
 #include "game_object.hpp"
 #include "camera.hpp"
@@ -11,6 +12,7 @@
 #include "tilelayer_component.hpp"
 #include "player_component.hpp"
 #include "animation_component.hpp"
+#include "health_component.hpp"
 #include "level_loader.hpp"
 #include "input_manager.hpp"
 #include <SFML/Graphics/Rect.hpp>
@@ -39,6 +41,8 @@ GameScene::~GameScene() = default;
 
 void GameScene::update(sf::Time delta) {
     Scene::update(delta);
+    handle_object_collisions();
+    handle_tile_triggers();
 }
 
 void GameScene::render() {
@@ -47,7 +51,6 @@ void GameScene::render() {
 
 void GameScene::handle_input() {
     Scene::handle_input();
-    test_health();  // 测试生命值组件
 }
 
 bool GameScene::init_level() {
@@ -148,10 +151,126 @@ bool GameScene::init_enemy_and_item() {
     return success;
 }
 
-void GameScene::test_health() {
-    auto input_manager = context_.get_input_manager();
-    if (input_manager.is_action_pressed(Action::Attack)) {
-        player_obs_->get_component<game::component::PlayerComponent>()->take_damage(1);
+void GameScene::handle_object_collisions() {
+    // 从物理引擎中获取碰撞对
+    auto collision_pairs = context_.get_physics_engine().get_collision_pairs();
+    if (collision_pairs.empty()) return;
+    for (const auto& pair : collision_pairs) {
+        auto* obj1 = pair.first;
+        auto* obj2 = pair.second;
+
+        // 处理玩家与敌人的碰撞
+        if (obj1->get_name() == "player" && obj2->get_tag() == "enemy") {
+            player_vs_enemy_collision(obj1, obj2);
+        } else if (obj2->get_name() == "player" && obj1->get_tag() == "enemy") {
+            player_vs_enemy_collision(obj2, obj1);
+        } else if (obj1->get_name() == "player" && obj2->get_tag() == "item") {
+            // 处理玩家与道具的碰撞
+            player_vs_item_collision(obj1, obj2);
+        } else if (obj2->get_name() == "player" && obj1->get_tag() == "item") {
+            player_vs_item_collision(obj2, obj1);
+            // 处理玩家与"hazard"对象碰撞
+        } else if (obj1->get_name() == "player" && obj2->get_tag() == "hazard") {
+            obj1->get_component<game::component::PlayerComponent>()->take_damage(1);
+            spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj1->get_name());
+        } else if (obj2->get_name() == "player" && obj1->get_tag() == "hazard") {
+            obj2->get_component<game::component::PlayerComponent>()->take_damage(1);
+            spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->get_name());
+        }
     }
+}
+
+void GameScene::handle_tile_triggers() {
+    const auto& tile_trigger_events = context_.get_physics_engine().get_tile_trigger_events();
+    for (const auto& event : tile_trigger_events) {
+        auto* obj = event.first;        // 瓦片触发事件的对象
+        auto tile_type = event.second;  // 瓦片类型
+        if (tile_type == engine::component::TileType::Hazard) {
+            // 玩家碰到到危险瓦片，受伤
+            if (obj->get_name() == "player") {       
+                obj->get_component<game::component::PlayerComponent>()->take_damage(1);
+                spdlog::debug("玩家 {} 受到了 HAZARD 瓦片伤害", obj->get_name());
+            } 
+            // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
+        }
+    }
+}
+
+void GameScene::player_vs_enemy_collision(engine::object::GameObject* player, engine::object::GameObject* enemy) {
+    // --- 踩踏判断逻辑：1. 玩家在敌人上方    2. 重叠区域尺寸：x > y
+    auto player_aabb = player->get_component<engine::component::ColliderComponent>()->get_world_aabb();
+    auto enemy_aabb = enemy->get_component<engine::component::ColliderComponent>()->get_world_aabb();
+
+    if (auto overlap = player_aabb.findIntersection(enemy_aabb)) {
+        if (overlap.value().size.x > overlap.value().size.y
+            && player_aabb.position.y < enemy_aabb.position.y) {
+            spdlog::info("玩家 {} 踩踏了敌人 {}", player->get_name(), enemy->get_name());
+            auto enemy_health = enemy->get_component<engine::component::HealthComponent>();
+            if (!enemy_health) {
+                spdlog::error("敌人 {} 没有 HealthComponent 组件，无法处理踩踏伤害", enemy->get_name());
+                return;
+            }
+            enemy_health->take_damage(1);  // 造成1点伤害
+            if (!enemy_health->is_alive()) {
+                spdlog::info("敌人 {} 被踩踏后死亡", enemy->get_name());
+                enemy->set_need_remove(true);  // 标记敌人为待删除状态
+                create_effect(enemy_aabb.getCenter(), enemy->get_tag());  // 创建（死亡）特效
+            }
+            // 玩家跳起效果
+            player->get_component<engine::component::PhysicsComponent>()->velocity_.y = -300.f;  // 向上跳起
+        } else {
+            spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->get_name(), player->get_name());
+            player->get_component<game::component::PlayerComponent>()->take_damage(1);
+            // TODO: 其他受伤逻辑
+        }
+    }
+}
+
+void GameScene::player_vs_item_collision(engine::object::GameObject* player, engine::object::GameObject* item) {
+    if (item->get_name() == "fruit") {
+        player->get_component<engine::component::HealthComponent>()->heal(1);  // 加血
+    } else if (item->get_name() == "gem") {
+        //TODO: 加分
+    }
+    item->set_need_remove(true);  // 标记道具为待删除状态
+    auto item_aabb = item->get_component<engine::component::ColliderComponent>()->get_world_aabb();
+    create_effect(item_aabb.position + item_aabb.size / 2.f, item->get_tag());  // 创建特效
+}
+
+void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {
+    // --- 创建游戏对象和变换组件 ---
+    auto effect_obj = std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));
+    auto transform = effect_obj->add_component<engine::component::TransformComponent>(center_pos);
+
+    // --- 根据标签创建不同的精灵组件和动画--- 
+    auto animation = std::make_unique<engine::render::Animation>("effect", false);
+    if (tag == "enemy") {
+        effect_obj->add_component<engine::component::SpriteComponent>(
+            *context_.get_resource_manager().get_texture("assets/textures/FX/enemy-deadth.png")
+        );
+        transform->set_origin({20.f, 20.5f});
+        for (auto i = 0; i < 5; i++) {
+            animation->add_frame({{(i * 40), 0}, {40, 41}}, sf::seconds(0.1f));
+        }
+    } else if (tag == "item") {
+        effect_obj->add_component<engine::component::SpriteComponent>(
+            *context_.get_resource_manager().get_texture("assets/textures/FX/item-feedback.png")
+        );
+        transform->set_origin({16.f, 16.f});
+        for (auto i = 0; i < 4; i++) {
+            animation->add_frame({{(i * 32), 0}, {32, 32}}, sf::seconds(0.1f));
+        }
+    } else {
+        spdlog::warn("未知特效类型: {}", tag);
+        return;
+    }
+
+    // --- 根据创建的动画，添加动画组件，并设置为单次播放 ---
+    auto* animation_component = effect_obj->add_component<engine::component::AnimationComponent>();
+    animation_component->add_animation(std::move(animation));
+    animation_component->set_one_shot_removal(true);
+    animation_component->play_animation("effect");
+    safe_add_game_object(std::move(effect_obj));  // 安全添加特效对象
+    spdlog::debug("创建特效: {}", tag);
 }
 } // namespace game::scene

@@ -24,7 +24,7 @@ public:
      * @param use_gravity 物体是否受重力影响，默认true
      * @param mass 物体质量，默认1.0
      */
-    PhysicsComponent(engine::object::GameObject* owner, engine::physics::PhysicsEngine* physics_engine, bool use_gravity = true, float mass = 1.0f);
+    PhysicsComponent(engine::object::GameObject* owner, engine::physics::PhysicsEngine* physics_engine, bool use_gravity = true, float mass = 1.f);
     ~PhysicsComponent() override;
 
     // 删除复制/移动操作
@@ -35,7 +35,7 @@ public:
 
     // PhysicsEngine使用的物理方法
     void add_force(const sf::Vector2f& force) { if (enabled_) force_ += force; } ///< @brief 添加力
-    void clear_force() { force_ = {0.0f, 0.0f}; }                                ///< @brief 清除力
+    void clear_force() { force_ = {0.f, 0.f}; }                                  ///< @brief 清除力
     const sf::Vector2f& get_force() const { return force_; }                     ///< @brief 获取当前力
     float get_mass() const { return mass_; }                                     ///< @brief 获取质量
     bool is_enabled() const { return enabled_; }                                 ///< @brief 获取组件是否启用
@@ -43,7 +43,7 @@ public:
 
     // 设置器/获取器
     void set_enabled(bool enabled) { enabled_ = enabled; }                           ///< @brief 设置组件是否启用
-    void set_mass(float mass) { mass_ = (mass >= 0.0f) ? mass : 1.0f; }              ///< @brief 设置质量，质量不能为负
+    void set_mass(float mass) { mass_ = (mass >= 0.f) ? mass : 1.f; }                ///< @brief 设置质量，质量不能为负
     void set_use_gravity(bool use_gravity) { use_gravity_ = use_gravity; }           ///< @brief 设置组件是否受重力影响
     void set_velocity(sf::Vector2f velocity) { velocity_ = std::move(velocity); }    ///< @brief 设置速度
     const sf::Vector2f& get_velocity() const { return velocity_; }                   ///< @brief 获取当前速度
@@ -70,7 +70,7 @@ public:
 
 private:
     // 核心循环方法
-    void update(sf::Time delta, engine::core::Context& context) override {}
+    void update(sf::Time, engine::core::Context&) override {}
 
 public:
     sf::Vector2f velocity_ = {0.f, 0.f};    ///< @brief 物体的速度,公共成员，方便 PhysisEngine访问更新

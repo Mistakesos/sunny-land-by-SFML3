@@ -150,7 +150,6 @@ void LevelLoader::load_tile_layer(const nlohmann::json& layer_json, Scene& scene
     // 添加到场景中
     scene.add_game_object(std::move(game_object));
     spdlog::info("加载瓦片图层: '{}' 完成", layer_name);
-
 }
 
 void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& scene) {
@@ -212,6 +211,9 @@ void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& sce
             auto tag = get_tile_property<std::string>(tile_json, "tag");
             if (tag) {
                 game_object->set_tag(tag.value());
+            } else if (tile_info.type == engine::component::TileType::Hazard) {
+                // 如果是瓦片且没有手动设置标签，则自动设置为 "hazard"
+                game_object->set_tag("hazard");
             }
 
             // 获取重力信息并设置
@@ -349,7 +351,11 @@ engine::component::TileType LevelLoader::get_tile_type(const nlohmann::json& til
             } else if (property.contains("name") && property["name"] == "unisolid") {
                 auto is_unisolid = property.value("value", false);
                 return is_unisolid ? engine::component::TileType::Unisolid : engine::component::TileType::Normal;
+            } else if (property.contains("name") && property["name"] == "hazard") {
+                auto is_hazard = property.value("value", false);
+                return is_hazard ? engine::component::TileType::Hazard : engine::component::TileType::Normal;
             }
+
             // TODO: 可以在这里添加更多自定义属性处理逻辑
         }
     }

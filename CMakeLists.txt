@@ -9,6 +9,12 @@ project(sunny_land)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+)
+
 find_package(SFML REQUIRED COMPONENTS Audio Graphics)
 find_package(nlohmann_json REQUIRED)
 find_package(spdlog REQUIRED)

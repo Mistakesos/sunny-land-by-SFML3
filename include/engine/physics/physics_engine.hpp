@@ -45,7 +45,14 @@ public:
     void set_world_bounds(sf::FloatRect world_bounds) { world_bounds_ = std::move(world_bounds); }  ///< @brief 设置世界边界
     const std::optional<sf::FloatRect>& get_world_bounds() const { return world_bounds_; }          ///< @brief 获取世界边界
     ///< @brief 获取本帧检测到的所有GameObject碰撞对（此列表在每次update开始时清空）
-    const std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>& get_collision_pairs() { return collision_pairs_; }
+    const std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>& get_collision_pairs() {
+        return collision_pairs_; 
+    }
+    /// @brief 获取本帧检测到的所有瓦片触发事件。(此列表在每次 update 开始时清空)
+    const std::vector<std::pair<engine::object::GameObject*, engine::component::TileType>>& get_tile_trigger_events() const {
+        return tile_trigger_events_;
+    }
+
 
 private:
     void check_object_collisions();     ///< @brief 检测并处理对象之间的碰撞，并记录需要游戏逻辑处理的碰撞对
@@ -64,6 +71,11 @@ private:
      */
     float get_tile_height_at_width(float width, engine::component::TileType type, sf::Vector2f tile_size);
 
+    /**
+     * @brief 检测所有游戏对象与瓦片层的触发器类型瓦片碰撞，并记录触发事件。(位移处理完毕后再调用)
+     */ 
+    void check_tile_triggers();   
+    
     std::vector<engine::component::PhysicsComponent*> components_;              ///< @brief 注册的物理组件容器，非拥有指针
     std::vector<engine::component::TileLayerComponent*> collision_tile_layers_; ///< @brief 注册的碰撞瓦片图层容器
 
@@ -71,7 +83,10 @@ private:
     sf::Vector2f max_speed_ = {500.f, 500.f};                       ///< @brief 最大速度（像素/秒）
     std::optional<sf::FloatRect> world_bounds_;                     ///< @brief 世界边界，用于限制物体移动范围
 
-    // @brief 储存本帧发生的 GameObject 碰撞对（每次 update 开始时清空）
+    /// @brief 储存本帧发生的 GameObject 碰撞对（每次 update 开始时清空）
     std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>> collision_pairs_;
+    /// @brief 存储本帧发生的瓦片触发事件 (GameObject*, 触发的瓦片类型, 每次 update 开始时清空)
+    std::vector<std::pair<engine::object::GameObject*, engine::component::TileType>> tile_trigger_events_;
+
 };
 } // namespace engine::physics

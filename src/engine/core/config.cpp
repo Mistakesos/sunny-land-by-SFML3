@@ -80,10 +80,6 @@ void Config::from_json(const nlohmann::json& json) {
     if (json.contains("performance")) {
         const auto& perf_config = json["performance"];
         target_fps_ = perf_config.value("target_fps", target_fps_);
-        if (target_fps_ < 0) {
-            spdlog::warn("目标 FPS 不能为负数。设置为 0（无限制）。");
-            target_fps_ = 0;
-        }
     }
     if (json.contains("audio")) {
         const auto& audio_config = json["audio"];

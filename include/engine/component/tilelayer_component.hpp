@@ -97,7 +97,7 @@ public:
 
 protected:
     // 核心循环方法
-    void update(sf::Time delta, engine::core::Context&) override {}
+    void update(sf::Time, engine::core::Context&) override {}
     void render(engine::core::Context& context) override;
 
 private:

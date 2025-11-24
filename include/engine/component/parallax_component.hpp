@@ -33,7 +33,7 @@ public:
     
 protected:
     // 核心循环函数覆盖
-    void update(sf::Time delta, engine::core::Context& context) override {}     // 必须实现纯虚函数，留空
+    void update(sf::Time, engine::core::Context&) override {}     // 必须实现纯虚函数，留空
     void render(engine::core::Context& context) override;      
 
 private:

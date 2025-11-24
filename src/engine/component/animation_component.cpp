@@ -63,7 +63,7 @@ bool AnimationComponent::is_animation_finished() const {
     return animation_timer_ >= current_animation_obs_->get_total_duration();
 }
 
-void AnimationComponent::update(sf::Time delta, engine::core::Context& context) {
+void AnimationComponent::update(sf::Time delta, engine::core::Context&) {
     // 如果没有正在播放的动画，或者没有当前动画，或者没有精灵组件，或者当前动画没有帧，则直接返回
     if (!is_playing_ || !current_animation_obs_ || !sprite_component_obs_ || current_animation_obs_->is_empty()) {
         spdlog::trace("AnimationComponent 更新时没有正在播放的动画或精灵组件为空。");

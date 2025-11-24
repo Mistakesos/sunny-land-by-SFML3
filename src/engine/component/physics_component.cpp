@@ -6,7 +6,7 @@
 
 namespace engine::component {
 PhysicsComponent::PhysicsComponent(engine::object::GameObject* owner, engine::physics::PhysicsEngine* physics_engine, bool use_gravity, float mass) 
-    : Component(owner)
+    : Component{owner}
     , physics_engine_obs_{physics_engine}
     , mass_{mass >= 0.f ? mass : 1.f}
     , use_gravity_{use_gravity} {

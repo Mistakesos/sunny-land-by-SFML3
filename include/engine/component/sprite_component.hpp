@@ -29,7 +29,7 @@ public:
     bool get_hidden() { return is_hidden_; }                               ///< @brief 获取隐藏状态
     void set_hidden(bool hide) { is_hidden_ = hide; }                      ///< @brief 设置隐藏状态
 private:
-    void update(sf::Time delta, engine::core::Context& context) override {} ///< @brief 更新函数留空
+    void update(sf::Time, engine::core::Context&) override {}               ///< @brief 更新函数留空
     void render(engine::core::Context& context) override;                   ///< @brief 渲染函数需要覆盖
 
     TransformComponent* transform_obs_ = nullptr;                           ///< @brief 变换组件的观察指针

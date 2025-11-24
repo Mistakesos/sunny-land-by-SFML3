@@ -49,7 +49,7 @@ void WalkState::handle_input(engine::core::Context& context) {
     }
 }
 
-void WalkState::update(sf::Time delta_time, engine::core::Context& context) {
+void WalkState::update(sf::Time, engine::core::Context&) {
     // 限制最大速度
     auto physics_component = player_component_obs_->get_physics_component();
     auto max_speed = player_component_obs_->get_max_speed();

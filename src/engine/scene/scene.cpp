@@ -21,31 +21,23 @@ Scene::~Scene() = default;
 void Scene::update(sf::Time delta) {
     if (!is_initialized_) return;
 
-    // 先更新物理引擎
-    context_.get_physics_engine().update(delta);
-
-    // 更新相机
-    context_.get_camera().update(delta);
-    
-    bool need_remove = false;  // 设定一个标志，用于判断是否需要移除对象
-
     // 更新所有游戏对象，先略过需要移除的对象
     for (auto& obj : game_objects_) {
         if (obj && !obj->is_need_remove()) {
             obj->update(delta, context_);
         } else {
-            need_remove = true;
             if (!obj) spdlog::warn("尝试更新一个空的游戏对象指针。");
+            std::erase_if(game_objects_, [](const std::unique_ptr<engine::object::GameObject>& obj) {
+                return !obj || obj->is_need_remove();
+            });
         }
     }
 
-    if (need_remove) {
-        // 使用C++20新添加的erase_if删除需要移除的对象，比使用erase - remove_if更简洁
-        // NOTE: 用此语句则没有机会调用clean方法，因此要在update中先调用clean方法
-        std::erase_if(game_objects_, [](const std::unique_ptr<engine::object::GameObject>& obj) {
-            return !obj || obj->is_need_remove();
-        });
-    }
+    // 先更新物理引擎
+    context_.get_physics_engine().update(delta);
+
+    // 更新相机
+    context_.get_camera().update(delta);
 
     process_pending_additions();      // 处理待添加（延时添加）的游戏对象
 }

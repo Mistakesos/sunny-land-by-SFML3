@@ -46,7 +46,7 @@ public:
     void translate(const sf::Vector2f& offset) { position_ += offset; }           ///< @brief 移动（sf::Sprite::move)    
 
 private:
-    void update(sf::Time delta, engine::core::Context& context) override {} ///< @brief 覆盖纯虚函数，这里不需要实现
+    void update(sf::Time, engine::core::Context&) override {} ///< @brief 覆盖纯虚函数，这里不需要实现
     
     sf::Vector2f position_ = {0.f, 0.f};        ///< @brief 位置
     sf::Vector2f scale_ = {1.f, 1.f};           ///< @brief 缩放

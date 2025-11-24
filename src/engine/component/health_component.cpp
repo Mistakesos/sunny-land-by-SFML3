@@ -66,7 +66,7 @@ void HealthComponent::set_invincible(sf::Time duration) {
     }
 }
 
-void HealthComponent::update(sf::Time delta, engine::core::Context& context) {
+void HealthComponent::update(sf::Time delta, engine::core::Context&) {
     // 更新无敌状态计时器
     if (is_invincible_) {
         invincibility_timer_ -= delta;

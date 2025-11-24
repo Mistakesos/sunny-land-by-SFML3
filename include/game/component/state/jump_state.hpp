@@ -10,6 +10,6 @@ public:
 
 private:
     void handle_input(engine::core::Context& context) override;
-    void update(sf::Time delta_time, engine::core::Context& context) override;
+    void update(sf::Time, engine::core::Context&) override;
 };
 } // namespace game::component::state

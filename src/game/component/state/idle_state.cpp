@@ -18,7 +18,6 @@ IdleState::IdleState(PlayerComponent* player_component)
 
 void IdleState::handle_input(engine::core::Context& context) {
     auto input_manager = context.get_input_manager();
-    auto physics_component = player_component_obs_->get_physics_component();
     
     // 如果按下了左右移动键，则切换到 WalkState
     if (input_manager.is_action_held(Action::MoveLeft) || input_manager.is_action_held(Action::MoveRight)) {
@@ -31,7 +30,7 @@ void IdleState::handle_input(engine::core::Context& context) {
     }
 }
 
-void IdleState::update(sf::Time delta_time, engine::core::Context& context) {
+void IdleState::update(sf::Time, engine::core::Context&) {
     // 应用摩擦力(水平方向)
     auto physics_component = player_component_obs_->get_physics_component();
     auto friction_factor = player_component_obs_->get_friction_factor();

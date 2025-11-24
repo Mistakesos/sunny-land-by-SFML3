@@ -44,7 +44,7 @@ public:
 
 private:
     // 核心循环方法
-    void update(sf::Time delta, engine::core::Context& context) override {}
+    void update(sf::Time, engine::core::Context&) override {}
 
     TransformComponent* transform_obs_ = nullptr;           ///< @brief TransformComponent 的非拥有指针
 

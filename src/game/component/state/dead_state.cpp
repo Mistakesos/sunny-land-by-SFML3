@@ -22,12 +22,12 @@ DeadState::DeadState(PlayerComponent* player_component)
     }
 }
 
-void DeadState::handle_input(engine::core::Context& context) {
+void DeadState::handle_input(engine::core::Context&) {
     // 死亡状态下不处理输入
     return;
 }
 
-void DeadState::update(sf::Time delta_time, engine::core::Context& context) {
+void DeadState::update(sf::Time, engine::core::Context&) {
     // 死亡状态下不更新状态
     return;
 }

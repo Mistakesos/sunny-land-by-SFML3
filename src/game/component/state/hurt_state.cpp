@@ -24,12 +24,12 @@ HurtState::HurtState(PlayerComponent* player_component)
     spdlog::debug("PlayerComponent 进入 HurtState");
 }
 
-void HurtState::handle_input(engine::core::Context& context) {
+void HurtState::handle_input(engine::core::Context&) {
     // 硬直期间不能进行任何操控
     return;
 }
 
-void HurtState::update(sf::Time delta, engine::core::Context& context) {
+void HurtState::update(sf::Time delta, engine::core::Context&) {
     stunned_timer_ += delta;
     // --- 两种情况离开受伤（硬直）状态：---
     // 1. 落地

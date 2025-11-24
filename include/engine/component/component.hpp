@@ -33,9 +33,9 @@ public:
 
 protected:
     // 关键循环函数（未来将其中一个改为 = 0 以实现纯虚函数
-    virtual void handle_input(engine::core::Context& context) {}                ///< @brief 处理输入
-    virtual void update(sf::Time delta, engine::core::Context& context) = 0;    ///< @brief 更新
-    virtual void render(engine::core::Context& context) {}                      ///< @brief 渲染
+    virtual void handle_input(engine::core::Context&) {}                ///< @brief 处理输入
+    virtual void update(sf::Time, engine::core::Context&) = 0;          ///< @brief 更新
+    virtual void render(engine::core::Context&) {}                      ///< @brief 渲染
 
     engine::object::GameObject* owner_ = nullptr;           ///< @brief 指向该组件的 GameObject
 };
