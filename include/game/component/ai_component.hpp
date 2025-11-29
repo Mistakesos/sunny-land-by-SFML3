@@ -12,6 +12,7 @@ namespace engine::component {
     class PhysicsComponent;
     class ColliderComponent;
     class AnimationComponent;
+    class SpriteComponent;
 } // namespace engine::component
 
 namespace game::component {
@@ -41,6 +42,7 @@ public:
     engine::component::TransformComponent* get_transform_component() const { return transform_component_obs_; }
     engine::component::PhysicsComponent* get_physics_component() const { return physics_component_obs_; }
     engine::component::ColliderComponent* get_collider_component() const { return collider_component_obs_; }
+    engine::component::SpriteComponent* get_sprite_component() const { return sprite_component_obs_; }
     engine::component::AnimationComponent* get_animation_component() const { return animation_component_obs_; }
 
 private:
@@ -54,6 +56,7 @@ private:
     engine::component::TransformComponent* transform_component_obs_ = nullptr;
     engine::component::PhysicsComponent* physics_component_obs_ = nullptr;
     engine::component::ColliderComponent* collider_component_obs_ = nullptr;
+    engine::component::SpriteComponent* sprite_component_obs_ = nullptr;
     engine::component::AnimationComponent* animation_component_obs_ = nullptr;
 };
 } // namespace game::component

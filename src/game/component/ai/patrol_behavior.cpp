@@ -47,9 +47,7 @@ void PatrolBehavior::update(sf::Time) {
     }
 
     // 更新精灵翻转(向左移动时，不翻转)
-    const auto& size = collider_component->get_world_aabb().size;
     const auto& scale = transform_component->get_scale();
-    transform_component->set_origin({size.x / 2.f, size.y});
     if (moving_right_) {
         transform_component->set_scale({-std::abs(scale.x), scale.y});
     } else {

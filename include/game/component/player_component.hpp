@@ -76,12 +76,6 @@ private:
     // 核心循环函数
     void handle_input(engine::core::Context& context) override;
     void update(sf::Time delta, engine::core::Context& context) override;
-    void render(engine::core::Context& context) override {
-        auto render = context.get_renderer();
-        auto aabb = collider_component_obs_->get_world_aabb();
-        spdlog::debug("aabb pos {}, {}", aabb.position.x, aabb.position.y);
-        render.draw_rect(aabb, sf::Color::Red);
-    }                      ///< @brief 渲染
     
     engine::component::TransformComponent* transform_component_obs_ = nullptr; // 指向 TransformComponent 的非拥有指针
     engine::component::SpriteComponent* sprite_component_obs_ = nullptr;

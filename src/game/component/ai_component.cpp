@@ -4,6 +4,7 @@
 #include "transform_component.hpp"
 #include "physics_component.hpp"
 #include "collider_component.hpp"
+#include "sprite_component.hpp"
 #include "animation_component.hpp"
 #include "health_component.hpp"
 #include <spdlog/spdlog.h>
@@ -15,7 +16,13 @@ AIComponent::AIComponent(engine::object::GameObject* owner)
     transform_component_obs_ = owner_->get_component<engine::component::TransformComponent>();
     physics_component_obs_ = owner_->get_component<engine::component::PhysicsComponent>();
     collider_component_obs_ = owner_->get_component<engine::component::ColliderComponent>();
+    sprite_component_obs_ = owner_->get_component<engine::component::SpriteComponent>();
     animation_component_obs_ = owner_->get_component<engine::component::AnimationComponent>();
+
+    // 处理翻转时，按底边中心为原点，处理位置时也一样
+    auto& sprite = sprite_component_obs_->get_sprite();
+    const auto& local_bounds = sprite.getLocalBounds();
+    transform_component_obs_->set_origin({local_bounds.size.x / 2.f, local_bounds.size.y});
 
     // 检查是否所有必需的组件都存在
     if (!transform_component_obs_ || !physics_component_obs_ || !collider_component_obs_ || !animation_component_obs_) {

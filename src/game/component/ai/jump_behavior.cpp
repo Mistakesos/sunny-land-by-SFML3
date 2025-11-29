@@ -64,10 +64,7 @@ void JumpBehavior::update(sf::Time delta_time) {
             animation_component->play_animation("jump");                    // 播放跳跃动画
 
             // 更新精灵翻转
-            const auto& size = collider_component->get_world_aabb().size;
             const auto& scale = transform_component->get_scale();
-            transform_component->set_origin({size.x / 2.f, size.y});
-
             if (jumping_right_) {
                 transform_component->set_scale({-std::abs(scale.x), scale.y});
             } else {

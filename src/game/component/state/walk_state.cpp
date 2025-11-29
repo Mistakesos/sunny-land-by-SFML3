@@ -24,19 +24,13 @@ void WalkState::handle_input(engine::core::Context& context) {
     auto input_manager = context.get_input_manager();
     auto physics_component = player_component_obs_->get_physics_component();
     auto transform_component = player_component_obs_->get_transform_component();
-    auto collider_component = player_component_obs_->get_collider_component();
 
     // 如果按下“jump”则切换到 JumpState
     if (input_manager.is_action_pressed(Action::Jump)) {
         transition<JumpState>();
     }
     
-    auto size = collider_component->get_world_aabb().size;
     const auto& scale = transform_component->get_scale();
-    size.componentWiseDiv(scale);
-    transform_component->set_origin({size.x / 2.f, size.y});
-    auto pos = transform_component->get_position();
-    spdlog::debug("transform_position: {}, {}", pos.x, pos.y);
     // 步行状态可以左右移动
     if (input_manager.is_action_held(Action::MoveLeft)) {
         if (physics_component->velocity_.x > 0.f) {

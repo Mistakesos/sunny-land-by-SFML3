@@ -23,10 +23,10 @@ PlayerComponent::PlayerComponent(engine::object::GameObject* owner)
     animation_component_obs_ = owner_->get_component<engine::component::AnimationComponent>();
     health_component_obs_ = owner_->get_component<engine::component::HealthComponent>();
 
-    // 设为以脚底中心为原点
-    auto size = collider_component_obs_->get_world_aabb().size;
-    transform_component_obs_->set_origin({size.x, size.y});
-    transform_component_obs_->set_scale({2.f, 2.f});
+    // 处理翻转时，按底边中心为原点，处理位置时也一样
+    auto& sprite = sprite_component_obs_->get_sprite();
+    const auto& local_bounds = sprite.getLocalBounds();
+    transform_component_obs_->set_origin({local_bounds.size.x / 2.f, local_bounds.size.y});
     
     // 检查必要组件是否存在
     if (!transform_component_obs_ || !physics_component_obs_ || !sprite_component_obs_) {

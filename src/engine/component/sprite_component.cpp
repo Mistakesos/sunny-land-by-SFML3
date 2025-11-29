@@ -34,12 +34,12 @@ void SpriteComponent::render(engine::core::Context& context) {
 
     // 获取变换信息（考虑偏移量）
     const sf::Vector2f& origin = transform_obs_->get_origin();
-    const sf::Vector2f& pos = transform_obs_->get_position();
+    const sf::Vector2f& position = transform_obs_->get_position();
     const sf::Vector2f& scale = transform_obs_->get_scale();
     sf::Angle rotation = transform_obs_->get_rotation();
 
     sprite_.setOrigin(origin);
-    sprite_.setPosition(pos);
+    sprite_.setPosition(position);
     sprite_.setScale(scale);
     sprite_.setRotation(rotation);
     
