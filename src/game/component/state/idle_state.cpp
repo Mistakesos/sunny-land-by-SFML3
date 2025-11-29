@@ -52,7 +52,7 @@ void IdleState::update(sf::Time, engine::core::Context&) {
     physics_component->velocity_.x *= friction_factor;
 
     // 如果离地，则切换到 FallState
-    if (!physics_component->has_collided_below()) {
+    if (!player_component_obs_->is_on_ground()) {
         transition<FallState>();
     }
 }

@@ -66,7 +66,7 @@ void WalkState::update(sf::Time, engine::core::Context&) {
     physics_component->velocity_.x = std::clamp(physics_component->velocity_.x, -max_speed, max_speed);
 
     // 如果离地，则切换到 FallState
-    if (!physics_component->has_collided_below()) {
+    if (!player_component_obs_->is_on_ground()) {
         transition<FallState>();
     }
 }

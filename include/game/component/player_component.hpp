@@ -74,6 +74,8 @@ public:
     ///< @brief 当有下一个状态时move给当前状态
     void try_change_state();
     
+    bool is_on_ground() const;                              ///< @brief 检查玩家是否在地面上(考虑了Coyote Time)
+    
 private:
     // 核心循环函数
     void handle_input(engine::core::Context& context) override;
@@ -90,14 +92,22 @@ private:
     std::unique_ptr<state::PlayerState> current_state_;
     bool is_dead_ = false;
 
-    // --- 移动相关参数 ---
+    /// <--- 移动相关参数 ---> ///
     float move_force_ = 200.f;         ///< @brief 水平移动力
     float max_speed_ = 120.f;          ///< @brief 最大移动速度 (像素/秒)
     float climb_speed_ = 100.f;        ///< @brief 爬梯子速度 (像素/秒)
     float friction_factor_ = 0.6f;     ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
     float jump_vel_ = 350.f;           ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
 
-    // --- 属性相关参数 ---
+    /// ---> 属性相关参数 <--- ///
     sf::Time stunned_duration_ = sf::seconds(0.4f); ///< @brief 玩家被击中后的硬直时间（单位：秒）
+
+    // 土狼时间(Coyote Time): 允许玩家在离地后短暂时间内仍然可以跳跃
+    static constexpr sf::Time COYOTE_TIME = sf::seconds(0.1f);      ///< @brief Coyote Time (单位：秒）
+    sf::Time coyote_timer_ = sf::Time::Zero;                        ///< @brief Coyote Time 计时器
+
+    // 无敌闪烁时间
+    static constexpr sf::Time FLASH_INTERVAL = sf::seconds(0.1f);   ///< @brief 闪烁间隔时间（单位：秒）
+    sf::Time flash_timer_ = sf::Time::Zero;                         ///< @brief 闪烁计时器，用于无敌状态下的闪烁效果
 };
 } // namespace game::component

@@ -26,7 +26,7 @@ public:
     ~SpriteComponent() override = default;
 
     sf::Sprite& get_sprite() { return sprite_; }                           ///< @brief 获取精灵
-    bool get_hidden() { return is_hidden_; }                               ///< @brief 获取隐藏状态
+    bool is_hidden() { return is_hidden_; }                               ///< @brief 获取隐藏状态
     void set_hidden(bool hide) { is_hidden_ = hide; }                      ///< @brief 设置隐藏状态
 private:
     void update(sf::Time, engine::core::Context&) override {}               ///< @brief 更新函数留空

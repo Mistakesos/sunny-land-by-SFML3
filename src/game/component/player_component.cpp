@@ -70,6 +70,10 @@ void PlayerComponent::try_change_state() {
     }
 }
 
+bool PlayerComponent::is_on_ground() const {
+    return coyote_timer_ <= COYOTE_TIME || physics_component_obs_->has_collided_below();
+}
+
 void PlayerComponent::handle_input(engine::core::Context& context) {
     if (current_state_) current_state_->handle_input(context);
 
@@ -79,6 +83,31 @@ void PlayerComponent::handle_input(engine::core::Context& context) {
 void PlayerComponent::update(sf::Time delta, engine::core::Context& context) {
     if (current_state_) current_state_->update(delta, context);
 
+    // 一旦离地，开始计时 Coyote Timer
+    if (!physics_component_obs_->has_collided_below()) {
+        coyote_timer_ += delta;
+    } else {    // 如果碰撞到地面，重置 Coyote Timer
+        coyote_timer_ = sf::Time::Zero; 
+    }
+
+    // 如果处于无敌状态，则进行闪烁
+    if (health_component_obs_->is_invincible()) {
+        flash_timer_ += delta;         // 闪烁计时器增加
+        if (flash_timer_.asSeconds() >= 2.f * FLASH_INTERVAL.asSeconds()) {
+            flash_timer_ -= sf::seconds(2.f * FLASH_INTERVAL.asSeconds());    // 闪烁计时器在 0～2倍闪烁间隔 中循环
+        }
+        // 一半时间可见，一半时间不可见。
+        if (flash_timer_ < FLASH_INTERVAL) {
+            sprite_component_obs_->set_hidden(true);
+        } else {
+            sprite_component_obs_->set_hidden(false);
+        }
+    }
+    // 非无敌状态时确保精灵可见
+    else if (sprite_component_obs_->is_hidden()) {
+        sprite_component_obs_->set_hidden(false);
+    }
+    
     try_change_state();
 }
 } // namespace game::component
