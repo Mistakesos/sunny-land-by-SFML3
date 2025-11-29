@@ -207,6 +207,21 @@ void PhysicsEngine::resolve_tile_collisions(engine::component::PhysicsComponent*
                 new_obj_pos.y = tile_y * layer->get_tile_size().y - obj_size.y;
                 pc->velocity_.y = 0.f;
                 pc->set_collided_below(true);
+            } else if (tile_type_left == engine::component::TileType::Ladder && tile_type_right == engine::component::TileType::Ladder) {
+                // 如果两个角点都位于梯子上，则判断是不是处在梯子顶层
+                auto tile_type_up_l = layer->get_tile_type_at({tile_x, tile_y - 1});       // 检测左角点上方瓦片类型
+                auto tile_type_up_r = layer->get_tile_type_at({tile_x_right, tile_y - 1}); // 检测右角点上方瓦片类型
+                // 如果上方不是梯子，证明处在梯子顶层
+                if (tile_type_up_r != engine::component::TileType::Ladder && tile_type_up_l != engine::component::TileType::Ladder) {
+                    // 通过是否使用重力来区分是否处于攀爬状态。
+                    if (pc->is_use_gravity()) {             // 非攀爬状态
+                        pc->set_on_top_ladder(true);        // 设置在梯子顶层标志
+                        pc->set_collided_below(true);       // 设置下方碰撞标志
+                        // 让物体贴着梯子顶层位置(与SOLID情况相同)
+                        new_obj_pos.y = tile_y * layer->get_tile_size().y - obj_size.y;
+                        pc->velocity_.y = 0.0f;
+                    }    // 攀爬状态，不做任何处理
+                }
             } else {
                 // 检测斜坡瓦片（下方两个角点都要检测）
                 auto width_left = obj_pos.x - tile_x * tile_size.x;

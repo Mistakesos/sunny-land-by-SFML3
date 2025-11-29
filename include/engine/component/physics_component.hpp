@@ -57,6 +57,7 @@ public:
         collided_left_ = false;
         collided_right_ = false;
         collided_ladder_ = false;
+        is_on_top_ladder_ = false;
     }
 
     void set_collided_below(bool collided) { collided_below_ = collided; }    ///< @brief 设置下方碰撞标志
@@ -64,12 +65,14 @@ public:
     void set_collided_left(bool collided) { collided_left_ = collided; }      ///< @brief 设置左方碰撞标志
     void set_collided_right(bool collided) { collided_right_ = collided; }    ///< @brief 设置右方碰撞标志
     void set_collided_ladder(bool collided) { collided_ladder_ = collided; }  ///< @brief 设置梯子碰撞标志
+    void set_on_top_ladder(bool on_top) { is_on_top_ladder_ = on_top; }       ///< @brief 设置是否在梯子顶层
     
     bool has_collided_below() const { return collided_below_; }       ///< @brief 检查是否与下方发生碰撞
     bool has_collided_above() const { return collided_above_; }       ///< @brief 检查是否与上方发生碰撞
     bool has_collided_left() const { return collided_left_; }         ///< @brief 检查是否与左方发生碰撞
     bool has_collided_right() const { return collided_right_; }       ///< @brief 检查是否与右方发生碰撞    
     bool has_collided_ladder() const { return collided_ladder_; }     ///< @brief 检查是否与梯子发生碰撞
+    bool is_on_top_ladder() const { return is_on_top_ladder_; }       ///< @brief 检查是否在梯子顶层
 
 private:
     // 核心循环方法
@@ -92,6 +95,7 @@ private:
     bool collided_above_ = false;
     bool collided_left_ = false;
     bool collided_right_ = false;
-    bool collided_ladder_ = false;
+    bool collided_ladder_ = false;      ///< @brief 是否与梯子发生碰撞
+    bool is_on_top_ladder_ = false;     ///< @brief 是否在梯子顶层（梯子上方没有瓦片）
 };
 } // namespace engine::component
