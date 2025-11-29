@@ -354,8 +354,10 @@ engine::component::TileType LevelLoader::get_tile_type(const nlohmann::json& til
             } else if (property.contains("name") && property["name"] == "hazard") {
                 auto is_hazard = property.value("value", false);
                 return is_hazard ? engine::component::TileType::Hazard : engine::component::TileType::Normal;
+            } else if (property.contains("name") && property["name"] == "ladder") {
+                auto is_ladder = property.value("value", false);
+                return is_ladder ? engine::component::TileType::Ladder : engine::component::TileType::Normal;
             }
-
             // TODO: 可以在这里添加更多自定义属性处理逻辑
         }
     }

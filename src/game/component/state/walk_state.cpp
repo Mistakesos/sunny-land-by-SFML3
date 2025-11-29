@@ -2,6 +2,7 @@
 #include "idle_state.hpp"
 #include "jump_state.hpp"
 #include "fall_state.hpp"
+#include "climb_state.hpp"
 #include "sprite_component.hpp"
 #include "transform_component.hpp"
 #include "collider_component.hpp"
@@ -24,6 +25,12 @@ void WalkState::handle_input(engine::core::Context& context) {
     auto input_manager = context.get_input_manager();
     auto physics_component = player_component_obs_->get_physics_component();
     auto transform_component = player_component_obs_->get_transform_component();
+
+    // 如果按下上下键，且与梯子重合，则切换到 ClimbState
+    if (physics_component->has_collided_ladder() &&
+        (input_manager.is_action_held(Action::MoveUp))) {
+        transition<ClimbState>();
+    }
 
     // 如果按下“jump”则切换到 JumpState
     if (input_manager.is_action_pressed(Action::Jump)) {

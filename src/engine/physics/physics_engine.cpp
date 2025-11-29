@@ -385,6 +385,9 @@ void PhysicsEngine::check_tile_triggers() {
                     // 未来可以添加更多触发器类型的瓦片，目前只有 HAZARD 类型
                     if (tile_type == engine::component::TileType::Hazard) {
                         triggers_set.insert(tile_type);     // 记录触发事件，set 保证每个瓦片类型只记录一次
+                    } else if (tile_type == engine::component::TileType::Ladder) {
+                        // 梯子类型不必记录到事件容器，物理引擎自己处理
+                        pc->set_collided_ladder(true);
                     }
                 }
             }
