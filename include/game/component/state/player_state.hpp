@@ -31,6 +31,11 @@ public:
     void play_animation(const std::string& animation_name);      ///< @brief 播放指定名称的动画，使用 AnimationComponent 的方法
 
 protected:
+    /**
+     * @brief 过渡到下一个状态，设置初始状态后无需重复传入 PlayerComponent 指针
+     * @param Next 下一个状态类名
+     * @param Args 下一个状态的构造参数
+     */
     template<typename Next, typename... Args>
     void transition(Args&&... args) {
         next_state_ = std::make_unique<Next>(player_component_obs_, std::forward<Args>(args)...);

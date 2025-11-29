@@ -4,6 +4,8 @@
 #include "fall_state.hpp"
 #include "sprite_component.hpp"
 #include "transform_component.hpp"
+#include "collider_component.hpp"
+#include "animation_component.hpp"
 #include "player_component.hpp"
 #include "physics_component.hpp"
 #include "input_manager.hpp"
@@ -22,12 +24,19 @@ void WalkState::handle_input(engine::core::Context& context) {
     auto input_manager = context.get_input_manager();
     auto physics_component = player_component_obs_->get_physics_component();
     auto transform_component = player_component_obs_->get_transform_component();
+    auto collider_component = player_component_obs_->get_collider_component();
 
     // 如果按下“jump”则切换到 JumpState
     if (input_manager.is_action_pressed(Action::Jump)) {
         transition<JumpState>();
     }
     
+    auto size = collider_component->get_world_aabb().size;
+    const auto& scale = transform_component->get_scale();
+    size.componentWiseDiv(scale);
+    transform_component->set_origin({size.x / 2.f, size.y});
+    auto pos = transform_component->get_position();
+    spdlog::debug("transform_position: {}, {}", pos.x, pos.y);
     // 步行状态可以左右移动
     if (input_manager.is_action_held(Action::MoveLeft)) {
         if (physics_component->velocity_.x > 0.f) {
@@ -35,14 +44,14 @@ void WalkState::handle_input(engine::core::Context& context) {
         }
         // 添加向左的水平力
         physics_component->add_force({-player_component_obs_->get_move_force(), 0.f});
-        transform_component->set_scale({-1.f, 1.f});       // 向左移动时翻转
+        transform_component->set_scale({-std::abs(scale.x), scale.y});                  // 向左移动时翻转
     } else if (input_manager.is_action_held(Action::MoveRight)) {
         if (physics_component->velocity_.x < 0.f) {
             physics_component->velocity_.x = 0.f;           // 如果当前速度是向左的，则先减速到0
         }
         // 添加向右的水平力
         physics_component->add_force({player_component_obs_->get_move_force(), 0.f});
-        transform_component->set_scale({1.f, 1.f});         // 向右移动时重置翻转
+        transform_component->set_scale({std::abs(scale.x), scale.y});         // 向右移动时重置翻转
     } else {
         // 如果没有按下左右移动键，则切换到 IdleState
         transition<IdleState>();

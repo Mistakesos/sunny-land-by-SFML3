@@ -2,6 +2,11 @@
 #include "component.hpp"
 #include "game_object.hpp"
 #include "player_state.hpp"
+#include "render.hpp"
+#include "camera.hpp"
+#include "context.hpp"
+#include "collider_component.hpp"
+#include <SFML/Graphics.hpp>
 #include <memory>
 #include <typeindex>
 #include <utility>
@@ -13,6 +18,7 @@ namespace engine::input {
 namespace engine::component {
     class TransformComponent;
     class PhysicsComponent;
+    class ColliderComponent;
     class SpriteComponent;
     class AnimationComponent;
     class HealthComponent;
@@ -46,6 +52,7 @@ public:
     engine::component::TransformComponent* get_transform_component() const { return transform_component_obs_; }
     engine::component::SpriteComponent* get_sprite_component() const { return sprite_component_obs_; }
     engine::component::PhysicsComponent* get_physics_component() const { return physics_component_obs_; }
+    engine::component::ColliderComponent* get_collider_component() const { return collider_component_obs_; }
     engine::component::AnimationComponent* get_animation_component() const { return animation_component_obs_; }
     engine::component::HealthComponent* get_health_component() const { return health_component_obs_; }
 
@@ -62,15 +69,24 @@ public:
     void set_stunned_duration(sf::Time duration) { stunned_duration_ = duration; }    ///< @brief 设置硬直时间
     sf::Time get_stunned_duration() const { return stunned_duration_; }               ///< @brief 获取硬直时间
 
-
+    ///< @brief 当有下一个状态时move给当前状态
+    void try_change_state();
+    
 private:
     // 核心循环函数
     void handle_input(engine::core::Context& context) override;
     void update(sf::Time delta, engine::core::Context& context) override;
+    void render(engine::core::Context& context) override {
+        auto render = context.get_renderer();
+        auto aabb = collider_component_obs_->get_world_aabb();
+        spdlog::debug("aabb pos {}, {}", aabb.position.x, aabb.position.y);
+        render.draw_rect(aabb, sf::Color::Red);
+    }                      ///< @brief 渲染
     
     engine::component::TransformComponent* transform_component_obs_ = nullptr; // 指向 TransformComponent 的非拥有指针
     engine::component::SpriteComponent* sprite_component_obs_ = nullptr;
     engine::component::PhysicsComponent* physics_component_obs_ = nullptr;
+    engine::component::ColliderComponent* collider_component_obs_ = nullptr;
     engine::component::AnimationComponent* animation_component_obs_ = nullptr;
     engine::component::HealthComponent* health_component_obs_ = nullptr;
 

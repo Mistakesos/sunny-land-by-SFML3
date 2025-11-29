@@ -8,6 +8,7 @@
 #include "sprite_component.hpp"
 #include "animation_component.hpp"
 #include "health_component.hpp"
+#include "collider_component.hpp"
 #include "game_object.hpp"
 #include <spdlog/spdlog.h>
 
@@ -17,14 +18,15 @@ PlayerComponent::PlayerComponent(engine::object::GameObject* owner)
     // 获取必要的组件
     transform_component_obs_ = owner_->get_component<engine::component::TransformComponent>();
     physics_component_obs_ = owner_->get_component<engine::component::PhysicsComponent>();
+    collider_component_obs_ = owner_->get_component<engine::component::ColliderComponent>();
     sprite_component_obs_ = owner_->get_component<engine::component::SpriteComponent>();
     animation_component_obs_ = owner_->get_component<engine::component::AnimationComponent>();
-    health_component_obs_ = owner->get_component<engine::component::HealthComponent>();
+    health_component_obs_ = owner_->get_component<engine::component::HealthComponent>();
 
     // 设为以脚底中心为原点
-    sf::Sprite& sprite = sprite_component_obs_->get_sprite();
-    auto size = sprite.getLocalBounds().size;
-    transform_component_obs_->set_origin({size.x / 2.f, size.y});
+    auto size = collider_component_obs_->get_world_aabb().size;
+    transform_component_obs_->set_origin({size.x, size.y});
+    transform_component_obs_->set_scale({2.f, 2.f});
     
     // 检查必要组件是否存在
     if (!transform_component_obs_ || !physics_component_obs_ || !sprite_component_obs_) {
@@ -62,20 +64,21 @@ bool PlayerComponent::take_damage(int damage) {
     return true;
 }
 
-void PlayerComponent::handle_input(engine::core::Context& context) {
-    if (current_state_) current_state_->handle_input(context);
-
-    // 只检查一次
+void PlayerComponent::try_change_state() {
     if (current_state_->next_state_) {
         current_state_ = std::move(current_state_->next_state_);
     }
 }
 
+void PlayerComponent::handle_input(engine::core::Context& context) {
+    if (current_state_) current_state_->handle_input(context);
+
+    try_change_state();
+}
+
 void PlayerComponent::update(sf::Time delta, engine::core::Context& context) {
     if (current_state_) current_state_->update(delta, context);
 
-    if (current_state_->next_state_) {
-        current_state_ = std::move(current_state_->next_state_);
-    }
+    try_change_state();
 }
 } // namespace game::component

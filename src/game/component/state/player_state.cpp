@@ -7,6 +7,9 @@
 namespace game::component::state {
 PlayerState::PlayerState(PlayerComponent* player_component)
     : player_component_obs_{player_component} {
+    if (!player_component_obs_) {
+        spdlog::error("出现错误！玩家状态初始化时需要传入一个PlayerComponent指针！");
+    }
 }
 
 void PlayerState::play_animation(const std::string& animation_name) {

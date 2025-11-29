@@ -22,14 +22,15 @@ void FallState::handle_input(engine::core::Context& context) {
     auto transform_component = player_component_obs_->get_transform_component();
 
     // 下落状态下可以左右移动
+    const auto& scale = transform_component->get_scale();
     if (input_manager.is_action_held(Action::MoveLeft)) {
         if (physics_component->velocity_.x > 0.f) physics_component->velocity_.x = 0.f;
         physics_component->add_force({-player_component_obs_->get_move_force(), 0.f});
-        transform_component->set_scale({-1.f, 1.f});
+        transform_component->set_scale({-std::abs(scale.x), scale.y});
     } else if (input_manager.is_action_held(Action::MoveRight)) {
         if (physics_component->velocity_.x < 0.f) physics_component->velocity_.x = 0.f;
         physics_component->add_force({player_component_obs_->get_move_force(), 0.f});
-        transform_component->set_scale({1.f, 1.f});
+        transform_component->set_scale({std::abs(scale.x), scale.y});
     }
 }
 
