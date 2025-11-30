@@ -2,6 +2,7 @@
 #include "resource_manager.hpp"
 #include "physics_engine.hpp"
 #include "animation.hpp"
+#include "audio_player.hpp"
 #include "context.hpp"
 #include "game_object.hpp"
 #include "camera.hpp"
@@ -38,6 +39,12 @@ GameScene::GameScene(std::string_view name, engine::core::Context& context, engi
         return;
     }
     
+    // 设置音量
+    context_.get_audio_player().set_music_volume(20.f);  // 设置背景音乐音量为20%
+    context_.get_audio_player().set_sound_volume(50.f);  // 设置音效音量为50%
+    // 播放背景音乐 (默认循环)
+    context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
+
     spdlog::trace("GameScene 构造成功");
 }
 
@@ -219,6 +226,10 @@ void GameScene::player_vs_enemy_collision(engine::object::GameObject* player, en
             }
             // 玩家跳起效果
             player->get_component<engine::component::PhysicsComponent>()->velocity_.y = -300.f;  // 向上跳起
+
+            // 播放音效 (此音效完全可以放在玩家的音频组件中，这里示例另一种用法：直接用AudioPlayer播放，传入文件路径)
+            context_.get_audio_player().play_sound("assets/audio/punch2a.mp3");
+
         } else {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->get_name(), player->get_name());
             player->get_component<game::component::PlayerComponent>()->take_damage(1);
@@ -236,6 +247,7 @@ void GameScene::player_vs_item_collision(engine::object::GameObject* player, eng
     item->set_need_remove(true);  // 标记道具为待删除状态
     auto item_aabb = item->get_component<engine::component::ColliderComponent>()->get_world_aabb();
     create_effect(item_aabb.position + item_aabb.size / 2.f, item->get_tag());  // 创建特效
+    context_.get_audio_player().play_sound("assets/audio/poka01.mp3");          // 播放音效
 }
 
 void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {

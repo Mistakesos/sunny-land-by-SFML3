@@ -21,10 +21,10 @@ public:
      * @param jump_interval 两次跳跃之间的间隔时间。
      */
     JumpBehavior(AIComponent* ai_component
-                , float min_x
-                , float max_x
-                , sf::Vector2f jump_vel = sf::Vector2f(100.f, -300.f)
-                , sf::Time jump_interval = sf::seconds(2.f)
+               , float min_x
+               , float max_x
+               , sf::Vector2f jump_vel = sf::Vector2f(100.f, -300.f)
+               , sf::Time jump_interval = sf::seconds(2.f)
     );
     ~JumpBehavior() override = default;
 

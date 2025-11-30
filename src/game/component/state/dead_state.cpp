@@ -2,6 +2,7 @@
 #include "player_component.hpp"
 #include "physics_component.hpp"
 #include "collider_component.hpp"
+#include "audio_component.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <spdlog/spdlog.h>
 
@@ -9,8 +10,13 @@ namespace game::component::state {
 DeadState::DeadState(PlayerComponent* player_component)
     : PlayerState{player_component} {
     spdlog::debug("玩家进入死亡状态。");
+    
     play_animation("hurt");  // 播放死亡(受伤)动画
 
+    if (auto* audio_component = player_component_obs_->get_audio_component(); audio_component) {
+        audio_component->play_sound("dead");  // 播放死亡音效
+    }
+    
     // 应用击退力（只向上）
     auto physics_component = player_component_obs_->get_physics_component();
     physics_component->velocity_ = sf::Vector2f(0.f, -200.f);  // 向上击退

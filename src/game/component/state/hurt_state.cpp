@@ -5,12 +5,18 @@
 #include "player_component.hpp"
 #include "transform_component.hpp"
 #include "physics_component.hpp"
+#include "audio_component.hpp"
 #include <SFML/System/Vector2.hpp>
 
 namespace game::component::state {
 HurtState::HurtState(PlayerComponent* player_component)
     : PlayerState{player_component} {
     play_animation("hurt");  // 播放受伤动画
+
+    if (auto* audio_component = player_component_obs_->get_audio_component(); audio_component) {
+        audio_component->play_sound("hurt");  // 播放受伤音效
+    }
+
     // --- 造成击退效果 ---
     auto physics_component = player_component_obs_->get_physics_component();
     auto transform_component = player_component_obs_->get_transform_component();

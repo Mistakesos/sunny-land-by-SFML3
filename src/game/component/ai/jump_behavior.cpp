@@ -4,14 +4,15 @@
 #include "transform_component.hpp"
 #include "collider_component.hpp"
 #include "animation_component.hpp"
+#include "audio_component.hpp"
 #include <spdlog/spdlog.h>
 
 namespace game::component::ai {
 JumpBehavior::JumpBehavior(AIComponent* ai_component
-                           , float min_x
-                           , float max_x
-                           , sf::Vector2f jump_vel
-                           , sf::Time jump_interval) 
+                         , float min_x
+                         , float max_x
+                         , sf::Vector2f jump_vel
+                         , sf::Time jump_interval) 
     : AIBehavior{ai_component}
     , patrol_min_x_{min_x}
     , patrol_max_x_{max_x}
@@ -35,8 +36,9 @@ void JumpBehavior::update(sf::Time delta_time) {
     // 获取必要的组件
     auto* physics_component = ai_component_obs_->get_physics_component();
     auto* transform_component = ai_component_obs_->get_transform_component();
-    auto* collider_component = ai_component_obs_->get_collider_component();
     auto* animation_component = ai_component_obs_->get_animation_component();
+    auto* audio_component = ai_component_obs_->get_audio_component();
+
     if (!physics_component || !transform_component || !animation_component) {
         spdlog::error("JumpBehavior：缺少必要的组件，无法执行跳跃行为。");
         return;
@@ -44,6 +46,10 @@ void JumpBehavior::update(sf::Time delta_time) {
 
     auto is_on_ground = physics_component->has_collided_below();      // 着地标志
     if (is_on_ground) {    // 如果在地面上
+        if (audio_component && jump_timer_ == sf::Time::Zero) {      // 刚刚落地时（进入idle状态），如果有音频组件，播放音效
+            audio_component->play_sound("cry", true);       // 使用空间音频
+        }
+
         jump_timer_ += delta_time;              // 增加跳跃计时器
         physics_component->velocity_.x = 0.f;   // 停止水平移动（否则会有惯性）
 

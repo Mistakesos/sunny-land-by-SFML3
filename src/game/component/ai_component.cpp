@@ -7,6 +7,7 @@
 #include "sprite_component.hpp"
 #include "animation_component.hpp"
 #include "health_component.hpp"
+#include "audio_component.hpp"
 #include <spdlog/spdlog.h>
 
 namespace game::component {
@@ -18,6 +19,7 @@ AIComponent::AIComponent(engine::object::GameObject* owner)
     collider_component_obs_ = owner_->get_component<engine::component::ColliderComponent>();
     sprite_component_obs_ = owner_->get_component<engine::component::SpriteComponent>();
     animation_component_obs_ = owner_->get_component<engine::component::AnimationComponent>();
+    audio_component_obs_ = owner_->get_component<engine::component::AudioComponent>();
 
     // 处理翻转时，按底边中心为原点，处理位置时也一样
     auto& sprite = sprite_component_obs_->get_sprite();

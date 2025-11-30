@@ -41,7 +41,14 @@ private:
      * @param sprite_size 每一帧动画的尺寸
      */
     void add_animation(const nlohmann::json& anim_json, engine::component::AnimationComponent* ac, const sf::Vector2i& sprite_size);
-    
+
+    /**
+     * @brief 添加音效到指定的 AudioComponent。
+     * @param sound_json 音效json数据（自定义）
+     * @param audio_component AudioComponent 指针（音效添加到此组件）
+     */
+    void add_sound(const nlohmann::json& sound_json, engine::component::AudioComponent* audio_component);
+
     /**
      * @brief 获取瓦片属性
      * @tparam T 属性类型

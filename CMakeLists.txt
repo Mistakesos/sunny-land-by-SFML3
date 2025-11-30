@@ -34,6 +34,7 @@ file(GLOB_RECURSE SRC_LIST CMAKE_CONFIGURE_DEPENDS
     ${PROJECT_SOURCE_DIR}/src/engine/object/*.cpp
     ${PROJECT_SOURCE_DIR}/src/engine/scene/*.cpp
     ${PROJECT_SOURCE_DIR}/src/engine/physics/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/engine/audio/*.cpp
     ${PROJECT_SOURCE_DIR}/src/game/scene/*.cpp
     ${PROJECT_SOURCE_DIR}/src/game/component/*.cpp
     ${PROJECT_SOURCE_DIR}/src/game/component/state/*.cpp
@@ -56,6 +57,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/include/engine/object
         ${PROJECT_SOURCE_DIR}/include/engine/scene
         ${PROJECT_SOURCE_DIR}/include/engine/physics
+        ${PROJECT_SOURCE_DIR}/include/engine/audio
         ${PROJECT_SOURCE_DIR}/include/game/scene
         ${PROJECT_SOURCE_DIR}/include/game/component
         ${PROJECT_SOURCE_DIR}/include/game/component/state

@@ -29,6 +29,10 @@ namespace engine::scene {
     class SceneManager;
 } // namespace engine::scene
 
+namespace engine::audio {
+    class AudioPlayer;
+} // namespace engine::audio
+
 namespace engine::core {
 class Time;
 class Config;
@@ -69,7 +73,8 @@ private:
     std::unique_ptr<engine::render::Renderer> renderer_;                        ///< @brief 渲染器组件
     std::unique_ptr<engine::render::Camera> camera_;                            ///< @brief 摄像机组件
     std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;            ///< @brief 物理引擎组件
-    std::unique_ptr<engine::core::Context> context_;                            ///< @brief 上下文组件，最后初始化的组件
+    std::unique_ptr<engine::audio::AudioPlayer> audio_player_;                  ///< @brief 音频播放组件
+    std::unique_ptr<engine::core::Context> context_;                            ///< @brief ！上下文组件，最后初始化的组件
     std::unique_ptr<engine::scene::SceneManager> scene_manager_;                ///< @brief 场景管理器,依赖上下文，最后初始化
 };
 } // namespace engine::core

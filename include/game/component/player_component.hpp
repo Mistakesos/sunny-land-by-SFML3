@@ -55,6 +55,7 @@ public:
     engine::component::ColliderComponent* get_collider_component() const { return collider_component_obs_; }
     engine::component::AnimationComponent* get_animation_component() const { return animation_component_obs_; }
     engine::component::HealthComponent* get_health_component() const { return health_component_obs_; }
+    engine::component::AudioComponent* get_audio_component() const { return audio_component_obs_; }
 
     void set_is_dead(bool is_dead) { is_dead_ = is_dead; }                ///< @brief 设置玩家是否死亡
     bool is_dead() const { return is_dead_; }                             ///< @brief 获取玩家是否死亡    
@@ -87,6 +88,7 @@ private:
     engine::component::ColliderComponent* collider_component_obs_ = nullptr;
     engine::component::AnimationComponent* animation_component_obs_ = nullptr;
     engine::component::HealthComponent* health_component_obs_ = nullptr;
+    engine::component::AudioComponent* audio_component_obs_ = nullptr;
 
     ///< @brief PlayerState（基类）内部缓存了 PlayerComponent 指针
     std::unique_ptr<state::PlayerState> current_state_;

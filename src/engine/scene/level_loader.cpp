@@ -12,6 +12,7 @@
 #include "physics_component.hpp"
 #include "animation_component.hpp"
 #include "health_component.hpp"
+#include "audio_component.hpp"
 #include <spdlog/spdlog.h>
 #include <SFML/System/Vector2.hpp>
 #include <fstream>
@@ -246,6 +247,23 @@ void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& sce
                 add_animation(anim_json, ac, static_cast<sf::Vector2i>(local_size));
             }
 
+            // 获取音效信息并设置
+            auto sound_string = get_tile_property<std::string>(tile_json, "sound");
+            if (sound_string) {
+                // 解析string为JSON对象
+                nlohmann::json sound_json;
+                try {
+                    sound_json = nlohmann::json::parse(sound_string.value());
+                } catch (const nlohmann::json::parse_error& e) {
+                    spdlog::error("解析音效 JSON 字符串失败: {}", e.what());
+                    continue;  // 跳过此对象
+                }
+                // 添加AudioComponent
+                auto* audio_component = game_object->add_component<engine::component::AudioComponent>(&scene.get_context().get_audio_player(), &scene.get_context().get_camera());
+                // 添加音效到 AudioComponent
+                add_sound(sound_json, audio_component);
+            }
+
             // 获取生命值信息并设置
             auto health = get_tile_property<int>(tile_json, "health");
             if (health) {
@@ -305,6 +323,24 @@ void LevelLoader::add_animation(const nlohmann::json& anim_json, engine::compone
         }
         // 将 Animation 对象添加到 AnimationComponent 中
         ac->add_animation(std::move(animation));
+    }
+}
+
+void LevelLoader::add_sound(const nlohmann::json& sound_json, engine::component::AudioComponent* audio_component) {
+    if (!sound_json.is_object() || !audio_component) {
+        spdlog::error("无效的音效 JSON 或 AudioComponent 指针。");
+        return;
+    }
+    // 遍历音效 JSON 对象中的每个键值对（音效id : 音效路径）
+    for (const auto& sound : sound_json.items()) {
+        const std::string& sound_id = sound.key();
+        const std::string& sound_path = sound.value();
+        if (sound_id.empty() || sound_path.empty() ) {
+            spdlog::warn("音效 '{}' 缺少必要信息。", sound_id);
+            continue;
+        }
+        // 添加音效到 AudioComponent
+        audio_component->add_sound(sound_id, sound_path);
     }
 }
 

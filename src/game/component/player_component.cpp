@@ -9,6 +9,7 @@
 #include "animation_component.hpp"
 #include "health_component.hpp"
 #include "collider_component.hpp"
+#include "audio_component.hpp"
 #include "game_object.hpp"
 #include <spdlog/spdlog.h>
 
@@ -22,6 +23,7 @@ PlayerComponent::PlayerComponent(engine::object::GameObject* owner)
     sprite_component_obs_ = owner_->get_component<engine::component::SpriteComponent>();
     animation_component_obs_ = owner_->get_component<engine::component::AnimationComponent>();
     health_component_obs_ = owner_->get_component<engine::component::HealthComponent>();
+    audio_component_obs_ = owner_->get_component<engine::component::AudioComponent>();
 
     // 处理翻转时，按底边中心为原点，处理位置时也一样
     auto& sprite = sprite_component_obs_->get_sprite();
@@ -29,7 +31,8 @@ PlayerComponent::PlayerComponent(engine::object::GameObject* owner)
     transform_component_obs_->set_origin({local_bounds.size.x / 2.f, local_bounds.size.y});
     
     // 检查必要组件是否存在
-    if (!transform_component_obs_ || !physics_component_obs_ || !sprite_component_obs_) {
+    if (!transform_component_obs_ || !physics_component_obs_ || !sprite_component_obs_
+        || !animation_component_obs_ || !health_component_obs_ || !audio_component_obs_) {
         spdlog::error("Player 对象缺少必要组件！");
     }
 

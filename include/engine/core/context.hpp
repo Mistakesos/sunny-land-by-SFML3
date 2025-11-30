@@ -18,6 +18,10 @@ namespace engine::physics {
     class PhysicsEngine;
 } // namespace engine::physics
 
+namespace engine::audio {
+    class AudioPlayer;
+} // namespace engine::audio
+
 namespace engine::core {
 /**
  * @brief 持有对核心引擎模块引用的上下文对象
@@ -34,11 +38,12 @@ public:
      * @param resource_manager 对 ResourceManager 实例的引用。
      * @param physics_engine 对 PhysicsEngine 实例的引用。
      */
-    Context(engine::input::InputManager& input_manager,
-            engine::render::Renderer& renderer,
-            engine::render::Camera& camera,
-            engine::resource::ResourceManager& resource_manager,
-            engine::physics::PhysicsEngine& physics_engine);
+    Context(engine::input::InputManager& input_manager
+            , engine::render::Renderer& renderer
+            , engine::render::Camera& camera
+            , engine::resource::ResourceManager& resource_manager
+            , engine::physics::PhysicsEngine& physics_engine
+            , engine::audio::AudioPlayer& audio_player);
     ~Context() = default;
 
     // 禁止拷贝和移动，Context 对象通常是唯一的或按需创建/传递
@@ -53,6 +58,7 @@ public:
     engine::render::Camera& get_camera() const { return camera_; }                               ///< @brief 获取相机
     engine::resource::ResourceManager& get_resource_manager() const { return resource_manager_; }///< @brief 获取资源管理器
     engine::physics::PhysicsEngine& get_physics_engine() const { return physics_engine_; }       ///< @brief 获取物理引擎
+    engine::audio::AudioPlayer& get_audio_player() const { return audio_player_; }               ///< @brief 获取音频播放器
 
 private:
     engine::input::InputManager& input_manager_;                ///< @brief 输入管理器
@@ -60,5 +66,6 @@ private:
     engine::render::Camera& camera_;                            ///< @brief 相机
     engine::resource::ResourceManager& resource_manager_;       ///< @brief 资源管理器
     engine::physics::PhysicsEngine& physics_engine_;            ///< @brief 物理引擎
+    engine::audio::AudioPlayer& audio_player_;                  ///< @brief 音频播放器
 };
 } // namespace engine::core

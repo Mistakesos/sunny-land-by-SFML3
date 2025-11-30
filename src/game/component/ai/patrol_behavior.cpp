@@ -26,7 +26,6 @@ PatrolBehavior::PatrolBehavior(AIComponent* ai_component, float min_x, float max
 void PatrolBehavior::update(sf::Time) {
     // 获取必要的组件
     auto* physics_component = ai_component_obs_->get_physics_component();
-    auto* collider_component = ai_component_obs_->get_collider_component();
     auto* transform_component = ai_component_obs_->get_transform_component();
     if (!physics_component || !transform_component) {
         spdlog::error("PatrolBehavior：缺少必要的组件，无法执行巡逻行为。");

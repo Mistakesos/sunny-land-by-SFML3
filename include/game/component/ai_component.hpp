@@ -13,6 +13,7 @@ namespace engine::component {
     class ColliderComponent;
     class AnimationComponent;
     class SpriteComponent;
+    class AudioComponent;
 } // namespace engine::component
 
 namespace game::component {
@@ -44,6 +45,7 @@ public:
     engine::component::ColliderComponent* get_collider_component() const { return collider_component_obs_; }
     engine::component::SpriteComponent* get_sprite_component() const { return sprite_component_obs_; }
     engine::component::AnimationComponent* get_animation_component() const { return animation_component_obs_; }
+    engine::component::AudioComponent* get_audio_component() const { return audio_component_obs_; }
 
 private:
     // 核心循环方法
@@ -58,5 +60,6 @@ private:
     engine::component::ColliderComponent* collider_component_obs_ = nullptr;
     engine::component::SpriteComponent* sprite_component_obs_ = nullptr;
     engine::component::AnimationComponent* animation_component_obs_ = nullptr;
+    engine::component::AudioComponent* audio_component_obs_ = nullptr;
 };
 } // namespace game::component
