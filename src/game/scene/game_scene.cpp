@@ -20,6 +20,7 @@
 #include "jump_behavior.hpp"
 #include "level_loader.hpp"
 #include "input_manager.hpp"
+#include "scene_manager.hpp"
 #include <SFML/Graphics/Rect.hpp>
 #include <spdlog/spdlog.h>
 
@@ -39,11 +40,11 @@ GameScene::GameScene(std::string_view name, engine::core::Context& context, engi
         return;
     }
     
+    // 播放背景音乐 (默认循环)
+    context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
     // 设置音量
     context_.get_audio_player().set_music_volume(20.f);  // 设置背景音乐音量为20%
     context_.get_audio_player().set_sound_volume(50.f);  // 设置音效音量为50%
-    // 播放背景音乐 (默认循环)
-    context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
 
     spdlog::trace("GameScene 构造成功");
 }
@@ -65,9 +66,10 @@ void GameScene::handle_input() {
 }
 
 bool GameScene::init_level() {
-     // 加载关卡
+    // 加载关卡
     engine::scene::LevelLoader level_loader(context_);
-    if (!level_loader.load_level("assets/maps/level_1.tmj", *this)) {
+    auto level_path = level_name_to_path(scene_name_);
+    if (!level_loader.load_level(level_path, *this)){
         spdlog::error("关卡加载失败！");
         return false;
     }
@@ -167,23 +169,24 @@ void GameScene::handle_object_collisions() {
         auto* obj1 = pair.first;
         auto* obj2 = pair.second;
 
-        // 处理玩家与敌人的碰撞
-        if (obj1->get_name() == "player" && obj2->get_tag() == "enemy") {
+        if (obj1->get_name() == "player" && obj2->get_tag() == "enemy") {               // 处理玩家与敌人的碰撞
             player_vs_enemy_collision(obj1, obj2);
         } else if (obj2->get_name() == "player" && obj1->get_tag() == "enemy") {
             player_vs_enemy_collision(obj2, obj1);
-        } else if (obj1->get_name() == "player" && obj2->get_tag() == "item") {
-            // 处理玩家与道具的碰撞
+        } else if (obj1->get_name() == "player" && obj2->get_tag() == "item") {         // 处理玩家与道具的碰撞
             player_vs_item_collision(obj1, obj2);
         } else if (obj2->get_name() == "player" && obj1->get_tag() == "item") {
             player_vs_item_collision(obj2, obj1);
-            // 处理玩家与"hazard"对象碰撞
-        } else if (obj1->get_name() == "player" && obj2->get_tag() == "hazard") {
+        } else if (obj1->get_name() == "player" && obj2->get_tag() == "hazard") {       // 处理玩家与"hazard"对象碰撞
             obj1->get_component<game::component::PlayerComponent>()->take_damage(1);
             spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj1->get_name());
         } else if (obj2->get_name() == "player" && obj1->get_tag() == "hazard") {
             obj2->get_component<game::component::PlayerComponent>()->take_damage(1);
             spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", obj2->get_name());
+        } else if (obj1->get_name() == "player" && obj2->get_tag() == "next_level") {   // 处理玩家与关底触发器碰撞
+            to_next_level(obj2);
+        } else if (obj2->get_name() == "player" && obj1->get_tag() == "next_level") {
+            to_next_level(obj1);
         }
     }
 }
@@ -248,6 +251,12 @@ void GameScene::player_vs_item_collision(engine::object::GameObject* player, eng
     auto item_aabb = item->get_component<engine::component::ColliderComponent>()->get_world_aabb();
     create_effect(item_aabb.position + item_aabb.size / 2.f, item->get_tag());  // 创建特效
     context_.get_audio_player().play_sound("assets/audio/poka01.mp3");          // 播放音效
+}
+
+void GameScene::to_next_level(engine::object::GameObject* trigger) {
+    auto scene_name = trigger->get_name();
+    auto next_scene = std::make_unique<game::scene::GameScene>(scene_name, context_, scene_manager_);
+    scene_manager_.request_replace_scene(std::move(next_scene));
 }
 
 void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {

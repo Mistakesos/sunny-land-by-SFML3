@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <optional>
 #include <SFML/Audio.hpp>
 
 namespace engine::resource {
@@ -29,12 +30,11 @@ public:
     /**
      * @brief 播放音效
      * @param sound_path 音效路径
-     * @param position 音效位置（不要使用此参数，空间音频目前不完善）
      * @param volume 音量 0-100，默认 100
      * @param loop 是否循环，默认 false
      * @return 返回 sf::Sound* 可用于后续控制（pause/stop/setVolume），失败返回 nullptr
      */
-    sf::Sound* play_sound(std::string_view sound_path, sf::Vector2f position = {0.f, 0.f}, float volume = 100.f, bool loop = false);
+    sf::Sound* play_sound(std::string_view sound_path, bool loop = false, std::optional<float> volume = std::nullopt);
 
     /**
      * @brief 设置所有音效的全局音量
@@ -70,5 +70,8 @@ private:
 
     // 当前背景音乐路径（防止重复播放）
     std::string current_music_path_;
+
+    float music_volume_ = 100.f;
+    float sound_volume_ = 100.f;
 };
 } // namespace engine::audio

@@ -35,7 +35,7 @@ void AudioComponent::play_sound(std::string_view sound_id, bool use_spatial)
             spdlog::debug("AudioComponent::playSound: 音效 '{}' 超出范围，不播放。", sound_id);
             return; // 超出范围，不播放
         }
-        audio_player_obs_->play_sound(sound_path, object_pos);
+        audio_player_obs_->play_sound(sound_path);
     } else {    // 不使用空间定位
         audio_player_obs_->play_sound(sound_path);
     }

@@ -19,7 +19,7 @@ AudioPlayer::~AudioPlayer() {
 }
 
 // ========================= 音效 =========================
-sf::Sound* AudioPlayer::play_sound(std::string_view sound_path, sf::Vector2f, float volume, bool loop) {
+sf::Sound* AudioPlayer::play_sound(std::string_view sound_path, bool loop, std::optional<float> volume) {
     // 清理播放结束的音效
     std::erase_if(active_sounds_, [](const auto& s) {
         return s->getStatus() == sf::SoundSource::Status::Stopped;
@@ -32,27 +32,34 @@ sf::Sound* AudioPlayer::play_sound(std::string_view sound_path, sf::Vector2f, fl
     }
 
     auto sound = std::make_unique<sf::Sound>(*buffer);
-    sound->setVolume(std::clamp(volume, 0.f, 100.f));
+    if (volume.has_value())
+    {
+        sound->setVolume(std::clamp(volume.value(), 0.f, 100.f));
+    } else {
+        sound->setVolume(sound_volume_);
+    }
     sound->setLooping(loop);
     sound->play();
 
     active_sounds_.push_back(std::move(sound));
 
-    spdlog::trace("AudioPlayer: 播放音效 '{}', 音量: {:.1f}, 循环: {}", sound_path, volume, loop);
+    spdlog::trace("AudioPlayer: 播放音效 '{}', 音量: {}, 循环: {}", sound_path, volume.has_value() ? volume.value() : sound_volume_, loop);
     return active_sounds_.back().get();
 }
 
 void AudioPlayer::set_sound_volume(float volume) {
-    volume = std::clamp(volume, 0.f, 100.f);
+    sound_volume_ = std::clamp(volume, 0.f, 100.f);
     for (auto& sound : active_sounds_) {
-        sound->setVolume(volume);
+        sound->setVolume(sound_volume_);
     }
-    spdlog::trace("AudioPlayer: 全局音效音量设为 {:.1f}", volume);
+    spdlog::trace("AudioPlayer: 全局音效音量设为 {:.1f}", sound_volume_);
 }
 
 float AudioPlayer::get_sound_volume() const {
-    if (active_sounds_.empty()) return 100.f;
-    return active_sounds_.front()->getVolume();
+    if (!active_sounds_.empty()) {
+        return active_sounds_.front()->getVolume();
+    }
+    return sound_volume_;
 }
 
 // ========================= 音乐 =========================
@@ -107,19 +114,18 @@ void AudioPlayer::resume_music() {
 }
 
 void AudioPlayer::set_music_volume(float volume) {
-    volume = std::clamp(volume, 0.f, 100.f);
+    music_volume_ = std::clamp(volume, 0.f, 100.f);
     if (current_music_path_.empty()) return;
     if (auto* music = resource_manager_->get_music(current_music_path_)) {
-        music->setVolume(volume);
+        music->setVolume(music_volume_);
     }
-    spdlog::trace("AudioPlayer: 音乐音量设为 {:.1f}", volume);
+    spdlog::trace("AudioPlayer: 音乐音量设为 {}", music_volume_);
 }
 
 float AudioPlayer::get_music_volume() const {
-    if (current_music_path_.empty()) return 100.f;
     if (auto* music = resource_manager_->get_music(current_music_path_)) {
         return music->getVolume();
     }
-    return 100.f;
+    return music_volume_;
 }
 } // namespace engine::audio
