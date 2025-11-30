@@ -8,13 +8,19 @@ namespace engine::object {
     class GameObject;
 } // namespace engine::object
 
+namespace game::data {
+    class SessionData;
+} // namespace game::data
+
 namespace game::scene {
 /**
  * @brief 主要的游戏场景，包含玩家、敌人、关卡元素等
  */
 class GameScene final : public engine::scene::Scene {
 public:
-    GameScene(std::string_view name, engine::core::Context& context, engine::scene::SceneManager& scene_manager);
+    GameScene(engine::core::Context& context
+            , engine::scene::SceneManager& scene_manager
+            , std::shared_ptr<game::data::SessionData> data = nullptr);
     ~GameScene();
     // 覆盖场景类的核心方法
     void update(sf::Time delta) override;
@@ -28,6 +34,7 @@ private:
 
     void handle_object_collisions();        ///< @brief 处理游戏对象间的碰撞逻辑（从PhysicsEngine获取信息）
     void handle_tile_triggers();            ///< @brief 处理瓦片触发事件（从PhysicsEngine获取信息）
+    void handle_player_damage(int damage);  ///< @brief 处理玩家受伤（更新得分、UI等）
     void player_vs_enemy_collision(engine::object::GameObject* player, engine::object::GameObject* enemy);  ///< @brief 玩家与敌人碰撞处理
     void player_vs_item_collision(engine::object::GameObject* player, engine::object::GameObject* item);    ///< @brief 玩家与道具碰撞处理
 
@@ -43,6 +50,10 @@ private:
      */
     void create_effect(sf::Vector2f center_pos, std::string_view tag);
 
-    engine::object::GameObject* player_obs_ = nullptr; ///< @brief 保存测试对象的指针，方便访问
+    // 测试函数
+    void test_save_and_load();
+
+    std::shared_ptr<game::data::SessionData> game_session_data_ = nullptr;      ///< @brief 场景间共享数据，因此用shared_ptr
+    engine::object::GameObject* player_obs_ = nullptr;                          ///< @brief 保存测试对象的指针，方便访问
 };
 }

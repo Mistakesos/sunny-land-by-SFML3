@@ -15,6 +15,7 @@
 #include "animation_component.hpp"
 #include "health_component.hpp"
 #include "ai_component.hpp"
+#include "session_data.hpp"
 #include "patrol_behavior.hpp"
 #include "updown_behavior.hpp"
 #include "jump_behavior.hpp"
@@ -25,8 +26,17 @@
 #include <spdlog/spdlog.h>
 
 namespace game::scene {
-GameScene::GameScene(std::string_view name, engine::core::Context& context, engine::scene::SceneManager& scene_manager)
-    : Scene{name, context, scene_manager} {
+GameScene::GameScene(engine::core::Context& context
+                   , engine::scene::SceneManager& scene_manager
+                   , std::shared_ptr<game::data::SessionData> data)
+    : Scene{"GameScene", context, scene_manager}
+    , game_session_data_{std::move(data)} {
+
+    if (!game_session_data_) {      // 如果没有传入SessionData，则创建一个默认的
+        game_session_data_ = std::make_shared<game::data::SessionData>();
+        spdlog::info("未提供 SessionData，使用默认值。");
+    }
+
     if (!init_level()) {
         spdlog::error("关卡初始化失败！");
         return;
@@ -39,7 +49,7 @@ GameScene::GameScene(std::string_view name, engine::core::Context& context, engi
         spdlog::error("敌人和道具初始化失败！");
         return;
     }
-    
+
     // 播放背景音乐 (默认循环)
     context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
     // 设置音量
@@ -63,12 +73,13 @@ void GameScene::render() {
 
 void GameScene::handle_input() {
     Scene::handle_input();
+    test_save_and_load();
 }
 
 bool GameScene::init_level() {
     // 加载关卡
     engine::scene::LevelLoader level_loader(context_);
-    auto level_path = level_name_to_path(scene_name_);
+    auto level_path = game_session_data_->get_map_path();
     if (!level_loader.load_level(level_path, *this)){
         spdlog::error("关卡加载失败！");
         return false;
@@ -198,13 +209,26 @@ void GameScene::handle_tile_triggers() {
         auto tile_type = event.second;  // 瓦片类型
         if (tile_type == engine::component::TileType::Hazard) {
             // 玩家碰到到危险瓦片，受伤
-            if (obj->get_name() == "player") {       
-                obj->get_component<game::component::PlayerComponent>()->take_damage(1);
+            if (obj->get_name() == "player") {
+                handle_player_damage(1);
                 spdlog::debug("玩家 {} 受到了 HAZARD 瓦片伤害", obj->get_name());
-            } 
+            }
             // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
         }
     }
+}
+
+void GameScene::handle_player_damage(int damage) {
+    auto player_component = player_obs_->get_component<game::component::PlayerComponent>();
+    if (!player_component->take_damage(damage)) { // 没有受伤，直接返回
+        return;
+    }
+    if (player_component->is_dead()) {
+        spdlog::info("玩家 {} 死亡", player_obs_->get_name());
+        // TODO: 可能的死亡逻辑处理
+    }
+    // 更新游戏数据(生命值)
+    game_session_data_->set_current_health(player_component->get_health_component()->get_current_health());
 }
 
 void GameScene::player_vs_enemy_collision(engine::object::GameObject* player, engine::object::GameObject* enemy) {
@@ -232,11 +256,10 @@ void GameScene::player_vs_enemy_collision(engine::object::GameObject* player, en
 
             // 播放音效 (此音效完全可以放在玩家的音频组件中，这里示例另一种用法：直接用AudioPlayer播放，传入文件路径)
             context_.get_audio_player().play_sound("assets/audio/punch2a.mp3");
-
+            game_session_data_->add_score(10);
         } else {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->get_name(), player->get_name());
-            player->get_component<game::component::PlayerComponent>()->take_damage(1);
-            // TODO: 其他受伤逻辑
+            handle_player_damage(1);
         }
     }
 }
@@ -245,7 +268,8 @@ void GameScene::player_vs_item_collision(engine::object::GameObject* player, eng
     if (item->get_name() == "fruit") {
         player->get_component<engine::component::HealthComponent>()->heal(1);  // 加血
     } else if (item->get_name() == "gem") {
-        //TODO: 加分
+        // 加分
+        game_session_data_->add_score(5);
     }
     item->set_need_remove(true);  // 标记道具为待删除状态
     auto item_aabb = item->get_component<engine::component::ColliderComponent>()->get_world_aabb();
@@ -255,7 +279,9 @@ void GameScene::player_vs_item_collision(engine::object::GameObject* player, eng
 
 void GameScene::to_next_level(engine::object::GameObject* trigger) {
     auto scene_name = trigger->get_name();
-    auto next_scene = std::make_unique<game::scene::GameScene>(scene_name, context_, scene_manager_);
+    auto map_path = level_name_to_path(scene_name);
+    game_session_data_->set_next_level(map_path);     // 设置下一个关卡信息
+    auto next_scene = std::make_unique<game::scene::GameScene>(context_, scene_manager_, game_session_data_);
     scene_manager_.request_replace_scene(std::move(next_scene));
 }
 
@@ -264,7 +290,7 @@ void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {
     auto effect_obj = std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));
     auto transform = effect_obj->add_component<engine::component::TransformComponent>(center_pos);
 
-    // --- 根据标签创建不同的精灵组件和动画--- 
+    // --- 根据标签创建不同的精灵组件和动画---
     auto animation = std::make_unique<engine::render::Animation>("effect", false);
     if (tag == "enemy") {
         effect_obj->add_component<engine::component::SpriteComponent>(
@@ -294,5 +320,17 @@ void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {
     animation_component->play_animation("effect");
     safe_add_game_object(std::move(effect_obj));  // 安全添加特效对象
     spdlog::debug("创建特效: {}", tag);
+}
+
+void GameScene::test_save_and_load() {
+    auto input_manager = context_.get_input_manager();
+    if (input_manager.is_action_pressed(Action::Attack)) {
+        game_session_data_->save_to_file("assets/save.json");
+    }
+    if (input_manager.is_action_pressed(Action::Pause)) {
+        game_session_data_->load_from_file("assets/save.json");
+        spdlog::info("当前生命值: {}", game_session_data_->get_current_health());
+        spdlog::info("当前得分: {}", game_session_data_->get_current_score());
+    }
 }
 } // namespace game::scene

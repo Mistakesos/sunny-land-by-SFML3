@@ -34,7 +34,7 @@ Game::Game()
                                                      , *audio_player_)}
     , scene_manager_{std::make_unique<engine::scene::SceneManager>(*context_)} {
     // 创建第一个场景并压入栈
-    auto scene = std::make_unique<game::scene::GameScene>("level_1", *context_, *scene_manager_);
+    auto scene = std::make_unique<game::scene::GameScene>(*context_, *scene_manager_);
     scene_manager_->request_push_scene(std::move(scene));
 }
 
