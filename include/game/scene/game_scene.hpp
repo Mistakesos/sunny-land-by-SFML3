@@ -31,6 +31,7 @@ private:
     [[nodiscard]] bool init_level();
     [[nodiscard]] bool init_player();
     [[nodiscard]] bool init_enemy_and_item();
+    [[nodiscard]] bool init_ui();
 
     void handle_object_collisions();        ///< @brief 处理游戏对象间的碰撞逻辑（从PhysicsEngine获取信息）
     void handle_tile_triggers();            ///< @brief 处理瓦片触发事件（从PhysicsEngine获取信息）
@@ -49,9 +50,6 @@ private:
      * @param tag 特效标签（决定特效类型,例如"enemy","item"）
      */
     void create_effect(sf::Vector2f center_pos, std::string_view tag);
-
-    // 测试函数
-    void test_text_renderer();
 
     std::shared_ptr<game::data::SessionData> game_session_data_ = nullptr;      ///< @brief 场景间共享数据，因此用shared_ptr
     engine::object::GameObject* player_obs_ = nullptr;                          ///< @brief 保存测试对象的指针，方便访问

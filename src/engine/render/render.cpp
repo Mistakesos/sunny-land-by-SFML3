@@ -161,7 +161,8 @@ void Renderer::draw_ui_text(const Camera& camera
     window_obs_->draw(text);
 }
 
-void Renderer::draw_rect(const sf::FloatRect& rect, sf::Color color) {
+void Renderer::draw_ui_filled_rect(const Camera& camera, const sf::FloatRect& rect, sf::Color color) {
+    window_obs_->setView(camera.get_ui_view());
     sf::RectangleShape shape;
     shape.setPosition({rect.position.x, rect.position.y});
     shape.setSize({rect.size.x, rect.size.y});

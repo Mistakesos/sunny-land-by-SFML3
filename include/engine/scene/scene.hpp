@@ -1,4 +1,5 @@
 #pragma once
+#include "ui_manager.hpp"
 #include <vector>
 #include <memory>
 #include <string>
@@ -7,10 +8,6 @@
 namespace engine::core {
     class Context;
 } // namespace engine::core
-
-namespace engine::ui {
-    class UIManager;
-} // namespace engine::ui
 
 namespace engine::object {
     class GameObject;
@@ -77,11 +74,13 @@ public:
     std::vector<std::unique_ptr<engine::object::GameObject>>& get_game_objects() { return game_objects_; }  ///< @brief 获取场景中的游戏对象
     
 protected:
-    void process_pending_additions();                       ///< @brief 处理待添加的游戏对象。（每轮更新的最后调用）
+    void process_pending_additions();                               ///< @brief 处理待添加的游戏对象。（每轮更新的最后调用）
 
-    std::string scene_name_;                                ///< @brief 场景名称
-    engine::core::Context& context_;                        ///< @brief 上下文引用（显式，构造时传入）
-    engine::scene::SceneManager& scene_manager_;            ///< @brief 场景管理器引用
+    std::string scene_name_;                                        ///< @brief 场景名称
+    engine::core::Context& context_;                                ///< @brief 上下文引用（显式，构造时传入）
+    engine::scene::SceneManager& scene_manager_;                    ///< @brief 场景管理器引用
+    std::unique_ptr<engine::ui::UIManager> ui_manager_ = nullptr;   ///< @brief UI管理器(初始化时自动创建)
+
     bool is_initialized_ = false;                           ///< @brief 场景是否已初始化(非当前场景很可能未被删除，因此需要初始化标志避免重复初始化)
     std::vector<std::unique_ptr<engine::object::GameObject>> game_objects_;         ///< @brief 场景中的游戏对象
     std::vector<std::unique_ptr<engine::object::GameObject>> pending_additions_;    ///< @brief 待添加的游戏对象（延时添加）

@@ -3,6 +3,7 @@
 #include "game_object.hpp"
 #include "camera.hpp"
 #include "scene_manager.hpp"
+#include "ui_manager.hpp"
 #include "physics_engine.hpp"
 #include "context.hpp"
 #include <spdlog/spdlog.h>
@@ -11,7 +12,8 @@ namespace engine::scene {
 Scene::Scene(std::string_view name, engine::core::Context& context, SceneManager& scene_manager)
     : scene_name_(name)
     , context_{context}
-    , scene_manager_{scene_manager} {
+    , scene_manager_{scene_manager}
+    , ui_manager_{std::make_unique<ui::UIManager>(sf::Vector2f{640.f, 360.f})} {
     is_initialized_ = true;         // 子类应该最后调用父类的init方法
     spdlog::trace("场景 ‘{}’ 初始化完成", scene_name_);
 }
@@ -39,6 +41,9 @@ void Scene::update(sf::Time delta) {
     // 更新相机
     context_.get_camera().update(delta);
 
+    // 更新UI管理器
+    ui_manager_->update(delta, context_);
+    
     process_pending_additions();      // 处理待添加（延时添加）的游戏对象
 }
 
@@ -48,10 +53,16 @@ void Scene::render() {
     for (const auto& obj : game_objects_) {
         if (obj) obj->render(context_);
     }
+
+    // 渲染UI管理器
+    ui_manager_->render(context_);
 }
 
 void Scene::handle_input() {
     if (!is_initialized_) return;
+
+    // 处理UI管理器输入
+    if (ui_manager_->handle_input(context_)) return;   // 如果输入事件被UI处理则返回，不再处理游戏对象输入
 
     // 遍历所有游戏对象，略过需要移除的对象
     for (auto& obj : game_objects_) {

@@ -98,7 +98,7 @@ public:
      * @brief 绘制填充矩形
      * @param color 填充颜色
      */
-    void draw_rect(const sf::FloatRect& rect, sf::Color color);
+    void draw_ui_filled_rect(const Camera& camera, const sf::FloatRect& rect, sf::Color color);
 
 private:
     sf::RenderWindow* window_obs_ = nullptr;                                    ///< @brief 窗口的观察者指针，不负责管理生命周期，不要在该类里手动释放他

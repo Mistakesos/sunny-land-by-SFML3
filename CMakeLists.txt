@@ -35,6 +35,7 @@ file(GLOB_RECURSE SRC_LIST CMAKE_CONFIGURE_DEPENDS
     ${PROJECT_SOURCE_DIR}/src/engine/scene/*.cpp
     ${PROJECT_SOURCE_DIR}/src/engine/physics/*.cpp
     ${PROJECT_SOURCE_DIR}/src/engine/audio/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/engine/ui/*.cpp
     ${PROJECT_SOURCE_DIR}/src/game/scene/*.cpp
     ${PROJECT_SOURCE_DIR}/src/game/data/*.cpp
     ${PROJECT_SOURCE_DIR}/src/game/component/*.cpp
@@ -46,7 +47,7 @@ file(GLOB_RECURSE SRC_LIST CMAKE_CONFIGURE_DEPENDS
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 # 3、指定需要的头文件目录
-target_include_directories(${PROJECT_NAME} 
+target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/include/engine/utils
@@ -59,6 +60,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/include/engine/scene
         ${PROJECT_SOURCE_DIR}/include/engine/physics
         ${PROJECT_SOURCE_DIR}/include/engine/audio
+        ${PROJECT_SOURCE_DIR}/include/engine/ui
         ${PROJECT_SOURCE_DIR}/include/game/scene
         ${PROJECT_SOURCE_DIR}/include/game/data
         ${PROJECT_SOURCE_DIR}/include/game/component
@@ -66,9 +68,9 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/include/game/component/ai
 )
 
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        SFML::Audio 
+        SFML::Audio
         SFML::Graphics
         nlohmann_json::nlohmann_json
         spdlog::spdlog

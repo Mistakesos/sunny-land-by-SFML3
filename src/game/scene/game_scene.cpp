@@ -22,6 +22,8 @@
 #include "level_loader.hpp"
 #include "input_manager.hpp"
 #include "scene_manager.hpp"
+#include "ui_manager.hpp"
+#include "ui_panel.hpp"
 #include <SFML/Graphics/Rect.hpp>
 #include <spdlog/spdlog.h>
 
@@ -49,6 +51,10 @@ GameScene::GameScene(engine::core::Context& context
         spdlog::error("敌人和道具初始化失败！");
         return;
     }
+    if (!init_ui()) {
+        spdlog::error("ui 初始化失败！");
+        return;
+    }
 
     // 播放背景音乐 (默认循环)
     context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
@@ -69,7 +75,6 @@ void GameScene::update(sf::Time delta) {
 
 void GameScene::render() {
     Scene::render();
-    test_text_renderer();
 }
 
 void GameScene::handle_input() {
@@ -170,6 +175,15 @@ bool GameScene::init_enemy_and_item() {
     }
 
     return success;
+}
+
+bool GameScene::init_ui() {
+    ui_manager_->add_element(std::make_unique<engine::ui::UIPanel>(sf::Vector2f{100.f, 100.f}
+                                                                 , sf::Vector2f{200.f, 200.f}
+                                                                 , sf::Color{128, 0, 0, 76})
+    );
+
+    return true;
 }
 
 void GameScene::handle_object_collisions() {
@@ -320,13 +334,5 @@ void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {
     animation_component->play_animation("effect");
     safe_add_game_object(std::move(effect_obj));  // 安全添加特效对象
     spdlog::debug("创建特效: {}", tag);
-}
-
-void GameScene::test_text_renderer() {
-    auto& text_renderer = context_.get_renderer();
-    const auto& camera = context_.get_camera();
-    // UI和地图各渲染一次，测试是否正常
-    text_renderer.draw_text(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32u, sf::Vector2f{200.f, 200.f});
-    text_renderer.draw_ui_text(camera, "UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32u, sf::Vector2f{100.f, 100.f}, sf::Color{0, 255, 0, 255});
 }
 } // namespace game::scene
