@@ -69,11 +69,11 @@ void GameScene::update(sf::Time delta) {
 
 void GameScene::render() {
     Scene::render();
+    test_text_renderer();
 }
 
 void GameScene::handle_input() {
     Scene::handle_input();
-    test_save_and_load();
 }
 
 bool GameScene::init_level() {
@@ -322,15 +322,11 @@ void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {
     spdlog::debug("创建特效: {}", tag);
 }
 
-void GameScene::test_save_and_load() {
-    auto input_manager = context_.get_input_manager();
-    if (input_manager.is_action_pressed(Action::Attack)) {
-        game_session_data_->save_to_file("assets/save.json");
-    }
-    if (input_manager.is_action_pressed(Action::Pause)) {
-        game_session_data_->load_from_file("assets/save.json");
-        spdlog::info("当前生命值: {}", game_session_data_->get_current_health());
-        spdlog::info("当前得分: {}", game_session_data_->get_current_score());
-    }
+void GameScene::test_text_renderer() {
+    auto& text_renderer = context_.get_renderer();
+    const auto& camera = context_.get_camera();
+    // UI和地图各渲染一次，测试是否正常
+    text_renderer.draw_text(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32u, sf::Vector2f{200.f, 200.f});
+    text_renderer.draw_ui_text(camera, "UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32u, sf::Vector2f{100.f, 100.f}, sf::Color{0, 255, 0, 255});
 }
 } // namespace game::scene

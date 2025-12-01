@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <iostream>
@@ -104,6 +105,60 @@ void Renderer::draw_parallax(
 void Renderer::draw_ui_sprite(const Camera& camera, sf::Sprite& sprite) {
     window_obs_->setView(camera.get_ui_view());
     window_obs_->draw(sprite);
+}
+
+void Renderer::draw_text(const Camera& camera
+                       , std::string_view str
+                       , std::string_view font_id
+                       , unsigned int font_size
+                       , sf::Vector2f position
+                       , sf::Color font_color) {
+    window_obs_->setView(camera.get_world_view());
+
+    auto font = resourec_manager_obs_->get_font(font_id);
+    if (!font) {
+        spdlog::warn("drawUIText 获取字体失败: {} 大小 {}", std::string(font_id), font_size);
+        return;
+    }
+
+    sf::String string(sf::String::fromUtf8(str.begin(), str.end()));
+    sf::Text text(*font, string, font_size);
+    text.setPosition(position);
+    text.setFillColor(font_color);
+
+    auto shadow = text;
+    shadow.setPosition(text.getPosition() + sf::Vector2f{2.f, 2.f});
+    shadow.setFillColor(sf::Color::Black);
+
+    window_obs_->draw(shadow);
+    window_obs_->draw(text);
+}
+
+void Renderer::draw_ui_text(const Camera& camera
+                          , std::string_view str
+                          , std::string_view font_id
+                          , unsigned int font_size
+                          , sf::Vector2f position
+                          , sf::Color font_color) {
+    window_obs_->setView(camera.get_ui_view());
+
+    auto font = resourec_manager_obs_->get_font(font_id);
+    if (!font) {
+        spdlog::warn("drawUIText 获取字体失败: {} 大小 {}", std::string(font_id), font_size);
+        return;
+    }
+
+    sf::String string(sf::String::fromUtf8(str.begin(), str.end()));
+    sf::Text text(*font, string, font_size);
+    text.setPosition(position);
+    text.setFillColor(font_color);
+
+    auto shadow = text;
+    shadow.setPosition(text.getPosition() + sf::Vector2f{2.f, 2.f});
+    shadow.setFillColor(sf::Color::Black);
+
+    window_obs_->draw(shadow);
+    window_obs_->draw(text);
 }
 
 void Renderer::draw_rect(const sf::FloatRect& rect, sf::Color color) {

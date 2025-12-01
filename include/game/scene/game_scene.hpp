@@ -51,7 +51,7 @@ private:
     void create_effect(sf::Vector2f center_pos, std::string_view tag);
 
     // 测试函数
-    void test_save_and_load();
+    void test_text_renderer();
 
     std::shared_ptr<game::data::SessionData> game_session_data_ = nullptr;      ///< @brief 场景间共享数据，因此用shared_ptr
     engine::object::GameObject* player_obs_ = nullptr;                          ///< @brief 保存测试对象的指针，方便访问

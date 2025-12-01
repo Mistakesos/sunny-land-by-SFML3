@@ -2,17 +2,18 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <string>
 #include <optional>
 
 namespace sf {
-class RenderWindow;
-class Sprite;
-class Color;
+    class RenderWindow;
+    class Sprite;
+    class Text;
 } // namespace sf
 
 namespace engine::resource {
-class ResourceManager;
+    class ResourceManager;
 } // namespace engine::resource
 
 namespace engine::render {
@@ -57,14 +58,41 @@ public:
     /**
      * @brief 绘制精灵考虑视差背景
      */
-    void draw_parallax(const Camera& camera, sf::Sprite& sprite,
-                       const sf::Vector2f& scroll_factor, sf::Vector2<bool> repeat = {true, true}, const sf::Vector2f& scale = {1.f, 1.f});
+    void draw_parallax(const Camera& camera, sf::Sprite& sprite
+                     , const sf::Vector2f& scroll_factor
+                     , sf::Vector2<bool> repeat = {true, true}
+                     , const sf::Vector2f& scale = {1.f, 1.f}
+    );
     
     /**
      * @brief 绘制ui精灵
      * @param sprite 要绘制的ui精灵
      */
     void draw_ui_sprite(const Camera& camera, sf::Sprite& sprite);
+
+    /**
+     * @brief 绘制文字
+     * @param text 要绘制的文字
+     */
+    void draw_text(const Camera& camera
+                 , std::string_view str
+                 , std::string_view font_id
+                 , unsigned int font_size
+                 , sf::Vector2f position
+                 , sf::Color font_color = sf::Color::White
+    );
+
+    /**
+     * @brief 绘制 ui 文字
+     * @param text 要绘制的 ui 文字
+     */
+    void draw_ui_text(const Camera& camera
+                    , std::string_view str
+                    , std::string_view font_id
+                    , unsigned int font_size
+                    , sf::Vector2f position
+                    , sf::Color font_color = sf::Color::White
+    );
 
     /**
      * @brief 绘制填充矩形
