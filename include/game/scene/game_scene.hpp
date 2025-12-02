@@ -12,6 +12,12 @@ namespace game::data {
     class SessionData;
 } // namespace game::data
 
+namespace engine::ui {
+    class UILabel;
+    class UIPanel;
+    class UIImage;
+} // namespace engine::ui
+
 namespace game::scene {
 /**
  * @brief 主要的游戏场景，包含玩家、敌人、关卡元素等
@@ -51,7 +57,17 @@ private:
      */
     void create_effect(sf::Vector2f center_pos, std::string_view tag);
 
+    // --- UI 相关函数 ---
+    void create_score_ui();                           ///< @brief 创建得分UI
+    void create_health_ui();                          ///< @brief 创建生命值UI (或最大生命值改变时重设)
+    void add_score_with_ui(int score);                ///< @brief 增加得分，同时更新UI
+    void heal_with_ui(int amount);                    ///< @brief 增加生命，同时更新UI
+    void update_health_with_ui();                     ///< @brief 更新生命值UI (只适用最大生命值不变的情况)
+
     std::shared_ptr<game::data::SessionData> game_session_data_ = nullptr;      ///< @brief 场景间共享数据，因此用shared_ptr
-    engine::object::GameObject* player_obs_ = nullptr;                          ///< @brief 保存测试对象的指针，方便访问
+    engine::object::GameObject* player_obs_ = nullptr;                          ///< @brief 保存玩家对象的非拥有指针，方便访问
+
+    engine::ui::UILabel* score_label_obs_ = nullptr;         ///< @brief 得分标签 (生命周期由UIManager管理，因此使用裸指针)
+    engine::ui::UIPanel* health_panel_obs_ = nullptr;        ///< @brief 生命值图标面板
 };
 }
