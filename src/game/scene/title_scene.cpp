@@ -1,6 +1,7 @@
 #include "title_scene.hpp"
 #include "context.hpp"
 #include "resource_manager.hpp"
+#include "game_state.hpp"
 #include "camera.hpp"
 #include "input_manager.hpp"
 #include "ui_manager.hpp"
@@ -17,13 +18,15 @@
 #include <spdlog/spdlog.h>
 
 namespace game::scene {
-
-// 构造函数：初始化场景名称和上下文，创建 UI 管理器
 TitleScene::TitleScene(engine::core::Context& context
                      , engine::scene::SceneManager& scene_manager
                      , std::shared_ptr<game::data::SessionData> session_data)
     : engine::scene::Scene{"TitleScene", context, scene_manager}
     , session_data_{std::move(session_data)} {
+    context_.get_game_state().set_state(engine::core::State::Title);
+    context_.get_camera().set_world_view_center(context_.get_camera().get_world_view_size() / 2.f);     // 涉及到切换场景，将位置重置为初始位置
+    context_.get_camera().set_limit_bounds(std::nullopt);       // 解除边界限制，让相机能正常移动
+
     if (!session_data_) {
         spdlog::warn("TitleScene 接收到空的 SessionData，创建一个默认的 SessionData");
         session_data_ = std::make_shared<game::data::SessionData>();
@@ -36,6 +39,7 @@ TitleScene::TitleScene(engine::core::Context& context
         return;
     }
 
+    
     // 创建 UI 元素
     create_ui();
 
@@ -47,7 +51,7 @@ TitleScene::TitleScene(engine::core::Context& context
 // 创建 UI 界面元素
 void TitleScene::create_ui() {
     spdlog::trace("创建 TitleScene UI...");
-    auto window_size = sf::Vector2f(640.f, 360.f);
+    auto window_size = context_.get_game_state().get_logical_size();
     
     // 设置背景音乐
     context_.get_audio_player().play_music("assets/audio/platformer_level03_loop.ogg");

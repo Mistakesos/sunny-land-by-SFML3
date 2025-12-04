@@ -1,11 +1,11 @@
 #include "scene.hpp"
+#include "camera.hpp"
 #include "context.hpp"
 #include "game_object.hpp"
-#include "camera.hpp"
+#include "game_state.hpp"
+#include "physics_engine.hpp"
 #include "scene_manager.hpp"
 #include "ui_manager.hpp"
-#include "physics_engine.hpp"
-#include "context.hpp"
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
@@ -13,7 +13,7 @@ Scene::Scene(std::string_view name, engine::core::Context& context, SceneManager
     : scene_name_(name)
     , context_{context}
     , scene_manager_{scene_manager}
-    , ui_manager_{std::make_unique<ui::UIManager>(sf::Vector2f{640.f, 360.f})} {
+    , ui_manager_{std::make_unique<ui::UIManager>(context_.get_game_state().get_logical_size())} {
     spdlog::trace("场景 ‘{}’ 初始化完成", scene_name_);
 }
 
@@ -32,11 +32,11 @@ void Scene::update(sf::Time delta) {
         }
     }
 
-    // 先更新物理引擎
-    context_.get_physics_engine().update(delta);
-
-    // 更新相机
-    context_.get_camera().update(delta);
+    // 只有游戏进行中，才需要更新物理引擎和相机
+    if (context_.get_game_state().is_playing()){
+        context_.get_physics_engine().update(delta);
+        context_.get_camera().update(delta);
+    }
 
     // 更新UI管理器
     ui_manager_->update(delta, context_);

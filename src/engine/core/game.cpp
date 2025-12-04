@@ -12,6 +12,7 @@
 #include "game_object.hpp"
 #include "physics_engine.hpp"
 #include "audio_player.hpp"
+#include "game_state.hpp"
 #include "context.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <spdlog/spdlog.h>
@@ -27,12 +28,14 @@ Game::Game()
     , camera_{std::make_unique<engine::render::Camera>(window_.get())}
     , physics_engine_{std::make_unique<engine::physics::PhysicsEngine>()}
     , audio_player_{std::make_unique<engine::audio::AudioPlayer>(resource_manager_.get())}
+    , game_state_{std::make_unique<engine::core::GameState>(window_.get())}
     , context_{std::make_unique<engine::core::Context>(*input_manager_
                                                      , *renderer_
                                                      , *camera_
                                                      , *resource_manager_
                                                      , *physics_engine_
-                                                     , *audio_player_)}
+                                                     , *audio_player_
+                                                     , *game_state_)}
     , scene_manager_{std::make_unique<engine::scene::SceneManager>(*context_)} {
     // 创建第一个场景并压入栈
     auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);

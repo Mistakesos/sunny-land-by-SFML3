@@ -1,32 +1,34 @@
 #include "game_scene.hpp"
-#include "resource_manager.hpp"
-#include "physics_engine.hpp"
+#include "menu_scene.hpp"
+#include "ai_component.hpp"
 #include "animation.hpp"
+#include "animation_component.hpp"
 #include "audio_player.hpp"
+#include "camera.hpp"
+#include "collider_component.hpp"
 #include "context.hpp"
 #include "game_object.hpp"
-#include "camera.hpp"
-#include "transform_component.hpp"
-#include "sprite_component.hpp"
-#include "physics_component.hpp"
-#include "collider_component.hpp"
-#include "tilelayer_component.hpp"
-#include "player_component.hpp"
-#include "animation_component.hpp"
+#include "game_state.hpp"
 #include "health_component.hpp"
-#include "ai_component.hpp"
-#include "session_data.hpp"
-#include "patrol_behavior.hpp"
-#include "updown_behavior.hpp"
+#include "input_manager.hpp"
 #include "jump_behavior.hpp"
 #include "level_loader.hpp"
-#include "input_manager.hpp"
+#include "patrol_behavior.hpp"
+#include "physics_component.hpp"
+#include "physics_engine.hpp"
+#include "player_component.hpp"
+#include "resource_manager.hpp"
 #include "scene_manager.hpp"
+#include "session_data.hpp"
+#include "sprite_component.hpp"
+#include "tilelayer_component.hpp"
+#include "transform_component.hpp"
+#include "ui_button.hpp"
+#include "ui_image.hpp"
+#include "ui_label.hpp"
 #include "ui_manager.hpp"
 #include "ui_panel.hpp"
-#include "ui_label.hpp"
-#include "ui_image.hpp"
-#include "ui_button.hpp"
+#include "updown_behavior.hpp"
 #include <SFML/Graphics/Rect.hpp>
 #include <spdlog/spdlog.h>
 
@@ -36,7 +38,7 @@ GameScene::GameScene(engine::core::Context& context
                    , std::shared_ptr<game::data::SessionData> data)
     : Scene{"GameScene", context, scene_manager}
     , game_session_data_{std::move(data)} {
-
+    context_.get_game_state().set_state(engine::core::State::Playing);
     if (!game_session_data_) {      // 如果没有传入SessionData，则创建一个默认的
         game_session_data_ = std::make_shared<game::data::SessionData>();
         spdlog::info("未提供 SessionData，使用默认值。");
@@ -82,6 +84,12 @@ void GameScene::render() {
 
 void GameScene::handle_input() {
     Scene::handle_input();
+
+    // 检查暂停动作
+    if (context_.get_input_manager().is_action_pressed(Action::Pause)) {
+        spdlog::debug("在 GameScene 中检测到暂停动作，正在推送 MenuScene");
+        scene_manager_.request_push_scene(std::make_unique<MenuScene>(context_, scene_manager_, game_session_data_));
+    }
 }
 
 bool GameScene::init_level() {

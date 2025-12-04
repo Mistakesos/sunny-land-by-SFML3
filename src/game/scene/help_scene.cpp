@@ -3,6 +3,7 @@
 #include "input_manager.hpp"
 #include "scene_manager.hpp"
 #include "resource_manager.hpp"
+#include "game_state.hpp"
 #include "ui_manager.hpp"
 #include "ui_image.hpp"
 #include <spdlog/spdlog.h>
@@ -10,7 +11,7 @@
 namespace game::scene {
 HelpsScene::HelpsScene(engine::core::Context& context, engine::scene::SceneManager& scene_manager)
     : engine::scene::Scene{"HelpsScene", context, scene_manager} {
-    auto window_size = sf::Vector2f(640.f, 360.f);
+    auto window_size = context_.get_game_state().get_logical_size();
 
     // 创建帮助图片 UIImage （让它覆盖整个屏幕）
     auto help_image = std::make_unique<engine::ui::UIImage>(

@@ -37,6 +37,7 @@ namespace engine::core {
 class Time;
 class Config;
 class Context;
+class GameState;
 /**
  * @brief 主游戏类，初始化资源，管理游戏循环
  */
@@ -74,6 +75,7 @@ private:
     std::unique_ptr<engine::render::Camera> camera_;                            ///< @brief 摄像机组件
     std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;            ///< @brief 物理引擎组件
     std::unique_ptr<engine::audio::AudioPlayer> audio_player_;                  ///< @brief 音频播放组件
+    std::unique_ptr<engine::core::GameState> game_state_;                       ///< @brief 游戏状态组件
     std::unique_ptr<engine::core::Context> context_;                            ///< @brief ！上下文组件，最后初始化的组件
     std::unique_ptr<engine::scene::SceneManager> scene_manager_;                ///< @brief 场景管理器,依赖上下文，最后初始化
 };
