@@ -42,11 +42,7 @@ void Camera::update(sf::Time delta_time) {
         float t = smooth_speed_ * delta_time.asSeconds();
         t = std::min(t, 1.f); // 确保插值因子不超过1
         
-        new_center = current_center + diff * t;
-        
-        // 四舍五入到整数，避免画面割裂
-        // new_center.x = std::round(new_center.x);
-        // new_center.y = std::round(new_center.y);
+        new_center = current_center + diff * t;        
     }
     
     world_view_.setCenter(new_center);

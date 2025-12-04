@@ -63,7 +63,7 @@ GameScene::GameScene(engine::core::Context& context
     context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
     // 设置音量
     context_.get_audio_player().set_music_volume(20.f);  // 设置背景音乐音量为20%
-    context_.get_audio_player().set_sound_volume(20.f);  // 设置音效音量为50%
+    context_.get_audio_player().set_sound_volume(20.f);  // 设置音效音量为20%
 
     spdlog::trace("GameScene 构造成功");
 }
@@ -112,6 +112,7 @@ bool GameScene::init_level() {
     // 设置相机边界和世界边界
     auto world_size = tile_layer->get_world_size();
     context_.get_camera().set_limit_bounds(sf::FloatRect(sf::Vector2f(0.f, 0.f), world_size));
+    context_.get_camera().set_world_view_center(context_.get_camera().get_world_view_size() / 2.f);     // 涉及到切换场景，将位置重置为初始位置
     context_.get_physics_engine().set_world_bounds(sf::FloatRect(sf::Vector2f(0.f, 0.f), world_size));
 
     return true;
@@ -188,7 +189,6 @@ bool GameScene::init_enemy_and_item() {
 bool GameScene::init_ui() {
     create_score_ui();
     create_health_ui();
-    create_test_button();
     return true;
 }
 
@@ -436,22 +436,6 @@ void GameScene::update_health_with_ui() {
     }
 
     spdlog::debug("生命值UI更新: {}/{}", current_health, max_health);
-}
-
-void GameScene::create_test_button() {
-    auto test_button = std::make_unique<engine::ui::UIButton>(context_,
-                                                              "assets/textures/UI/buttons/Start1.png",
-                                                              "assets/textures/UI/buttons/Start2.png",
-                                                              "assets/textures/UI/buttons/Start3.png",
-                                                              sf::Vector2f(100.f, 100.f),
-                                                              sf::Vector2f(0.f, 0.f),      // 采用图片大小
-                                                              [this](){ this->test_button_clicked(); });
-    ui_manager_->add_element(std::move(test_button));
-
-}
-
-void GameScene::test_button_clicked() {
-    spdlog::info("测试按钮被点击");
 }
 
 void GameScene::add_score_with_ui(int score) {

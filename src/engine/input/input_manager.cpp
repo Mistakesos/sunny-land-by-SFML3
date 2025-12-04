@@ -90,7 +90,7 @@ sf::Vector2i InputManager::get_mouse_position_window() const {
 sf::Vector2i InputManager::get_mouse_logical_position() const {
     const sf::View& view = window_obs_->getView();
     sf::Vector2i mouse_position = get_mouse_position_window();
-    sf::Vector2f scale = view.getSize().componentWiseDiv(window_obs_->getDefaultView().getSize());
+    sf::Vector2f scale = view.getSize().componentWiseDiv(static_cast<sf::Vector2f>(window_obs_->getSize()));
     sf::Vector2f logical_position = static_cast<sf::Vector2f>(mouse_position).componentWiseMul(scale);
     return static_cast<sf::Vector2i>(logical_position);
 }

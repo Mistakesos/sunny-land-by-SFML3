@@ -14,15 +14,12 @@ Scene::Scene(std::string_view name, engine::core::Context& context, SceneManager
     , context_{context}
     , scene_manager_{scene_manager}
     , ui_manager_{std::make_unique<ui::UIManager>(sf::Vector2f{640.f, 360.f})} {
-    is_initialized_ = true;         // 子类应该最后调用父类的init方法
     spdlog::trace("场景 ‘{}’ 初始化完成", scene_name_);
 }
 
 Scene::~Scene() = default;
 
 void Scene::update(sf::Time delta) {
-    if (!is_initialized_) return;
-
     // 更新所有游戏对象，先略过需要移除的对象
     for (auto& obj : game_objects_) {
         if (obj && !obj->is_need_remove()) {
@@ -48,7 +45,6 @@ void Scene::update(sf::Time delta) {
 }
 
 void Scene::render() {
-    if (!is_initialized_) return;
     // 渲染所有游戏对象
     for (const auto& obj : game_objects_) {
         if (obj) obj->render(context_);
@@ -59,8 +55,6 @@ void Scene::render() {
 }
 
 void Scene::handle_input() {
-    if (!is_initialized_) return;
-
     // 处理UI管理器输入
     if (ui_manager_->handle_input(context_)) return;   // 如果输入事件被UI处理则返回，不再处理游戏对象输入
 

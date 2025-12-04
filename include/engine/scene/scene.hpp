@@ -66,8 +66,6 @@ public:
     // getters and setters
     void set_name(std::string_view name) { scene_name_ = name; }                ///< @brief 设置场景名称
     std::string_view get_name() const { return scene_name_; }                   ///< @brief 获取场景名称
-    void set_initialized(bool initialized) { is_initialized_ = initialized; }   ///< @brief 设置场景是否已初始化
-    bool is_initialized() const { return is_initialized_; }                     ///< @brief 获取场景是否已初始化
 
     engine::core::Context& get_context() const { return context_; }                                         ///< @brief 获取上下文引用
     engine::scene::SceneManager& get_scene_manager() const { return scene_manager_; }                       ///< @brief 获取场景管理器引用
@@ -81,7 +79,6 @@ protected:
     engine::scene::SceneManager& scene_manager_;                    ///< @brief 场景管理器引用
     std::unique_ptr<engine::ui::UIManager> ui_manager_ = nullptr;   ///< @brief UI管理器(初始化时自动创建)
 
-    bool is_initialized_ = false;                           ///< @brief 场景是否已初始化(非当前场景很可能未被删除，因此需要初始化标志避免重复初始化)
     std::vector<std::unique_ptr<engine::object::GameObject>> game_objects_;         ///< @brief 场景中的游戏对象
     std::vector<std::unique_ptr<engine::object::GameObject>> pending_additions_;    ///< @brief 待添加的游戏对象（延时添加）
 };

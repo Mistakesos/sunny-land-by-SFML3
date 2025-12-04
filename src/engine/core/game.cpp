@@ -6,6 +6,7 @@
 #include "input_manager.hpp"
 #include "scene_manager.hpp"
 #include "game_scene.hpp"
+#include "title_scene.hpp"
 #include "render.hpp"
 #include "camera.hpp"
 #include "game_object.hpp"
@@ -34,7 +35,7 @@ Game::Game()
                                                      , *audio_player_)}
     , scene_manager_{std::make_unique<engine::scene::SceneManager>(*context_)} {
     // 创建第一个场景并压入栈
-    auto scene = std::make_unique<game::scene::GameScene>(*context_, *scene_manager_);
+    auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);
     scene_manager_->request_push_scene(std::move(scene));
 }
 
@@ -64,6 +65,11 @@ void Game::run() {
 
 void Game::handle_event() {
     input_manager_->process_event();
+
+    if (input_manager_->should_quit()) {
+        spdlog::trace("Game 收到来自 InputManager 的退出请求。");
+        window_->close();
+    }
 
     scene_manager_->handle_input();
 }

@@ -121,11 +121,6 @@ void SceneManager::replace_scene(std::unique_ptr<Scene>&& scene) {
         scene_stack_.pop_back();
     }
 
-    // 初始化新场景
-    if (!scene->is_initialized()) {
-        spdlog::warn("场景未正确初始化！");
-    }
-
     // 将新场景压入栈顶
     scene_stack_.push_back(std::move(scene));
 }
