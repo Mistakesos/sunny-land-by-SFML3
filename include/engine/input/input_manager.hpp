@@ -35,7 +35,8 @@ public:
     bool is_action_released(Action action) const;       ///< @brief 动作是否在本帧刚刚释放
     
     sf::Vector2i get_mouse_position() const;            ///< @brief 获取鼠标位置（屏幕坐标）
-    sf::Vector2i get_mouse_logical_position() const;    ///< @brief 获取鼠标逻辑坐标（从窗口）
+    sf::Vector2i get_mouse_position_window() const;     ///< @brief 获取鼠标位置（窗口坐标）
+    sf::Vector2i get_mouse_logical_position() const;    ///< @brief 获取鼠标逻辑坐标（窗口坐标，考虑 view 缩放）
     
     void process_event();
 private:
@@ -47,6 +48,5 @@ private:
     std::unordered_map<Action, ActionState> action_state_map_;                                         ///< @brief 储存每个动作当前的状态
 
     bool should_quit = false;           ///< @brief 退出标志
-    sf::Vector2f mouse_position_;       ///< @brief 鼠标位置（针对逻辑坐标）
 };
 } // namespace engine::input

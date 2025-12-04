@@ -26,6 +26,7 @@
 #include "ui_panel.hpp"
 #include "ui_label.hpp"
 #include "ui_image.hpp"
+#include "ui_button.hpp"
 #include <SFML/Graphics/Rect.hpp>
 #include <spdlog/spdlog.h>
 
@@ -187,7 +188,7 @@ bool GameScene::init_enemy_and_item() {
 bool GameScene::init_ui() {
     create_score_ui();
     create_health_ui();
-
+    create_test_button();
     return true;
 }
 
@@ -435,6 +436,22 @@ void GameScene::update_health_with_ui() {
     }
 
     spdlog::debug("生命值UI更新: {}/{}", current_health, max_health);
+}
+
+void GameScene::create_test_button() {
+    auto test_button = std::make_unique<engine::ui::UIButton>(context_,
+                                                              "assets/textures/UI/buttons/Start1.png",
+                                                              "assets/textures/UI/buttons/Start2.png",
+                                                              "assets/textures/UI/buttons/Start3.png",
+                                                              sf::Vector2f(100.f, 100.f),
+                                                              sf::Vector2f(0.f, 0.f),      // 采用图片大小
+                                                              [this](){ this->test_button_clicked(); });
+    ui_manager_->add_element(std::move(test_button));
+
+}
+
+void GameScene::test_button_clicked() {
+    spdlog::info("测试按钮被点击");
 }
 
 void GameScene::add_score_with_ui(int score) {
