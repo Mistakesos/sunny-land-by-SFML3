@@ -52,14 +52,14 @@ public:
     const AnimationFrame& get_frame(sf::Time time) const;
 
     // --- Setters and Getters ---
-    const std::string& get_name() const { return name_; }                        ///< @brief 获取动画名称
+    std::string_view get_name() const { return name_; }                        ///< @brief 获取动画名称
     const std::vector<AnimationFrame>& get_frames() const { return frames_; }    ///< @brief 获取动画帧列表
     size_t get_frame_count() const { return frames_.size(); }                    ///< @brief 获取帧数量
     sf::Time get_total_duration() const { return total_duration_; }              ///< @brief 获取动画的总持续时间（秒）
     bool is_looping() const { return loop_; }                                    ///< @brief 检查动画是否循环播放
     bool is_empty() const { return frames_.empty(); }                            ///< @brief 检查动画是否没有帧
 
-    void set_name(const std::string& name) { name_ = name; }                     ///< @brief 设置动画名称
+    void set_name(std::string_view name) { name_ = name; }                     ///< @brief 设置动画名称
     void set_looping(bool loop) { loop_ = loop; }                                ///< @brief 设置动画是否循环播放
 
 private:

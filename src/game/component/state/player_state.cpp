@@ -12,7 +12,7 @@ PlayerState::PlayerState(PlayerComponent* player_component)
     }
 }
 
-void PlayerState::play_animation(const std::string& animation_name) {
+void PlayerState::play_animation(std::string_view animation_name) {
     if (!player_component_obs_) {
         spdlog::error("PlayerState 没有关联的 PlayerComponent，无法播放动画 '{}'", animation_name);
         return;

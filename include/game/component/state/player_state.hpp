@@ -28,7 +28,7 @@ public:
     PlayerState(PlayerState&&) = delete;
     PlayerState& operator=(PlayerState&&) = delete;
 
-    void play_animation(const std::string& animation_name);      ///< @brief 播放指定名称的动画，使用 AnimationComponent 的方法
+    void play_animation(std::string_view animation_name);      ///< @brief 播放指定名称的动画，使用 AnimationComponent 的方法
 
 protected:
     /**
