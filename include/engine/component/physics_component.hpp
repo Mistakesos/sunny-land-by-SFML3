@@ -24,7 +24,11 @@ public:
      * @param use_gravity 物体是否受重力影响，默认true
      * @param mass 物体质量，默认1.0
      */
-    PhysicsComponent(engine::object::GameObject* owner, engine::physics::PhysicsEngine* physics_engine, bool use_gravity = true, float mass = 1.f);
+    PhysicsComponent(engine::object::GameObject* owner
+                   , engine::physics::PhysicsEngine* physics_engine
+                   , bool use_gravity = true
+                   , float mass = 1.f
+    );
     ~PhysicsComponent() override;
 
     // 删除复制/移动操作

@@ -1,0 +1,76 @@
+{
+    "window": {
+        "title": "Sunny Land",
+        "width": 1280,
+        "height": 720,
+        "resizable": true
+    },
+    "graphics": {
+        "vsync": false
+    },
+    "performance": {
+        "target_fps": 60
+    },
+    "audio": {
+        "music_volume": 20,
+        "sound_volume": 30
+    },
+    "keyboard_input_mappings": [
+        [
+            7,
+            [
+                15,
+                37
+            ]
+        ],
+        [
+            6,
+            [
+                10
+            ]
+        ],
+        [
+            5,
+            [
+                9,
+                40
+            ]
+        ],
+        [
+            4,
+            [
+                18,
+                88
+            ]
+        ],
+        [
+            3,
+            [
+                22,
+                89
+            ]
+        ],
+        [
+            2,
+            [
+                3,
+                86
+            ]
+        ],
+        [
+            1,
+            [
+                0,
+                87
+            ]
+        ]
+    ],
+    "mouse_input_mappings": [
+        [
+            6,
+            [
+                0
+            ]
+        ]
+    ]
+}

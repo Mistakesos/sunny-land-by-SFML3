@@ -5,7 +5,10 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::component {
-TileLayerComponent::TileLayerComponent(engine::object::GameObject* owner, sf::Vector2i tile_size, sf::Vector2i map_size, std::vector<TileInfo>&& tiles)
+TileLayerComponent::TileLayerComponent(engine::object::GameObject* owner
+                                     , sf::Vector2i tile_size
+                                     , sf::Vector2i map_size
+                                     , std::vector<TileInfo>&& tiles)
     : Component{owner}
     , tile_size_{std::move(tile_size)}
     , map_size_{std::move(map_size)}

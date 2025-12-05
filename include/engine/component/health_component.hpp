@@ -13,7 +13,10 @@ public:
      * @param max_health 最大生命值，默认为 1
      * @param invincibility_duration 无敌状态持续时间，默认为 2.0 秒
      */
-    explicit HealthComponent(engine::object::GameObject* owner, int max_health = 1, sf::Time invincibility_duration = sf::seconds(2.f));
+    explicit HealthComponent(engine::object::GameObject* owner
+                           , int max_health = 1
+                           , sf::Time invincibility_duration = sf::seconds(2.f)
+    );
     ~HealthComponent() override = default;
 
     // 禁止拷贝和移动
