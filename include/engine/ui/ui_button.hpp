@@ -27,8 +27,8 @@ public:
            , std::string_view normal_sprite_id
            , std::string_view hover_sprite_id
            , std::string_view pressed_sprite_id
-           , const sf::Vector2f& position = {0.f, 0.f}
-           , const sf::Vector2f& size = {0.f, 0.f}
+           , sf::Vector2f position = {0.f, 0.f}
+           , sf::Vector2f size = {0.f, 0.f}
            , std::function<void()> callback = nullptr);
     ~UIButton() override = default;
 

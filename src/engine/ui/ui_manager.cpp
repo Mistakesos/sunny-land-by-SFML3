@@ -4,10 +4,10 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::ui {
-UIManager::UIManager(const sf::Vector2f& window_size) {
+UIManager::UIManager(sf::Vector2f window_size) {
     // 创建一个无特定大小和位置的Panel，它的子元素将基于它定位。
     root_element_ = std::make_unique<UIPanel>(sf::Vector2f{0.f, 0.f}, sf::Vector2f{0.f, 0.f});
-    root_element_->set_size(window_size);
+    root_element_->set_size(std::move(window_size));
     spdlog::trace("UI管理器已初始化根面板。");
     spdlog::trace("UI管理器构造完成。");
 }

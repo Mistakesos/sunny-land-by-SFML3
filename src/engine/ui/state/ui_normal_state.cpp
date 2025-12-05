@@ -8,7 +8,7 @@
 
 namespace engine::ui::state {
 UINormalState::UINormalState(engine::ui::UIInteractive* owner) 
-    : UIState{owner}{
+    : UIState{owner} {
     owner_->set_sprite("normal");
     spdlog::debug("切换到正常状态");
 }

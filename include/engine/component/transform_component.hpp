@@ -25,7 +25,12 @@ public:
      * @param scale 缩放
      * @param angle 旋转角度（兼容角度和弧度）
      */
-    TransformComponent(engine::object::GameObject* owner, sf::Vector2f position = {0.f, 0.f}, sf::Vector2f scale = {1.f, 1.f}, sf::Angle angle = sf::degrees(0.f), sf::Vector2f origin = {0.f, 0.f});
+    TransformComponent(engine::object::GameObject* owner
+                     , sf::Vector2f position = {0.f, 0.f}
+                     , sf::Vector2f scale = {1.f, 1.f}
+                     , sf::Angle angle = sf::degrees(0.f)
+                     , sf::Vector2f origin = {0.f, 0.f}
+    );
     ~TransformComponent() override = default;
 
     // 禁止拷贝和移动
@@ -39,11 +44,11 @@ public:
     sf::Angle get_rotation() const { return angle_; }                             ///< @brief 获取旋转
     const sf::Vector2f& get_scale() const { return scale_; }                      ///< @brief 获取缩放
     sf::Vector2f get_origin() const { return origin_; }                           ///< @brief 获取原点
-    void set_origin(const sf::Vector2f& origin) { origin_ = origin; }             ///< @brief 设置原点
+    void set_origin(sf::Vector2f origin) { origin_ = std::move(origin); }         ///< @brief 设置原点
     void set_position(sf::Vector2f position) { position_ = std::move(position); } ///< @brief 设置位置
     void set_rotation(sf::Angle angle) { angle_ = angle; }                        ///< @brief 设置旋转角度
     void set_scale(sf::Vector2f scale) { scale_ = std::move(scale); }             ///< @brief 设置缩放，应用缩放时应同步更新Sprite偏移量
-    void translate(const sf::Vector2f& offset) { position_ += offset; }           ///< @brief 移动（sf::Sprite::move)    
+    void translate(sf::Vector2f offset) { position_ += offset; }                  ///< @brief 移动（sf::Sprite::move)    
 
 private:
     void update(sf::Time, engine::core::Context&) override {} ///< @brief 覆盖纯虚函数，这里不需要实现

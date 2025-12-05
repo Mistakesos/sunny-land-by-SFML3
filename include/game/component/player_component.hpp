@@ -57,12 +57,12 @@ public:
     engine::component::HealthComponent* get_health_component() const { return health_component_obs_; }
     engine::component::AudioComponent* get_audio_component() const { return audio_component_obs_; }
 
-    void set_is_dead(bool is_dead) { is_dead_ = is_dead; }                ///< @brief 设置玩家是否死亡
-    bool is_dead() const { return is_dead_; }                             ///< @brief 获取玩家是否死亡    
-    void set_move_force(float move_force) { move_force_ = move_force; }   ///< @brief 设置水平移动力
-    float get_move_force() const { return move_force_; }                  ///< @brief 获取水平移动力  
-    void set_max_speed(float max_speed) { max_speed_ = max_speed; }       ///< @brief 设置最大移动速度
-    float get_max_speed() const { return max_speed_; }                    ///< @brief 获取最大移动速度
+    void set_is_dead(bool is_dead) { is_dead_ = is_dead; }                  ///< @brief 设置玩家是否死亡
+    bool is_dead() const { return is_dead_; }                               ///< @brief 获取玩家是否死亡    
+    void set_move_force(float move_force) { move_force_ = move_force; }     ///< @brief 设置水平移动力
+    float get_move_force() const { return move_force_; }                    ///< @brief 获取水平移动力  
+    void set_max_speed(float max_speed) { max_speed_ = max_speed; }         ///< @brief 设置最大移动速度
+    float get_max_speed() const { return max_speed_; }                      ///< @brief 获取最大移动速度
     void set_climb_speed(float climb_speed) { climb_speed_ = climb_speed; } ///< @brief 设置爬梯子速度
     float get_climb_speed() const { return climb_speed_; }                  ///< @brief 获取爬梯子速度
     void set_friction_factor(float friction_factor) { friction_factor_ = friction_factor; }   ///< @brief 设置摩擦系数

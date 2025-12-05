@@ -7,8 +7,8 @@
 namespace engine::component {
 TileLayerComponent::TileLayerComponent(engine::object::GameObject* owner, sf::Vector2i tile_size, sf::Vector2i map_size, std::vector<TileInfo>&& tiles)
     : Component{owner}
-    , tile_size_{tile_size}
-    , map_size_{map_size}
+    , tile_size_{std::move(tile_size)}
+    , map_size_{std::move(map_size)}
     , tiles_{std::move(tiles)} {
     if (tiles_.size() != static_cast<size_t>(map_size_.x * map_size_.y)) {
         spdlog::error("TileLayerComponent: 地图尺寸与提供的瓦片向量大小不匹配。瓦片数据将被清除。");

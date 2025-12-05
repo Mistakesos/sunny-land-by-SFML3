@@ -9,8 +9,8 @@
 namespace engine::ui {
 UIInteractive::~UIInteractive() = default;
 
-UIInteractive::UIInteractive(engine::core::Context& context, const sf::Vector2f& position, const sf::Vector2f& size)
-    : UIElement{position, size}
+UIInteractive::UIInteractive(engine::core::Context& context, sf::Vector2f position, sf::Vector2f size)
+    : UIElement{std::move(position), std::move(size)}
     , context_{context} {
     spdlog::trace("UIInteractive 构造完成");
 }

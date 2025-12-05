@@ -23,8 +23,8 @@ public:
      * @param is_flipped 可选：精灵是否应该水平翻转。
      */
     UIImage(const sf::Texture& texture
-          , const sf::Vector2f& position = sf::Vector2f{0.f, 0.f}
-          , const sf::Vector2f& size = sf::Vector2f{0.f, 0.f}
+          , sf::Vector2f position = sf::Vector2f{0.f, 0.f}
+          , sf::Vector2f size = sf::Vector2f{0.f, 0.f}
           , const std::optional<sf::IntRect>& texture_rect = std::nullopt
           , bool is_flipped = false);
 

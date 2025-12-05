@@ -22,7 +22,7 @@ namespace engine::ui {
  */
 class UIManager final {
 public:
-    UIManager(const sf::Vector2f& window_size);
+    UIManager(sf::Vector2f window_size);
     ~UIManager();
 
     // 禁止拷贝和移动构造/赋值

@@ -22,8 +22,8 @@ public:
     virtual ~Collider() = default;
     virtual ColliderType get_type() const = 0;  ///< @brief 获取碰撞器类型
 
-    void set_aabb_size(const sf::Vector2f& size) { aabb_size_ = size; } ///< @brief 设置最小包围盒的尺寸（宽度和高度）
-    const sf::Vector2f& get_aabb_size() const { return aabb_size_; }    ///< @brief 获取最小包围盒的尺寸（高度和宽度）
+    void set_aabb_size(sf::Vector2f size) { aabb_size_ = std::move(size); } ///< @brief 设置最小包围盒的尺寸（宽度和高度）
+    const sf::Vector2f& get_aabb_size() const { return aabb_size_; }        ///< @brief 获取最小包围盒的尺寸（高度和宽度）
 
 protected:
     sf::Vector2f aabb_size_ = {0.f, 0.f};   ///< @brief 获取碰撞器的类型
@@ -38,17 +38,16 @@ public:
      * @brief 构造函数
      * @param size 包围盒的宽度和高度
      */
-    explicit AABBCollider(const sf::Vector2f& size)
-        : size_{size} { 
-        set_aabb_size(size);
+    explicit AABBCollider(sf::Vector2f size)
+        : size_{std::move(size)} { 
+        set_aabb_size(size_);
     }
     ~AABBCollider() override = default;
 
     // --- Getter and Setters
+    void set_size(sf::Vector2f size) { size_ = std::move(size); }
     ColliderType get_type() const override { return ColliderType::Aabb; }
     const sf::Vector2f& get_size() const { return size_; }
-    void set_size(const sf::Vector2f& size) { size_ = size; }
-
 
 private:
     sf::Vector2f size_ = {0.f, 0.f};    ///< @brief 包围盒的尺寸（和aabb_size_相同）

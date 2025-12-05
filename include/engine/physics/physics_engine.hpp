@@ -38,11 +38,11 @@ public:
     void update(sf::Time delta);        ///< @brief 核心循环：更新所有注册的物理组件的状态
 
     // 设置器/获取器
-    void set_gravity(sf::Vector2f gravity) { gravity_ = std::move(gravity); }           ///< @brief 设置全局重力加速度
-    const sf::Vector2f& get_gravity() const { return gravity_; }                        ///< @brief 获取当前的全局重力加速度
-    void set_max_speed(sf::Vector2f max_speed) { max_speed_ = std::move(max_speed); }   ///< @brief 设置最大速度
-    sf::Vector2f get_max_speed() const { return max_speed_; }                           ///< @brief 获取当前的最大速度
+    void set_gravity(sf::Vector2f gravity) { gravity_ = std::move(gravity); }                       ///< @brief 设置全局重力加速度
+    void set_max_speed(sf::Vector2f max_speed) { max_speed_ = std::move(max_speed); }               ///< @brief 设置最大速度
     void set_world_bounds(sf::FloatRect world_bounds) { world_bounds_ = std::move(world_bounds); }  ///< @brief 设置世界边界
+    sf::Vector2f get_max_speed() const { return max_speed_; }                                       ///< @brief 获取当前的最大速度
+    const sf::Vector2f& get_gravity() const { return gravity_; }                                    ///< @brief 获取当前的全局重力加速度
     const std::optional<sf::FloatRect>& get_world_bounds() const { return world_bounds_; }          ///< @brief 获取世界边界
     ///< @brief 获取本帧检测到的所有GameObject碰撞对（此列表在每次update开始时清空）
     const std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>& get_collision_pairs() {

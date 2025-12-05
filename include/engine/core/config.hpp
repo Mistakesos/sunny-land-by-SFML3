@@ -45,8 +45,8 @@ public:
     unsigned int target_fps_ = 60;                  ///< @brief 目标FPS，0表示无限制
 
     // 音频设置
-    float music_volume_ = 0.5f;
-    float sound_volume_ = 0.5f;
+    float music_volume_ = 100.f;
+    float sound_volume_ = 100.f;
 
     // 存储动作名称到 sfml scancode/button 的名称列表映射
     using Scancode = sf::Keyboard::Scancode;

@@ -9,7 +9,7 @@
 
 namespace engine::ui::state {
 UIPressedState::UIPressedState(engine::ui::UIInteractive* owner)
-    : UIState{owner}{
+    : UIState{owner} {
     owner_->set_sprite("pressed");
     owner_->play_sound("pressed");
     spdlog::debug("切换到按下状态");

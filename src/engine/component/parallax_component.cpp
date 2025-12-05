@@ -5,7 +5,10 @@
 #include "context.hpp"
 
 namespace engine::component {
-ParallaxComponent::ParallaxComponent(engine::object::GameObject* owner, const sf::Texture& texture, const sf::Vector2f& scroll_factor, sf::Vector2<bool> repeat)
+ParallaxComponent::ParallaxComponent(engine::object::GameObject* owner
+                                   , const sf::Texture& texture
+                                   , sf::Vector2f scroll_factor
+                                   , sf::Vector2<bool> repeat)
     : Component{owner}
     , sprite_{texture}
     , scroll_factor_{std::move(scroll_factor)}

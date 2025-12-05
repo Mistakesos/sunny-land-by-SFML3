@@ -6,9 +6,9 @@
 
 namespace engine::ui {
 
-UIPanel::UIPanel(const sf::Vector2f& position, const sf::Vector2f& size, const std::optional<sf::Color>& background_color)
-    : UIElement{position, size}
-    , background_color_{background_color} {
+UIPanel::UIPanel(sf::Vector2f position, sf::Vector2f size, std::optional<sf::Color> background_color)
+    : UIElement{std::move(position), std::move(size)}
+    , background_color_{std::move(background_color)} {
     spdlog::trace("UIPanel 构造完成。");
 }
 

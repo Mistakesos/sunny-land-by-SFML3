@@ -10,7 +10,7 @@
 
 namespace engine::scene {
 Scene::Scene(std::string_view name, engine::core::Context& context, SceneManager& scene_manager)
-    : scene_name_(name)
+    : scene_name_{name}
     , context_{context}
     , scene_manager_{scene_manager}
     , ui_manager_{std::make_unique<ui::UIManager>(context_.get_game_state().get_logical_size())} {

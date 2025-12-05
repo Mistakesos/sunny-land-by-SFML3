@@ -16,8 +16,8 @@ JumpBehavior::JumpBehavior(AIComponent* ai_component
     : AIBehavior{ai_component}
     , patrol_min_x_{min_x}
     , patrol_max_x_{max_x}
-    , jump_vel_{jump_vel}
-    , jump_interval_{jump_interval} {
+    , jump_vel_{std::move(jump_vel)}
+    , jump_interval_{std::move(jump_interval)} {
     if (patrol_min_x_ >= patrol_max_x_) {    // 确保巡逻范围是有效的
         spdlog::error("JumpBehavior: min_x ({}) 应小于 max_x ({})。行为可能不正确。", min_x, max_x);
         patrol_min_x_ = patrol_max_x_;

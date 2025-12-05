@@ -33,12 +33,12 @@ public:
     explicit GameState(sf::RenderWindow* window, State initial_state = State::Title);
     ~GameState() = default;
 
-    State get_current_state() const { return current_state_; }
-    void set_state(State new_state);
-    sf::Vector2u get_window_size() const;
     void set_window_size(sf::Vector2u new_size);
-    sf::Vector2f get_logical_size() const;
+    void set_state(State new_state);
     void set_logical_size(sf::Vector2f new_size);
+    sf::Vector2u get_window_size() const;
+    State get_current_state() const { return current_state_; }
+    sf::Vector2f get_logical_size() const;
 
     // --- 便捷查询方法 ---
 

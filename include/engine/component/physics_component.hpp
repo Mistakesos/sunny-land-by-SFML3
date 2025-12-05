@@ -34,7 +34,7 @@ public:
     PhysicsComponent& operator=(PhysicsComponent&&) = delete;
 
     // PhysicsEngine使用的物理方法
-    void add_force(const sf::Vector2f& force) { if (enabled_) force_ += force; } ///< @brief 添加力
+    void add_force(sf::Vector2f force) { if (enabled_) force_ += force; }        ///< @brief 添加力
     void clear_force() { force_ = {0.f, 0.f}; }                                  ///< @brief 清除力
     const sf::Vector2f& get_force() const { return force_; }                     ///< @brief 获取当前力
     float get_mass() const { return mass_; }                                     ///< @brief 获取质量

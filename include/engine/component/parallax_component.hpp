@@ -16,7 +16,10 @@ class TransformComponent;
 class ParallaxComponent final : public Component {
     friend class engine::object::GameObject;
 public:
-    ParallaxComponent(engine::object::GameObject* owner, const sf::Texture& texture, const sf::Vector2f& scroll_factor, sf::Vector2<bool> repeat = {true, false});
+    ParallaxComponent(engine::object::GameObject* owner
+                    , const sf::Texture& texture
+                    , sf::Vector2f scroll_factor
+                    , sf::Vector2<bool> repeat = {true, false});
     ~ParallaxComponent();
 
     // --- setter ---

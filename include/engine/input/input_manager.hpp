@@ -42,8 +42,8 @@ public:
     sf::Vector2i get_mouse_logical_position() const;    ///< @brief 获取鼠标逻辑坐标（窗口坐标，考虑 view 缩放）
     
     void process_event();
+    
 private:
-
     sf::RenderWindow* window_obs_ = nullptr;                                                            ///< @brief 用于传入获取鼠标的逻辑位置
     using Scancode = sf::Keyboard::Scancode;
     using Button = sf::Mouse::Button;

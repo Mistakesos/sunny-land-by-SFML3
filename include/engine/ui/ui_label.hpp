@@ -27,8 +27,8 @@ public:
             std::string_view text,
             std::string_view font_id,
             int font_size = 16,
-            const sf::Color& color = sf::Color::White,
-            const sf::Vector2f& position = {0.0f, 0.0f});
+            sf::Color color = sf::Color::White,
+            sf::Vector2f position = {0.0f, 0.0f});
 
     // --- 核心方法 ---
     void render(engine::core::Context& context) override;
@@ -42,7 +42,7 @@ public:
     void set_text(std::string_view text);                      ///< @brief 设置文本内容, 同时更新尺寸
     void set_font_id(std::string_view font_id);                ///< @brief 设置字体ID, 同时更新尺寸
     void set_font_size(int font_size);                         ///< @brief 设置字体大小, 同时更新尺寸
-    void set_text_color(const sf::Color& text_color);          ///< @brief 设置字体颜色
+    void set_text_color(sf::Color text_color);                 ///< @brief 设置字体颜色
 
 private:
     engine::render::Renderer& render_;   ///< @brief 需要文本渲染器，用于获取/更新文本尺寸

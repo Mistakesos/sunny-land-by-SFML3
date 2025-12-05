@@ -4,11 +4,11 @@
 
 namespace engine::ui {
 UIImage::UIImage(const sf::Texture& texture
-               , const sf::Vector2f& position
-               , const sf::Vector2f& size
+               , sf::Vector2f position
+               , sf::Vector2f size
                , const std::optional<sf::IntRect>& texture_rect
                , bool is_flipped) 
-    : UIElement{position, size}
+    : UIElement{std::move(position), std::move(size)}
     , sprite_{texture} {
     if (texture_rect.has_value()) {
         sprite_.setTextureRect(texture_rect.value());

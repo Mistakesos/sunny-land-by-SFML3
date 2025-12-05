@@ -40,7 +40,7 @@ public:
 
     void set_current_health(int current_health);                    ///< @brief 设置当前生命值 (确保不超过最大生命值)。
     void set_max_health(int max_health);                            ///< @brief 设置最大生命值 (确保不小于 1)。
-    void set_invincible(sf::Time duration);                            ///< @brief 设置 GameObject 进入无敌状态，持续时间为 duration 秒。
+    void set_invincible(sf::Time duration);                         ///< @brief 设置 GameObject 进入无敌状态，持续时间为 duration 秒。
     void set_invincibility_duration(sf::Time duration) { invincibility_duration_ = duration; } ///< @brief 设置无敌状态持续时间。
 
 protected:

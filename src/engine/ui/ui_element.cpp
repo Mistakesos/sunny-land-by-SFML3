@@ -5,9 +5,9 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::ui {
-UIElement::UIElement(const sf::Vector2f& position, const sf::Vector2f& size)
-    : position_{position}
-    , size_{size} {
+UIElement::UIElement(sf::Vector2f position, sf::Vector2f size)
+    : position_{std::move(position)}
+    , size_{std::move(size)} {
 }   
 
 bool UIElement::handle_input(engine::core::Context& context) {

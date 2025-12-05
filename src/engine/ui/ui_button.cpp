@@ -9,11 +9,13 @@ UIButton::UIButton(engine::core::Context& context
                  , std::string_view normal_sprite_id
                  , std::string_view hover_sprite_id
                  , std::string_view pressed_sprite_id
-                 , const sf::Vector2f& position
-                 , const sf::Vector2f& size
+                 , sf::Vector2f position
+                 , sf::Vector2f size
                  , std::function<void()> callback)
-    : UIInteractive(context, position, size)
-    , callback_(std::move(callback)) {
+    : UIInteractive{context
+                  , std::move(position)
+                  , std::move(size)}
+    , callback_{std::move(callback)} {
     auto& resource_manager = context.get_resource_manager();
     auto tex_normal = resource_manager.get_texture(normal_sprite_id);
     auto tex_hover = resource_manager.get_texture(hover_sprite_id);

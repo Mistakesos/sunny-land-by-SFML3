@@ -6,8 +6,8 @@
 namespace engine::audio {
 
 AudioPlayer::AudioPlayer(engine::resource::ResourceManager* rm)
-    : resource_manager_(rm) {
-    if (!resource_manager_) {
+    : resource_manager_obs_{rm} {
+    if (!resource_manager_obs_) {
         throw std::runtime_error("AudioPlayer: ResourceManager 指针为空");
     }
     spdlog::info("AudioPlayer 初始化成功");
@@ -25,7 +25,7 @@ sf::Sound* AudioPlayer::play_sound(std::string_view sound_path, bool loop, std::
         return s->getStatus() == sf::SoundSource::Status::Stopped;
     });
 
-    auto* buffer = resource_manager_->get_sound(sound_path);
+    auto* buffer = resource_manager_obs_->get_sound(sound_path);
     if (!buffer) {
         spdlog::error("AudioPlayer: 无法加载音效 '{}'", sound_path);
         return nullptr;
@@ -66,7 +66,7 @@ float AudioPlayer::get_sound_volume() const {
 bool AudioPlayer::play_music(std::string_view music_path, bool loop) {
     // 防止重复播放同一首
     if (current_music_path_ == music_path) {
-        auto* music = resource_manager_->get_music(music_path);
+        auto* music = resource_manager_obs_->get_music(music_path);
         if (music && music->getStatus() == sf::Music::Status::Playing) {
             return true;
         }
@@ -75,7 +75,7 @@ bool AudioPlayer::play_music(std::string_view music_path, bool loop) {
     // 先停止旧的（如果有）
     stop_music();
 
-    auto* music = resource_manager_->get_music(music_path);
+    auto* music = resource_manager_obs_->get_music(music_path);
     if (!music) {
         spdlog::error("AudioPlayer: 无法加载音乐 '{}'", music_path);
         return false;
@@ -93,7 +93,7 @@ bool AudioPlayer::play_music(std::string_view music_path, bool loop) {
 void AudioPlayer::stop_music() {
     if (current_music_path_.empty()) return;
 
-    if (auto* music = resource_manager_->get_music(current_music_path_)) {
+    if (auto* music = resource_manager_obs_->get_music(current_music_path_)) {
         music->stop();
     }
     current_music_path_.clear();
@@ -102,14 +102,14 @@ void AudioPlayer::stop_music() {
 
 void AudioPlayer::pause_music() {
     if (current_music_path_.empty()) return;
-    if (auto* music = resource_manager_->get_music(current_music_path_)) {
+    if (auto* music = resource_manager_obs_->get_music(current_music_path_)) {
         music->pause();
     }
 }
 
 void AudioPlayer::resume_music() {
     if (current_music_path_.empty()) return;
-    if (auto* music = resource_manager_->get_music(current_music_path_)) {
+    if (auto* music = resource_manager_obs_->get_music(current_music_path_)) {
         music->play();
     }
 }
@@ -117,14 +117,14 @@ void AudioPlayer::resume_music() {
 void AudioPlayer::set_music_volume(float volume) {
     music_volume_ = std::clamp(volume, 0.f, 100.f);
     if (current_music_path_.empty()) return;
-    if (auto* music = resource_manager_->get_music(current_music_path_)) {
+    if (auto* music = resource_manager_obs_->get_music(current_music_path_)) {
         music->setVolume(music_volume_);
     }
     spdlog::trace("AudioPlayer: 音乐音量设为 {}", music_volume_);
 }
 
 float AudioPlayer::get_music_volume() const {
-    if (auto* music = resource_manager_->get_music(current_music_path_)) {
+    if (auto* music = resource_manager_obs_->get_music(current_music_path_)) {
         return music->getVolume();
     }
     return music_volume_;

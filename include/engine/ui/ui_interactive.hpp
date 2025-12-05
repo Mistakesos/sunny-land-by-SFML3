@@ -20,7 +20,7 @@ namespace engine::ui {
  */
 class UIInteractive : public UIElement {
 public:
-    UIInteractive(engine::core::Context& context, const sf::Vector2f& position = {0.f, 0.f}, const sf::Vector2f& size = {0.f, 0.f});
+    UIInteractive(engine::core::Context& context, sf::Vector2f position = {0.f, 0.f}, sf::Vector2f size = {0.f, 0.f});
     ~UIInteractive() override;
 
     virtual void clicked() {}       ///< @brief 如果有点击事件，则重写该方法

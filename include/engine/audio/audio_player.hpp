@@ -63,7 +63,7 @@ public:
     float get_music_volume() const;
 
 private:
-    engine::resource::ResourceManager* resource_manager_;
+    engine::resource::ResourceManager* resource_manager_obs_;
 
     // 正在播放的音效实例（用于控制音量、暂停等）
     std::vector<std::unique_ptr<sf::Sound>> active_sounds_;

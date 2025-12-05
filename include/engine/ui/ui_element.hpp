@@ -23,7 +23,7 @@ public:
      * @param position 初始局部位置
      * @param size 初始大小
      */
-    explicit UIElement(const sf::Vector2f& position = {0.0f, 0.0f}, const sf::Vector2f& size = {0.0f, 0.0f});
+    explicit UIElement(sf::Vector2f position = {0.0f, 0.0f}, sf::Vector2f size = {0.0f, 0.0f});
 
     /**
      * @brief 虚析构函数，确保派生类正确清理
@@ -51,14 +51,14 @@ public:
     const sf::Vector2f& get_position() const { return position_; }   ///< @brief 获取元素位置(相对于父节点)
     bool is_visible() const { return visible_; }                     ///< @brief 检查元素是否可见
     bool is_need_remove() const { return need_remove_; }             ///< @brief 检查元素是否需要移除
-    UIElement* get_parent() const { return parent_obs_; }                ///< @brief 获取父元素
+    UIElement* get_parent() const { return parent_obs_; }            ///< @brief 获取父元素
     const std::vector<std::unique_ptr<UIElement>>& get_children() const { return children_; } ///< @brief 获取子元素列表
 
-    void set_size(const sf::Vector2f& size) { size_ = size; }        ///< @brief 设置元素大小
-    void set_visible(bool visible) { visible_ = visible; }           ///< @brief 设置元素的可见性
-    void set_parent(UIElement* parent) { parent_obs_ = parent; }         ///< @brief 设置父节点
-    void set_position(const sf::Vector2f& position) { position_ = position; } ///< @brief 设置元素位置(相对于父节点)
-    void set_need_remove(bool need_remove) { need_remove_ = need_remove; }    ///< @brief 设置元素是否需要移除
+    void set_size(sf::Vector2f size) { size_ = std::move(size); }                   ///< @brief 设置元素大小
+    void set_visible(bool visible) { visible_ = visible; }                          ///< @brief 设置元素的可见性
+    void set_parent(UIElement* parent) { parent_obs_ = parent; }                    ///< @brief 设置父节点
+    void set_position(sf::Vector2f position) { position_ = std::move(position); }   ///< @brief 设置元素位置(相对于父节点)
+    void set_need_remove(bool need_remove) { need_remove_ = need_remove; }          ///< @brief 设置元素是否需要移除
 
     // --- 辅助方法 ---
     sf::FloatRect get_bounds() const;                                ///< @brief 获取(计算)元素的边界(屏幕坐标)

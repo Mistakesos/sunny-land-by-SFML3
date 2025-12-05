@@ -9,14 +9,14 @@ UILabel::UILabel(engine::render::Renderer& render
                , std::string_view text
                , std::string_view font_id
                , int font_size
-               , const sf::Color& text_color
-               , const sf::Vector2f& position)
-    : UIElement{position}
+               , sf::Color text_color
+               , sf::Vector2f position)
+    : UIElement{std::move(position)}
     , render_{render}
     , text_{text}
     , font_id_{font_id}
     , font_size_{font_size}
-    , text_color_{text_color} {
+    , text_color_{std::move(text_color)} {
     // 获取文本渲染尺寸
     set_text(text_);    // 为了调整一次尺寸
     spdlog::trace("UILabel 构造完成");
@@ -56,8 +56,8 @@ void UILabel::set_font_size(int font_size) {
     size_ = text_temp.getGlobalBounds().size;
 }
 
-void UILabel::set_text_color(const sf::Color& text_color) {
-    text_color_ = text_color;
+void UILabel::set_text_color(sf::Color text_color) {
+    text_color_ = std::move(text_color);
     /* 颜色变化不影响尺寸 */
 }
 } // namespace engine::ui
