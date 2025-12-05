@@ -29,6 +29,7 @@ public:
     int get_level_health() const { return level_health_; }
     int get_level_score() const { return level_score_; }
     std::string_view get_map_path() const { return map_path_; }
+    bool get_is_win() const { return is_win_; }
 
     // --- Setters ---
     void set_current_health(int health);
@@ -38,17 +39,20 @@ public:
     void set_level_health(int level_health) {level_health_ = level_health; }
     void set_level_score(int level_score) {level_score_ = level_score; }
     void set_map_path(std::string_view map_path) { map_path_ = map_path; }
+    void set_is_win(bool is_win) { is_win_ = is_win; }
 
     void reset();                                           ///< @brief 重置游戏数据以准备开始新游戏（保留最高分）
     void set_next_level(std::string_view map_path);         ///< @brief 设置下一个场景信息（地图、关卡开始时的得分生命）
     bool save_to_file(std::string_view filename) const;     ///< @brief 将当前游戏数据保存到JSON文件（存档）
     bool load_from_file(std::string_view filename);         ///< @brief 从JSON文件中读取游戏数据（读档）
+    bool sync_high_score(std::string_view filename);        ///< @brief 同步最高分(文件与当前分数取最大值)
 
 private:
     int current_health_ = 3;
     int max_health_ = 3;
     int current_score_ = 0;
     int high_score_ = 0;
+    bool is_win_ = false;
     
     int level_health_ = 3;          ///< @brief 进入关卡时的生命值（读/存档用）
     int level_score_ = 0;           ///< @brief 进入关卡时的得分（读/存档用）

@@ -1,5 +1,6 @@
 #include "game_scene.hpp"
 #include "menu_scene.hpp"
+#include "end_scene.hpp"
 #include "ai_component.hpp"
 #include "animation.hpp"
 #include "animation_component.hpp"
@@ -39,10 +40,12 @@ GameScene::GameScene(engine::core::Context& context
     : Scene{"GameScene", context, scene_manager}
     , game_session_data_{std::move(data)} {
     context_.get_game_state().set_state(engine::core::State::Playing);
+    
     if (!game_session_data_) {      // 如果没有传入SessionData，则创建一个默认的
         game_session_data_ = std::make_shared<game::data::SessionData>();
         spdlog::info("未提供 SessionData，使用默认值。");
     }
+    game_session_data_->sync_high_score("assets/save.json");      // 更新最高分
 
     if (!init_level()) {
         spdlog::error("关卡初始化失败！");
@@ -76,6 +79,18 @@ void GameScene::update(sf::Time delta) {
     Scene::update(delta);
     handle_object_collisions();
     handle_tile_triggers();
+
+
+    // 玩家掉出地图下方则判断为失败
+    if (player_obs_ ) {
+        auto pos = player_obs_->get_component<engine::component::TransformComponent>()->get_position();
+        auto world_rect = context_.get_physics_engine().get_world_bounds();
+        // 多100像素冗余量
+        if (world_rect && pos.y > world_rect->position.y + world_rect->size.y + 100.f) {
+            spdlog::debug("玩家掉出地图下方，游戏失败");
+            show_end_scene(false);
+        }
+    }
 }
 
 void GameScene::render() {
@@ -226,6 +241,10 @@ void GameScene::handle_object_collisions() {
             to_next_level(obj2);
         } else if (obj2->get_name() == "player" && obj1->get_tag() == "next_level") {
             to_next_level(obj1);
+        } else if (obj1->get_name() == "player" && obj2->get_name() == "win") {         // 处理玩家与结束触发器碰撞
+            show_end_scene(true);
+        } else if (obj2->get_name() == "player" && obj1->get_name() == "win") {
+            show_end_scene(true);
         }
     }
 }
@@ -311,6 +330,13 @@ void GameScene::to_next_level(engine::object::GameObject* trigger) {
     game_session_data_->set_next_level(map_path);     // 设置下一个关卡信息
     auto next_scene = std::make_unique<game::scene::GameScene>(context_, scene_manager_, game_session_data_);
     scene_manager_.request_replace_scene(std::move(next_scene));
+}
+
+void GameScene::show_end_scene(bool is_win) {
+    spdlog::debug("显示结束场景，游戏 {}", is_win ? "胜利" : "失败");
+    game_session_data_->set_is_win(is_win);
+    auto end_scene = std::make_unique<game::scene::EndScene>(context_, scene_manager_, game_session_data_);
+    scene_manager_.request_push_scene(std::move(end_scene));
 }
 
 void GameScene::create_effect(sf::Vector2f center_pos, std::string_view tag) {

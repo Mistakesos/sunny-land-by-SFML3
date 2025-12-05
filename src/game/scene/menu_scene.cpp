@@ -131,6 +131,7 @@ void MenuScene::on_back_clicked() {
 
 void MenuScene::on_quit_clicked() {
     spdlog::debug("退出按钮被点击。请求应用程序退出。");
+    session_data_->sync_high_score("assets/save.json");     // 退出前先同步最高分
     context_.get_input_manager().set_should_quit(true);     // 输入管理器设置退出标志
 }
 } // namespace game::scene

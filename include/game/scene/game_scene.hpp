@@ -45,7 +45,8 @@ private:
     void player_vs_enemy_collision(engine::object::GameObject* player, engine::object::GameObject* enemy);  ///< @brief 玩家与敌人碰撞处理
     void player_vs_item_collision(engine::object::GameObject* player, engine::object::GameObject* item);    ///< @brief 玩家与道具碰撞处理
 
-    void to_next_level(engine::object::GameObject* trigger);          ///< @brief 进入下一个关卡
+    void to_next_level(engine::object::GameObject* trigger);            ///< @brief 进入下一个关卡
+    void show_end_scene(bool is_win);                                   ///< @brief 显示结束场景
 
     /// @brief 根据关卡名称获取对应的地图文件路径
     std::string level_name_to_path(std::string_view level_name) const { return "assets/maps/" + std::string(level_name) + ".tmj"; }

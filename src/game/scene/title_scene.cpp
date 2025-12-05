@@ -31,6 +31,7 @@ TitleScene::TitleScene(engine::core::Context& context
         spdlog::warn("TitleScene 接收到空的 SessionData，创建一个默认的 SessionData");
         session_data_ = std::make_shared<game::data::SessionData>();
     }
+    session_data_->sync_high_score("assets/save.json");      // 更新最高分
 
     // 加载背景地图
     engine::scene::LevelLoader level_loader(context);
@@ -38,7 +39,6 @@ TitleScene::TitleScene(engine::core::Context& context
         spdlog::error("加载背景失败");
         return;
     }
-
     
     // 创建 UI 元素
     create_ui();
@@ -194,6 +194,7 @@ void TitleScene::on_helps_click() {
 
 void TitleScene::on_quit_click() {
     spdlog::debug("退出按钮被点击。");
+    session_data_->sync_high_score("assets/save.json");   // 退出前先同步最高分
     context_.get_input_manager().set_should_quit(true);
 }
 } // namespace game::scenes 
