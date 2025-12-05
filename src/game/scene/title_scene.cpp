@@ -56,10 +56,6 @@ void TitleScene::create_ui() {
     // 设置背景音乐
     context_.get_audio_player().play_music("assets/audio/platformer_level03_loop.ogg");
 
-    // 设置音量
-    context_.get_audio_player().set_music_volume(20.f);  // 设置背景音乐音量为20%
-    context_.get_audio_player().set_sound_volume(20.f);  // 设置音效音量为20%
-
     // 创建标题图片 (假设不知道大小)
     auto title_image = std::make_unique<engine::ui::UIImage>(
         *context_.get_resource_manager().get_texture("assets/textures/UI/title-screen.png")

@@ -5,7 +5,6 @@
 #include "resource_manager.hpp"
 #include "input_manager.hpp"
 #include "scene_manager.hpp"
-#include "game_scene.hpp"
 #include "title_scene.hpp"
 #include "render.hpp"
 #include "camera.hpp"
@@ -37,20 +36,21 @@ Game::Game()
                                                      , *audio_player_
                                                      , *game_state_)}
     , scene_manager_{std::make_unique<engine::scene::SceneManager>(*context_)} {
-    // 创建第一个场景并压入栈
-    auto scene = std::make_unique<game::scene::TitleScene>(*context_, *scene_manager_);
-    scene_manager_->request_push_scene(std::move(scene));
+    // 设置游戏音量（从 assets/config.json 里读取）
+    audio_player_->set_music_volume(config_->music_volume_);    // 设置背景音乐音量
+    audio_player_->set_sound_volume(config_->sound_volume_);    // 设置音效音量
 }
 
 Game::~Game() = default;
 
 void Game::run() {
+    // 调用场景设置函数(创建第一个场景并压入栈)
+    scene_setup_func_(*scene_manager_);
+
     time_->set_target_fps(config_->target_fps_);
-    
+
     while (window_->isOpen()) {
-
         input_manager_->update();
-
         handle_event();
 
         time_->accumulate_frame_time();
@@ -58,12 +58,15 @@ void Game::run() {
             time_->consume_update_time();
 
             handle_event();
-
             update(time_->get_frame_duration());
         }
-
         render();
     }
+}
+
+void Game::register_scene_setup(std::function<void(engine::scene::SceneManager&)> func) {
+    scene_setup_func_ = std::move(func);
+    spdlog::trace("已注册场景设置函数");
 }
 
 void Game::handle_event() {

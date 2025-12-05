@@ -66,9 +66,6 @@ GameScene::GameScene(engine::core::Context& context
 
     // 播放背景音乐 (默认循环)
     context_.get_audio_player().play_music("assets/audio/hurry_up_and_run.ogg");
-    // 设置音量
-    context_.get_audio_player().set_music_volume(20.f);  // 设置背景音乐音量为20%
-    context_.get_audio_player().set_sound_volume(20.f);  // 设置音效音量为20%
 
     spdlog::trace("GameScene 构造成功");
 }

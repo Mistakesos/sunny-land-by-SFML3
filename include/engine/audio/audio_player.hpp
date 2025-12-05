@@ -12,7 +12,7 @@ namespace engine::resource {
 
 namespace engine::audio {
 /**
- * @brief 基于 SFML 的音频播放器，完全兼容你当前的 ResourceManager
+ * @brief 基于 SFML 的音频播放器
  * 音量范围：0-100（SFML 原生，直观）
  */
 class AudioPlayer final {

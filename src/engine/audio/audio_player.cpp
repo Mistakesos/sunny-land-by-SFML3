@@ -81,6 +81,7 @@ bool AudioPlayer::play_music(std::string_view music_path, bool loop) {
         return false;
     }
 
+    music->setVolume(music_volume_);
     music->setLooping(loop);
     music->play();
     current_music_path_ = music_path;
