@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
 # 添加编译器选项
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
-    target_compile_options(${PROJECT_NAME} PRIVATE
+    add_compile_options(
         -Wall
         -Wextra
         -Wpedantic
