@@ -9,11 +9,18 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 
 # 添加编译器选项
-add_compile_options(
-    -Wall
-    -Wextra
-    -Wpedantic
-)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+endif()
+
+# 手动设置库位置，或者配置环境变量
+if (WIN32)
+    set(CMAKE_PREFIX_PATH "Your Libs path")
+endif()
 
 # 需要的库
 find_package(SFML REQUIRED COMPONENTS Audio Graphics)
@@ -45,8 +52,15 @@ file(GLOB_RECURSE SRC_LIST CMAKE_CONFIGURE_DEPENDS
     ${PROJECT_SOURCE_DIR}/src/game/component/ai/*.cpp
 )
 
-# 生成可执行文件，这里的所有cpp文件用变量替代
+# 统一生成可执行文件
 add_executable(${PROJECT_NAME} ${SRC_LIST})
+
+# Windows 下隐藏黑窗（等价于 WIN32 宏）
+if(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+    )
+endif()
 
 # 指定需要的头文件目录
 target_include_directories(${PROJECT_NAME}
