@@ -174,7 +174,7 @@ void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& sce
                 continue;       // TODO: 多边形对象的处理方式
             } else {    // 没有这些标识则默认是矩形对象
                 // --- 创建游戏对象并添加TransfromComponent ---
-                std::string_view object_name = object.value("name", "Unnamed");
+                std::string object_name = object.value("name", "Unnamed");
                 auto game_object = std::make_unique<engine::object::GameObject>(object_name);
                     // 获取Transform相关信息 （自定义形状的坐标针对左上角）
                 auto position = sf::Vector2f(object.value("x", 0.f), object.value("y", 0.f));
@@ -214,7 +214,7 @@ void LevelLoader::load_object_layer(const nlohmann::json& layer_json, Scene& sce
             auto scale = dst_size.componentWiseDiv(src_size);
 
             // 获取对象名称
-            std::string_view object_name = object.value("name", "Unnamed");
+            std::string object_name = object.value("name", "Unnamed");
 
             // 创建游戏对象并添加组件
             auto game_object = std::make_unique<engine::object::GameObject>(object_name);
